@@ -1,0 +1,307 @@
+// SPDX-License-Identifier: CC0-1.0
+//
+// SPDX-FileContributor: Antonio Niño Díaz, 2024
+
+#include "nds/arm9/trig_lut.h"
+#include "nds/arm9/videoGL.h"
+#include "nds/input.h"
+#include "nds/system.h"
+#include <stdint.h>
+
+#include <gl2d.h>
+#include <nds.h>
+
+#include "s8.h"
+#include "s16.h"
+#include "s64.h"
+
+#define GAME_SCREEN_WIDTH 256
+#define GAME_SCREEN_HEIGHT 192
+#define GAME_SCREEN_BOUNDS 2
+
+#define MAX_COLOR_PHASE 2
+#define MAX_COLOR_BITS 32
+
+#define PLAYER_WIDTH 16
+#define PLAYER_HEIGHT 16
+#define PLAYER_HALF_WIDTH (PLAYER_WIDTH / 2)
+#define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
+#define PLAYER_ACCEL 4
+
+struct vec2 {
+    int16_t x;
+    int16_t y;
+};
+
+struct vec2 vec2_mul(struct vec2 v1, int scalar){
+    struct vec2 temp = {v1.x * scalar,
+                        v1.y * scalar};
+    return temp;
+}
+
+struct vec2 vec2_add(struct vec2 v1, struct vec2 v2){
+    struct vec2 temp = {v1.x + v2.x, v1.y + v2.y};
+    return temp;
+}
+
+struct vec2 vec2_sub(struct vec2 v1, struct vec2 v2){
+    struct vec2 temp = {v1.x - v2.x, v1.y - v2.y};
+    return temp;
+}
+
+struct vec2 vec2_div(struct vec2 v1, int scalar){
+    struct vec2 temp = {v1.x / scalar,
+                        v1.y / scalar};
+    return temp;
+}
+
+struct vec3 {
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
+};
+
+
+struct vec3 vec3_mul(struct vec3 v1, uint32_t scalar){
+    struct vec3 temp = {v1.x * scalar,
+                        v1.y * scalar,
+                        v1.z * scalar};
+    return temp;
+}
+
+struct vec3 vec3_mod(struct vec3 v1, uint32_t scalar){
+    struct vec3 temp = {v1.x % scalar,
+                        v1.y % scalar,
+                        v1.z % scalar};
+    return temp;
+}
+
+struct vec3 vec3_add(struct vec3 v1, struct vec3 v2){
+    struct vec3 temp = {v1.x + v2.x,
+                        v1.y + v2.y,
+                        v1.z + v2.z};
+    return temp;
+}
+struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2){
+    struct vec3 temp = {v1.x - v2.x,
+                        v1.y - v2.y,
+                        v1.z - v2.z};
+    return temp;
+}
+struct vec3 vec3_div(struct vec3 v1, int scalar){
+    struct vec3 temp = {v1.x / scalar,
+                        v1.y / scalar,
+                        v1.z / scalar};
+    return temp;
+}
+bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition){
+        if (keys & KEY_START)
+            return false;
+
+        if (keys & KEY_X)
+        {
+            color->x = 255;
+            color->y = 180;
+            color->z = 120;
+        }
+
+        if (keys & KEY_B)
+        {
+            color->x = 20;
+            color->y = 180;
+            color->z = 255;
+        }
+
+        if (keys & KEY_Y)
+        {
+            color->x = 0;
+            color->y = 180;
+            color->z = 255;
+        }
+
+        if (keys & KEY_A)
+        {
+            color->x = 255;
+            color->y = 180;
+            color->z = 0;
+        }
+
+        if (keys & KEY_UP)
+        {
+            vecPosition->y -= PLAYER_ACCEL;
+            if ( vecPosition->y - PLAYER_HALF_HEIGHT < 0)
+                vecPosition->y = PLAYER_HALF_HEIGHT;
+        }
+        
+
+        if (keys & KEY_DOWN)
+        {
+            vecPosition->y += PLAYER_ACCEL;
+            if ( vecPosition->y + PLAYER_HALF_HEIGHT + 1 > GAME_SCREEN_HEIGHT)
+                vecPosition->y = GAME_SCREEN_HEIGHT - PLAYER_HALF_HEIGHT;
+        }
+
+        if (keys & KEY_LEFT)
+        {
+            vecPosition->x -= PLAYER_ACCEL;
+            if ( vecPosition->x - PLAYER_HALF_WIDTH < 0)
+                vecPosition->x = PLAYER_HALF_WIDTH;
+        }
+
+        if (keys & KEY_RIGHT)
+        {
+            vecPosition->x += PLAYER_ACCEL;
+            if ( vecPosition->x + PLAYER_HALF_HEIGHT -1 > GAME_SCREEN_WIDTH)
+                vecPosition->x = GAME_SCREEN_WIDTH - PLAYER_HALF_WIDTH;
+        }
+
+
+    return true;
+}
+
+int loadTextures(glImage* texture, uint8_t texSize){
+    vramSetBankA(VRAM_A_TEXTURE);
+    vramSetBankE(VRAM_E_TEX_PALETTE);
+    int tempTex ;
+    const short unsigned int *pPal;
+    const unsigned int *pBitmap;
+
+    switch(texSize){
+        case 8:
+            pPal = s8Pal;
+            pBitmap = s8Bitmap;
+            break;
+        case 16:
+            pPal = s16Pal;
+            pBitmap = s16Bitmap;
+            break;
+        case 64:
+            pPal = s64Pal;
+            pBitmap = s64Bitmap;
+            break;
+        default:
+            return -1;
+    }
+
+
+    tempTex =
+        glLoadTileSet(texture,
+                      texSize, texSize,
+                      texSize, texSize,
+                      GL_RGB16,
+                      texSize, texSize,
+                      TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
+                      16,
+                      pPal,
+                      pBitmap);
+
+    if (tempTex < 0)
+        printf("Failed to load texture:  %d\n", tempTex);
+
+    return tempTex;
+}
+
+void clampColor(struct vec3 *color){
+    color->x = (color->x < 0) ? 0 : (color->x > 31) ? 31 : color->x;
+    color->y = (color->y < 0) ? 0 : (color->y > 31) ? 31 : color->y;
+    color->z = (color->z < 0) ? 0 : (color->z > 31) ? 31 : color->z;
+}
+
+
+void InitColors(struct vec3* colorMod, uint8_t* nColorPhase){
+    *nColorPhase = 1;
+    colorMod->x = 2;
+    colorMod->y = 1;
+    colorMod->z = 5;
+}
+
+
+
+
+int main(int argc, char **argv)
+{
+    consoleDemoInit();
+    struct vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT};
+
+    videoSetMode(MODE_5_3D);
+
+    glScreen2D();
+    glEnable(GL_TEXTURE_2D);
+
+    glImage texture[3];
+
+    loadTextures(&texture[0], 8);
+    loadTextures(&texture[1], 16);
+    loadTextures(&texture[2], 64);
+    uint16_t nColorCountChange = 0;
+    struct vec3 colorBase = {15, 12, 13};
+    struct vec3 colorMod;
+    struct vec3 color = {0, 0, 0};
+    uint8_t nColorPhase = 0;
+    InitColors(&colorMod, &nColorPhase);
+    while (1)
+    {
+        swiWaitForVBlank();
+
+        consoleClear();
+
+        // Print some controls
+        printf("START:  Exit to loader\n");
+        printf("r:%d,g:%d,b:%d,count:%d\n", color.x, color.y, color.z,nColorCountChange);
+        #ifdef DEBUG_MODE
+        printf("Player X: %d\n", vecPosition.x);
+        printf("Player Y: %d\n", vecPosition.y);
+        printf("Precieved player Y: %d, max = %d\n", vecPosition.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("\n");
+        #endif
+
+        if (nColorPhase > MAX_COLOR_PHASE)
+        {
+            color = vec3_mul(colorMod, nColorCountChange);
+            color = vec3_mod(color, MAX_COLOR_BITS);
+            color = vec3_add(color, colorBase);
+            clampColor(&color);
+
+            nColorPhase = 0;
+            nColorCountChange++;
+        }
+        nColorPhase++;
+
+        // vec3_add(colorMod, (struct vec3) {5, 4, 5});
+
+ 
+        scanKeys();
+
+
+
+
+        // color = vec3_add(color,
+        //                  vec3_add(colorBase,
+        //                          (struct vec3) {
+        //                            colorMod.x * nColorPhase * 0.1f,
+        //                            colorMod.y * nColorPhase * 0.3f,
+        //                            colorMod.z * nColorPhase * 0.2f,
+        //                            }
+        //                        )
+        //                  );
+
+        // clampColor(&color);
+
+
+        uint16_t keys = keysHeld();
+        handleKeys(keys, &color, &vecPosition);
+
+        glBegin2D();
+        glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
+        glColor(RGB15(color.x, color.y, color.z));
+
+        glSprite(vecPosition.x - PLAYER_HALF_WIDTH, vecPosition.y - PLAYER_HALF_HEIGHT, GL_FLIP_NONE, &texture[1]);
+
+
+        glEnd2D();
+
+        glFlush(0);
+    }
+
+    return 0;
+}
