@@ -28,6 +28,8 @@
 #define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
 #define PLAYER_ACCEL 4
 
+#define DEBUG_MODE 1
+
 struct vec2 {
     int16_t x;
     int16_t y;
