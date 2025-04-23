@@ -217,6 +217,22 @@ void InitColors(struct vec3* colorMod, uint8_t* nColorPhase){
     colorMod->z = 5;
 }
 
+void crossScreen(struct vec2 *pos) {
+    if (pos->x < 0) {
+        pos->x += GAME_SCREEN_WIDTH;
+    }
+    if (pos->x >= GAME_SCREEN_WIDTH) {
+        pos->x -= GAME_SCREEN_WIDTH;
+    }
+
+    if (pos->y < 0) {
+        pos->y += GAME_SCREEN_HEIGHT;
+    }
+    if (pos->y >= GAME_SCREEN_HEIGHT) {
+        pos->y -= GAME_SCREEN_HEIGHT;
+    }
+}
+
 int main(int argc, char **argv)
 {
     consoleDemoInit();
@@ -283,6 +299,7 @@ int main(int argc, char **argv)
 
         glFlush(0);
         vecPosition = vec2_add(vecPosition, vecVelocity);
+        crossScreen(&vecPosition);
     }
 
     return 0;
