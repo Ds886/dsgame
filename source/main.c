@@ -266,27 +266,8 @@ int main(int argc, char **argv)
             nColorCountChange++;
         }
         nColorPhase++;
-
-        // vec3_add(colorMod, (struct vec3) {5, 4, 5});
-
  
         scanKeys();
-
-
-
-
-        // color = vec3_add(color,
-        //                  vec3_add(colorBase,
-        //                          (struct vec3) {
-        //                            colorMod.x * nColorPhase * 0.1f,
-        //                            colorMod.y * nColorPhase * 0.3f,
-        //                            colorMod.z * nColorPhase * 0.2f,
-        //                            }
-        //                        )
-        //                  );
-
-        // clampColor(&color);
-
 
         uint16_t keys = keysHeld();
         handleKeys(keys, &color, &vecPosition);
