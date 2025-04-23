@@ -99,7 +99,7 @@ struct vec3 vec3_div(struct vec3 v1, int scalar){
     return temp;
 }
 
-bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition, s16* rotation){
+bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecVelocity, s16* rotation){
         if (keys & KEY_START)
             return false;
 
@@ -136,15 +136,15 @@ bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition, s16
 
         if (keys & KEY_UP)
         {
-            vecPosition->x += PLAYER_ACCEL * cos;
-            vecPosition->y += PLAYER_ACCEL * sin;
+            vecVelocity->x += PLAYER_ACCEL * cos;
+            vecVelocity->y += PLAYER_ACCEL * sin;
         }
         
 
         if (keys & KEY_DOWN)
         {
-            vecPosition->x -= PLAYER_ACCEL * cos;
-            vecPosition->y -= PLAYER_ACCEL * sin;
+            vecVelocity->x -= PLAYER_ACCEL * cos;
+            vecVelocity->y -= PLAYER_ACCEL * sin;
         }
 
         if (keys & KEY_LEFT)
@@ -220,6 +220,7 @@ void InitColors(struct vec3* colorMod, uint8_t* nColorPhase){
 int main(int argc, char **argv)
 {
     consoleDemoInit();
+    struct vec2 vecVelocity = {0, 0};
     struct vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT};
     s16 rotation = 0;
 
@@ -249,9 +250,9 @@ int main(int argc, char **argv)
         printf("START:  Exit to loader\n");
         printf("r:%d,g:%d,b:%d,count:%d\n", color.x, color.y, color.z,nColorCountChange);
         #ifdef DEBUG_MODE
-        printf("Player X: %f\n", vecPosition.x);
-        printf("Player Y: %f\n", vecPosition.y);
-        printf("Precieved player Y: %f, max = %d\n", vecPosition.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("Player X: %f\n", vecVelocity.x);
+        printf("Player Y: %f\n", vecVelocity.y);
+        printf("Precieved player Y: %f, max = %d\n", vecVelocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
         printf("\n");
         #endif
 
@@ -270,7 +271,7 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &color, &vecPosition, &rotation);
+        handleKeys(keys, &color, &vecVelocity, &rotation);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
@@ -281,6 +282,7 @@ int main(int argc, char **argv)
         glEnd2D();
 
         glFlush(0);
+        vecPosition = vec2_add(vecPosition, vecVelocity);
     }
 
     return 0;
