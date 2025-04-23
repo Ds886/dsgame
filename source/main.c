@@ -26,7 +26,9 @@
 #define PLAYER_HEIGHT 16
 #define PLAYER_HALF_WIDTH (PLAYER_WIDTH / 2)
 #define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
-#define PLAYER_ACCEL 4
+#define PLAYER_ACCEL 2.0f
+
+#define ROTATION_SPEED 2
 
 #define DEBUG_MODE 1
 
@@ -106,7 +108,8 @@ struct vec3 vec3_div(struct vec3 v1, int scalar){
                         v1.z / scalar};
     return temp;
 }
-bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition){
+
+bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition, s16* rotation){
         if (keys & KEY_START)
             return false;
 
@@ -137,34 +140,31 @@ bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition){
             color->y = 180;
             color->z = 0;
         }
+        s16 bin_rotation = degreesToAngle(*rotation);
+        float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+        float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
         if (keys & KEY_UP)
         {
-            vecPosition->y -= PLAYER_ACCEL;
-            if ( vecPosition->y - PLAYER_HALF_HEIGHT < 0)
-                vecPosition->y = PLAYER_HALF_HEIGHT;
+            vecPosition->x += round_float(PLAYER_ACCEL * cos);
+            vecPosition->y += round_float(PLAYER_ACCEL * sin);
         }
         
 
         if (keys & KEY_DOWN)
         {
-            vecPosition->y += PLAYER_ACCEL;
-            if ( vecPosition->y + PLAYER_HALF_HEIGHT + 1 > GAME_SCREEN_HEIGHT)
-                vecPosition->y = GAME_SCREEN_HEIGHT - PLAYER_HALF_HEIGHT;
+            vecPosition->x -= round_float(PLAYER_ACCEL * cos);
+            vecPosition->y -= round_float(PLAYER_ACCEL * sin);
         }
 
         if (keys & KEY_LEFT)
         {
-            vecPosition->x -= PLAYER_ACCEL;
-            if ( vecPosition->x - PLAYER_HALF_WIDTH < 0)
-                vecPosition->x = PLAYER_HALF_WIDTH;
+            *rotation -= ROTATION_SPEED;
         }
 
         if (keys & KEY_RIGHT)
         {
-            vecPosition->x += PLAYER_ACCEL;
-            if ( vecPosition->x + PLAYER_HALF_HEIGHT -1 > GAME_SCREEN_WIDTH)
-                vecPosition->x = GAME_SCREEN_WIDTH - PLAYER_HALF_WIDTH;
+            *rotation += ROTATION_SPEED;
         }
 
 
@@ -227,13 +227,11 @@ void InitColors(struct vec3* colorMod, uint8_t* nColorPhase){
     colorMod->z = 5;
 }
 
-
-
-
 int main(int argc, char **argv)
 {
     consoleDemoInit();
     struct vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT};
+    s16 rotation = 0;
 
     videoSetMode(MODE_5_3D);
 
@@ -282,14 +280,13 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &color, &vecPosition);
+        handleKeys(keys, &color, &vecPosition, &rotation);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
         glColor(RGB15(color.x, color.y, color.z));
 
-        glSprite(vecPosition.x - PLAYER_HALF_WIDTH, vecPosition.y - PLAYER_HALF_HEIGHT, GL_FLIP_NONE, &texture[1]);
-
+        glSpriteRotate(vecPosition.x - PLAYER_HALF_WIDTH, vecPosition.y - PLAYER_HALF_HEIGHT, degreesToAngle(rotation), GL_FLIP_NONE, &texture[1]);
 
         glEnd2D();
 
