@@ -33,19 +33,9 @@
 #define DEBUG_MODE 1
 
 struct vec2 {
-    int16_t x;
-    int16_t y;
+    float x;
+    float y;
 };
-
-s16 round_float(float a) {
-    s16 a_int = (s16)a;
-    if (a - (float)a_int > 0.5) {
-        return a_int+1;
-    }
-
-    return a_int;
-}
-
 
 struct vec2 vec2_mul(struct vec2 v1, int scalar){
     struct vec2 temp = {v1.x * scalar,
@@ -146,15 +136,15 @@ bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecPosition, s16
 
         if (keys & KEY_UP)
         {
-            vecPosition->x += round_float(PLAYER_ACCEL * cos);
-            vecPosition->y += round_float(PLAYER_ACCEL * sin);
+            vecPosition->x += PLAYER_ACCEL * cos;
+            vecPosition->y += PLAYER_ACCEL * sin;
         }
         
 
         if (keys & KEY_DOWN)
         {
-            vecPosition->x -= round_float(PLAYER_ACCEL * cos);
-            vecPosition->y -= round_float(PLAYER_ACCEL * sin);
+            vecPosition->x -= PLAYER_ACCEL * cos;
+            vecPosition->y -= PLAYER_ACCEL * sin;
         }
 
         if (keys & KEY_LEFT)
@@ -259,9 +249,9 @@ int main(int argc, char **argv)
         printf("START:  Exit to loader\n");
         printf("r:%d,g:%d,b:%d,count:%d\n", color.x, color.y, color.z,nColorCountChange);
         #ifdef DEBUG_MODE
-        printf("Player X: %d\n", vecPosition.x);
-        printf("Player Y: %d\n", vecPosition.y);
-        printf("Precieved player Y: %d, max = %d\n", vecPosition.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("Player X: %f\n", vecPosition.x);
+        printf("Player Y: %f\n", vecPosition.y);
+        printf("Precieved player Y: %f, max = %d\n", vecPosition.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
         printf("\n");
         #endif
 
