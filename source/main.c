@@ -35,6 +35,16 @@ struct vec2 {
     int16_t y;
 };
 
+s16 round_float(float a) {
+    s16 a_int = (s16)a;
+    if (a - (float)a_int > 0.5) {
+        return a_int+1;
+    }
+
+    return a_int;
+}
+
+
 struct vec2 vec2_mul(struct vec2 v1, int scalar){
     struct vec2 temp = {v1.x * scalar,
                         v1.y * scalar};
