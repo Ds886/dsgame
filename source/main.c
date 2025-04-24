@@ -37,6 +37,15 @@ struct vec2 {
     float y;
 };
 
+struct spritestate {
+    glImage *texture;
+    struct vec2 position;
+    struct vec2 velocity;
+    float acceleration;
+    float rotation;
+    float rotation_speed;
+};
+
 struct vec2 vec2_mul(struct vec2 v1, int scalar){
     struct vec2 temp = {v1.x * scalar,
                         v1.y * scalar};
@@ -231,6 +240,20 @@ void crossScreen(struct vec2 *pos) {
     if (pos->y >= GAME_SCREEN_HEIGHT) {
         pos->y -= GAME_SCREEN_HEIGHT;
     }
+}
+
+struct spritestate newSprite(glImage *texture, struct vec2 pos, struct vec3 color, float accel, float rotation_speed) {
+    struct spritestate ret;
+
+    ret.texture = texture;
+    ret.position = pos;
+    ret.velocity.x = 0;
+    ret.velocity.y = 0;
+    ret.acceleration = accel;
+    ret.rotation = 0;
+    ret.rotation_speed = rotation_speed;
+
+    return ret;
 }
 
 int main(int argc, char **argv)
