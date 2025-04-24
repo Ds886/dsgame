@@ -107,7 +107,7 @@ struct vec3 vec3_div(struct vec3 v1, int scalar){
     return temp;
 }
 
-bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecVelocity, s16* rotation){
+bool handleKeys(uint32_t keys, struct vec3 *color, struct spritestate* sprite){
         if (keys & KEY_START)
             return false;
 
@@ -138,31 +138,32 @@ bool handleKeys(uint32_t keys, struct vec3 *color, struct vec2* vecVelocity, s16
             color->y = 180;
             color->z = 0;
         }
-        s16 bin_rotation = degreesToAngle(*rotation);
+        
+        s16 bin_rotation = degreesToAngle(sprite->rotation);
         float cos = fixedToFloat(cosLerp(bin_rotation), 12);
         float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
         if (keys & KEY_UP)
         {
-            vecVelocity->x += PLAYER_ACCEL * cos;
-            vecVelocity->y += PLAYER_ACCEL * sin;
+            sprite->velocity.x += sprite->acceleration * cos;
+            sprite->velocity.y += sprite->acceleration * sin;
         }
         
 
         if (keys & KEY_DOWN)
         {
-            vecVelocity->x -= PLAYER_ACCEL * cos;
-            vecVelocity->y -= PLAYER_ACCEL * sin;
+            sprite->velocity.x -= sprite->acceleration * cos;
+            sprite->velocity.y -= sprite->acceleration * sin;
         }
 
         if (keys & KEY_LEFT)
         {
-            *rotation -= ROTATION_SPEED;
+            sprite->rotation -= sprite->rotation_speed;
         }
 
         if (keys & KEY_RIGHT)
         {
-            *rotation += ROTATION_SPEED;
+            sprite->rotation += sprite->rotation_speed;
         }
 
 
@@ -241,7 +242,8 @@ void crossScreen(struct vec2 *pos) {
     }
 }
 
-struct spritestate newSprite(glImage *texture, struct vec2 pos, struct vec3 color, float accel, float rotation_speed) {
+
+struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, float rotation_speed) {
     struct spritestate ret;
 
     ret.texture = texture;
@@ -255,12 +257,20 @@ struct spritestate newSprite(glImage *texture, struct vec2 pos, struct vec3 colo
     return ret;
 }
 
+void render(struct spritestate *sprite) {
+    glSpriteRotate(
+        sprite->position.x - PLAYER_HALF_WIDTH,
+        sprite->position.y - PLAYER_HALF_HEIGHT,
+        degreesToAngle(sprite->rotation), 
+        GL_FLIP_NONE,
+        sprite->texture
+    );    
+}
+
 int main(int argc, char **argv)
 {
     consoleDemoInit();
-    struct vec2 vecVelocity = {0, 0};
     struct vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT};
-    s16 rotation = 0;
 
     videoSetMode(MODE_5_3D);
 
@@ -278,6 +288,14 @@ int main(int argc, char **argv)
     struct vec3 color = {0, 0, 0};
     uint8_t nColorPhase = 0;
     InitColors(&colorMod, &nColorPhase);
+
+    struct spritestate sprite = newSprite(
+        &texture[1],
+        vecPosition,
+        PLAYER_ACCEL,
+        ROTATION_SPEED
+    );
+
     while (1)
     {
         swiWaitForVBlank();
@@ -288,9 +306,9 @@ int main(int argc, char **argv)
         printf("START:  Exit to loader\n");
         printf("r:%d,g:%d,b:%d,count:%d\n", color.x, color.y, color.z,nColorCountChange);
         #ifdef DEBUG_MODE
-        printf("Player X: %f\n", vecVelocity.x);
-        printf("Player Y: %f\n", vecVelocity.y);
-        printf("Precieved player Y: %f, max = %d\n", vecVelocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("Player X: %f\n", sprite.velocity.x);
+        printf("Player Y: %f\n", sprite.velocity.y);
+        printf("Precieved player Y: %f, max = %d\n", sprite.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
         printf("\n");
         #endif
 
@@ -309,19 +327,19 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &color, &vecVelocity, &rotation);
+        handleKeys(keys, &color, &sprite);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
         glColor(RGB15(color.x, color.y, color.z));
 
-        glSpriteRotate(vecPosition.x - PLAYER_HALF_WIDTH, vecPosition.y - PLAYER_HALF_HEIGHT, degreesToAngle(rotation), GL_FLIP_NONE, &texture[1]);
+        render(&sprite);
 
         glEnd2D();
 
         glFlush(0);
-        vecPosition = vec2_add(vecPosition, vecVelocity);
-        crossScreen(&vecPosition);
+        sprite.position = vec2_add(sprite.position, sprite.velocity);
+        crossScreen(&sprite.position);
     }
 
     return 0;
