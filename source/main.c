@@ -37,6 +37,12 @@ struct vec2 {
     float y;
 };
 
+struct vec3 {
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
+};
+
 struct spritestate {
     glImage *texture;
     struct vec2 position;
@@ -67,13 +73,6 @@ struct vec2 vec2_div(struct vec2 v1, int scalar){
                         v1.y / scalar};
     return temp;
 }
-
-struct vec3 {
-    uint8_t x;
-    uint8_t y;
-    uint8_t z;
-};
-
 
 struct vec3 vec3_mul(struct vec3 v1, uint32_t scalar){
     struct vec3 temp = {v1.x * scalar,
