@@ -287,11 +287,10 @@ int main(int argc, char **argv)
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
 
-    glImage texture[3];
+    glImage texture;
 
-    loadTextures(&texture[0], 8);
-    loadTextures(&texture[1], 16);
-    loadTextures(&texture[2], 64);
+    loadTextures(&texture, 16);
+
     uint16_t nColorCountChange = 0;
     color colorBase = {0.468, 0.375, 0.406};
     color colorMod;
@@ -300,7 +299,7 @@ int main(int argc, char **argv)
     InitColors(&colorMod, &nColorPhase);
 
     struct spritestate sprite = newSprite(
-        &texture[1],
+        &texture,
         vecPosition,
         PLAYER_ACCEL,
         ROTATION_SPEED
