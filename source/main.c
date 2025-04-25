@@ -20,7 +20,7 @@
 #define GAME_SCREEN_BOUNDS 2
 
 #define MAX_COLOR_PHASE 2
-#define MAX_COLOR_BITS 32
+#define MAX_COLOR_BITS 5
 
 #define PLAYER_WIDTH 16
 #define PLAYER_HEIGHT 16
@@ -32,16 +32,21 @@
 
 #define DEBUG_MODE 1
 
+#define FLOAT_TO_5BITS(n) ((uint16_t)(((1 << MAX_COLOR_BITS)-1)*n))
+#define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS((col)->x), FLOAT_TO_5BITS((col)->y), FLOAT_TO_5BITS((col)->z)))
+
 struct vec2 {
     float x;
     float y;
 };
 
 struct vec3 {
-    uint8_t x;
-    uint8_t y;
-    uint8_t z;
+    float x;
+    float y;
+    float z;
 };
+
+typedef struct vec3 color;
 
 struct spritestate {
     glImage *texture;
@@ -68,24 +73,29 @@ struct vec2 vec2_sub(struct vec2 v1, struct vec2 v2){
     return temp;
 }
 
-struct vec2 vec2_div(struct vec2 v1, int scalar){
+struct vec2 vec2_div(struct vec2 v1, float scalar){
     struct vec2 temp = {v1.x / scalar,
                         v1.y / scalar};
     return temp;
 }
 
-struct vec3 vec3_mul(struct vec3 v1, uint32_t scalar){
+struct vec3 vec3_mul(struct vec3 v1, float scalar){
     struct vec3 temp = {v1.x * scalar,
                         v1.y * scalar,
                         v1.z * scalar};
     return temp;
 }
 
-struct vec3 vec3_mod(struct vec3 v1, uint32_t scalar){
-    struct vec3 temp = {v1.x % scalar,
-                        v1.y % scalar,
-                        v1.z % scalar};
-    return temp;
+struct vec3 vec3_mod(struct vec3 v1){
+    while(v1.x > 1) v1.x -= 1;
+    while(v1.y > 1) v1.y -= 1;
+    while(v1.z > 1) v1.z -= 1;    
+
+    while(v1.x < 0) v1.x += 1;
+    while(v1.y < 0) v1.y += 1;
+    while(v1.z < 0) v1.z += 1;
+
+    return v1;
 }
 
 struct vec3 vec3_add(struct vec3 v1, struct vec3 v2){
@@ -100,7 +110,7 @@ struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2){
                         v1.z - v2.z};
     return temp;
 }
-struct vec3 vec3_div(struct vec3 v1, int scalar){
+struct vec3 vec3_div(struct vec3 v1, float scalar){
     struct vec3 temp = {v1.x / scalar,
                         v1.y / scalar,
                         v1.z / scalar};
@@ -213,17 +223,17 @@ int loadTextures(glImage* texture, uint8_t texSize){
 }
 
 void clampColor(struct vec3 *color){
-    color->x = (color->x < 0) ? 0 : (color->x > 31) ? 31 : color->x;
-    color->y = (color->y < 0) ? 0 : (color->y > 31) ? 31 : color->y;
-    color->z = (color->z < 0) ? 0 : (color->z > 31) ? 31 : color->z;
+    color->x = (color->x < 0) ? 0 : (color->x > 1) ? 1 : color->x;
+    color->y = (color->y < 0) ? 0 : (color->y > 1) ? 1 : color->y;
+    color->z = (color->z < 0) ? 0 : (color->z > 1) ? 1 : color->z;
 }
 
 
 void InitColors(struct vec3* colorMod, uint8_t* nColorPhase){
     *nColorPhase = 1;
-    colorMod->x = 2;
-    colorMod->y = 1;
-    colorMod->z = 5;
+    colorMod->x = 0.0625;
+    colorMod->y = 0.0312;
+    colorMod->z = 0.1562;
 }
 
 void crossScreen(struct vec2 *pos) {
@@ -283,9 +293,9 @@ int main(int argc, char **argv)
     loadTextures(&texture[1], 16);
     loadTextures(&texture[2], 64);
     uint16_t nColorCountChange = 0;
-    struct vec3 colorBase = {15, 12, 13};
-    struct vec3 colorMod;
-    struct vec3 color = {0, 0, 0};
+    color colorBase = {0.468, 0.375, 0.406};
+    color colorMod;
+    color currColor = {0, 0, 0};
     uint8_t nColorPhase = 0;
     InitColors(&colorMod, &nColorPhase);
 
@@ -304,7 +314,7 @@ int main(int argc, char **argv)
 
         // Print some controls
         printf("START:  Exit to loader\n");
-        printf("r:%d,g:%d,b:%d,count:%d\n", color.x, color.y, color.z,nColorCountChange);
+        printf("r:%f,g:%f,b:%f,count:%d\n", currColor.x, currColor.y, currColor.z,nColorCountChange);
         #ifdef DEBUG_MODE
         printf("Player X: %f\n", sprite.velocity.x);
         printf("Player Y: %f\n", sprite.velocity.y);
@@ -314,10 +324,10 @@ int main(int argc, char **argv)
 
         if (nColorPhase > MAX_COLOR_PHASE)
         {
-            color = vec3_mul(colorMod, nColorCountChange);
-            color = vec3_mod(color, MAX_COLOR_BITS);
-            color = vec3_add(color, colorBase);
-            clampColor(&color);
+            currColor = vec3_mul(colorMod, nColorCountChange);
+            currColor = vec3_mod(currColor);
+            currColor = vec3_add(currColor, colorBase);
+            clampColor(&currColor);
 
             nColorPhase = 0;
             nColorCountChange++;
@@ -327,11 +337,11 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &color, &sprite);
+        handleKeys(keys, &currColor, &sprite);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
-        glColor(RGB15(color.x, color.y, color.z));
+        glColor(COLOR_TO_15BIT(&currColor));
 
         render(&sprite);
 
