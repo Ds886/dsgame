@@ -15,6 +15,8 @@
 #include "s16.h"
 #include "s64.h"
 
+#include "linalg.h"
+
 #define GAME_SCREEN_WIDTH 256
 #define GAME_SCREEN_HEIGHT 192
 #define GAME_SCREEN_BOUNDS 2
@@ -35,17 +37,6 @@
 #define FLOAT_TO_5BITS(n) ((uint16_t)(((1 << MAX_COLOR_BITS)-1)*n))
 #define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS((col)->x), FLOAT_TO_5BITS((col)->y), FLOAT_TO_5BITS((col)->z)))
 
-struct vec2 {
-    float x;
-    float y;
-};
-
-struct vec3 {
-    float x;
-    float y;
-    float z;
-};
-
 typedef struct vec3 color;
 
 struct spritestate {
@@ -57,35 +48,6 @@ struct spritestate {
     float rotation_speed;
 };
 
-struct vec2 vec2_mul(struct vec2 v1, int scalar){
-    struct vec2 temp = {v1.x * scalar,
-                        v1.y * scalar};
-    return temp;
-}
-
-struct vec2 vec2_add(struct vec2 v1, struct vec2 v2){
-    struct vec2 temp = {v1.x + v2.x, v1.y + v2.y};
-    return temp;
-}
-
-struct vec2 vec2_sub(struct vec2 v1, struct vec2 v2){
-    struct vec2 temp = {v1.x - v2.x, v1.y - v2.y};
-    return temp;
-}
-
-struct vec2 vec2_div(struct vec2 v1, float scalar){
-    struct vec2 temp = {v1.x / scalar,
-                        v1.y / scalar};
-    return temp;
-}
-
-struct vec3 vec3_mul(struct vec3 v1, float scalar){
-    struct vec3 temp = {v1.x * scalar,
-                        v1.y * scalar,
-                        v1.z * scalar};
-    return temp;
-}
-
 struct vec3 vec3_mod(struct vec3 v1){
     while(v1.x > 1) v1.x -= 1;
     while(v1.y > 1) v1.y -= 1;
@@ -96,25 +58,6 @@ struct vec3 vec3_mod(struct vec3 v1){
     while(v1.z < 0) v1.z += 1;
 
     return v1;
-}
-
-struct vec3 vec3_add(struct vec3 v1, struct vec3 v2){
-    struct vec3 temp = {v1.x + v2.x,
-                        v1.y + v2.y,
-                        v1.z + v2.z};
-    return temp;
-}
-struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2){
-    struct vec3 temp = {v1.x - v2.x,
-                        v1.y - v2.y,
-                        v1.z - v2.z};
-    return temp;
-}
-struct vec3 vec3_div(struct vec3 v1, float scalar){
-    struct vec3 temp = {v1.x / scalar,
-                        v1.y / scalar,
-                        v1.z / scalar};
-    return temp;
 }
 
 bool handleKeys(uint32_t keys, struct vec3 *color, struct spritestate* sprite){
