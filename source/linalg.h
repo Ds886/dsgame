@@ -9,6 +9,10 @@ struct vec3 {
     float z;
 };
 
+#define MAT_SIZE 3
+
+typedef float matrix[MAT_SIZE][MAT_SIZE];
+
 struct vec2 vec2_mul(struct vec2 v1, int scalar);
 
 struct vec2 vec2_add(struct vec2 v1, struct vec2 v2);
@@ -24,3 +28,11 @@ struct vec3 vec3_add(struct vec3 v1, struct vec3 v2);
 struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2);
 
 struct vec3 vec3_div(struct vec3 v1, float scalar);
+
+void mat_add(matrix res, matrix m1, matrix m2);
+
+void mat_sub(matrix res, matrix m1, matrix m2);
+
+void mat_mul(matrix res, matrix m1, matrix m2);
+
+void mat_scale(matrix res, matrix m1, float scalar);
