@@ -36,3 +36,5 @@ void mat_sub(matrix res, matrix m1, matrix m2);
 void mat_mul(matrix res, matrix m1, matrix m2);
 
 void mat_scale(matrix res, matrix m1, float scalar);
+
+void mat_zeros(matrix res);

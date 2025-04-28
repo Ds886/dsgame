@@ -73,3 +73,20 @@ void mat_scale(matrix res, matrix m1, float scalar) {
         for (int j = 0; j < MAT_SIZE; j++)
             res[i][j] = m1[i][j] * scalar;
 }
+
+void mat_fill(matrix res, float val) {
+    for (int i = 0; i < MAT_SIZE; i++)
+        for (int j = 0; j < MAT_SIZE; j++)
+            res[i][j] = val;
+}
+
+void mat_zeros(matrix res) {
+    mat_fill(res, 0);
+}
+
+void mat_identity(matrix res) {
+    for (int i = 0; i < MAT_SIZE; i++)
+        for (int j = 0; j < MAT_SIZE; j++)
+            res[i][j] = (i == j) ? 1 : 0;
+}
+
