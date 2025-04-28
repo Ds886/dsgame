@@ -1,4 +1,5 @@
 #include "linalg.h"
+#include "nds/arm9/trig_lut.h"
 
 struct vec2 vec2_mul(struct vec2 v1, int scalar){
     struct vec2 temp = {v1.x * scalar,
@@ -90,6 +91,18 @@ void mat_identity(matrix res) {
             res[i][j] = (i == j) ? 1 : 0;
 }
 
+void rotation_matrix_2d(matrix res, float degrees) {
+    s16 bin_rotation = degreesToAngle(degrees);
+    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+
+    mat_identity(res);
+    res[0][0] = cos;
+    res[0][1] = -sin;
+    res[1][0] = sin;
+    res[1][1] = cos;
+}
+
 struct vec3 vec3_transform(matrix m, struct vec3 v) {
     struct vec3 res;
 
@@ -115,3 +128,12 @@ struct vec2 vec_reduce_dim(struct vec3 v) {
     return v2;
 }
 
+struct vec2 vec2_rotate(struct vec2 v, float degrees) {
+    struct vec3 v3 = vec_inc_dim(v);
+    matrix m;
+    
+    rotation_matrix_2d(m, degrees);
+    vec_transform(m, v3);
+
+    return vec_reduce_dim(v3);
+}

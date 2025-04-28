@@ -31,6 +31,8 @@ struct vec3 vec3_div(struct vec3 v1, float scalar);
 
 struct vec3 vec_transform(matrix m, struct vec3 v);
 
+struct vec2 vec2_rotate(struct vec2 v, float degrees);
+
 void mat_add(matrix res, matrix m1, matrix m2);
 
 void mat_sub(matrix res, matrix m1, matrix m2);
@@ -40,3 +42,5 @@ void mat_mul(matrix res, matrix m1, matrix m2);
 void mat_scale(matrix res, matrix m1, float scalar);
 
 void mat_zeros(matrix res);
+
+void rotation_matrix_2d(matrix res, float degrees);
