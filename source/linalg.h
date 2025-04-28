@@ -29,6 +29,8 @@ struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2);
 
 struct vec3 vec3_div(struct vec3 v1, float scalar);
 
+struct vec3 vec_transform(matrix m, struct vec3 v);
+
 void mat_add(matrix res, matrix m1, matrix m2);
 
 void mat_sub(matrix res, matrix m1, matrix m2);

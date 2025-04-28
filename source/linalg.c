@@ -90,6 +90,16 @@ void mat_identity(matrix res) {
             res[i][j] = (i == j) ? 1 : 0;
 }
 
+struct vec3 vec3_transform(matrix m, struct vec3 v) {
+    struct vec3 res;
+
+    res.x = m[0][0] * v.x + m[0][1] * v.x + m[0][2] * v.x;
+    res.y = m[1][0] * v.y + m[1][1] * v.y + m[1][2] * v.y;
+    res.z = m[2][0] * v.z + m[2][1] * v.z + m[2][2] * v.z;
+
+    return res;
+}
+
 struct vec3 vec_inc_dim(struct vec2 v) {
     struct vec3 v3;
     v3.x = v.x;
