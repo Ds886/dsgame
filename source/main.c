@@ -234,7 +234,19 @@ struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, flo
     return ret;
 }
 
-void render(struct spritestate *sprite) {
+void renderPolygon(struct polygonstate *poly, color col) {
+    glTriangle(
+        poly->triangle.a.x,
+        poly->triangle.a.y,
+        poly->triangle.b.x,
+        poly->triangle.b.y,
+        poly->triangle.c.x,
+        poly->triangle.c.y,
+        COLOR_TO_15BIT(&col)
+    );
+} 
+
+void renderSprite(struct spritestate *sprite) {
     glSpriteRotate(
         sprite->data.position.x - PLAYER_HALF_WIDTH,
         sprite->data.position.y - PLAYER_HALF_HEIGHT,
@@ -309,7 +321,7 @@ int main(int argc, char **argv)
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
         glColor(COLOR_TO_15BIT(&currColor));
 
-        render(&sprite);
+        renderSprite(&sprite);
 
         glEnd2D();
 
