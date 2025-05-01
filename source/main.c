@@ -64,7 +64,7 @@ struct vec3 vec3_mod(struct vec3 v1){
     return v1;
 }
 
-bool handleKeys(uint32_t keys, struct vec3 *color, struct spritestate* sprite){
+bool handleKeys(uint32_t keys, struct vec3 *color, obj2dData* spritedata){
         if (keys & KEY_START)
             return false;
 
@@ -96,31 +96,31 @@ bool handleKeys(uint32_t keys, struct vec3 *color, struct spritestate* sprite){
             color->z = 0;
         }
         
-        s16 bin_rotation = degreesToAngle(sprite->data.rotation);
+        s16 bin_rotation = degreesToAngle(spritedata->rotation);
         float cos = fixedToFloat(cosLerp(bin_rotation), 12);
         float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
         if (keys & KEY_UP)
         {
-            sprite->data.velocity.x += sprite->data.acceleration * cos;
-            sprite->data.velocity.y += sprite->data.acceleration * sin;
+            spritedata->velocity.x += spritedata->acceleration * cos;
+            spritedata->velocity.y += spritedata->acceleration * sin;
         }
         
 
         if (keys & KEY_DOWN)
         {
-            sprite->data.velocity.x -= sprite->data.acceleration * cos;
-            sprite->data.velocity.y -= sprite->data.acceleration * sin;
+            spritedata->velocity.x -= spritedata->acceleration * cos;
+            spritedata->velocity.y -= spritedata->acceleration * sin;
         }
 
         if (keys & KEY_LEFT)
         {
-            sprite->data.rotation -= sprite->data.rotation_speed;
+            spritedata->rotation -= spritedata->rotation_speed;
         }
 
         if (keys & KEY_RIGHT)
         {
-            sprite->data.rotation += sprite->data.rotation_speed;
+            spritedata->rotation += spritedata->rotation_speed;
         }
 
 
@@ -283,7 +283,7 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &currColor, &sprite);
+        handleKeys(keys, &currColor, &sprite.data);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
