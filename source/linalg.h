@@ -1,3 +1,6 @@
+#ifndef LINLANG_H
+#define LINLANG_H 1
+
 struct vec2 {
     float x;
     float y;
@@ -44,3 +47,4 @@ void mat_scale(matrix res, matrix m1, float scalar);
 void mat_zeros(matrix res);
 
 void rotation_matrix_2d(matrix res, float degrees);
+#endif
