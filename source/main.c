@@ -16,6 +16,7 @@
 #include "s64.h"
 
 #include "linalg.h"
+#include "polygon.h"
 
 #define GAME_SCREEN_WIDTH 256
 #define GAME_SCREEN_HEIGHT 192
@@ -49,6 +50,11 @@ struct obj2dData {
 
 struct spritestate {
     glImage *texture;
+    struct obj2dData data;
+};
+
+struct polygonstate {
+    Triangle triangle;
     struct obj2dData data;
 };
 
@@ -199,6 +205,20 @@ void crossScreen(struct vec2 *pos) {
     }
 }
 
+
+struct polygonstate newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed) {
+    struct polygonstate ret;
+
+    ret.triangle = tri;
+    ret.data.position = pos;
+    ret.data.velocity.x = 0;
+    ret.data.velocity.y = 0;
+    ret.data.acceleration = accel;
+    ret.data.rotation = 0;
+    ret.data.rotation_speed = rotation_speed;
+
+    return ret;
+}
 
 struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, float rotation_speed) {
     struct spritestate ret;
