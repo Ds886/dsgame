@@ -40,22 +40,22 @@
 
 typedef struct vec3 color;
 
-struct obj2dData {
+typedef struct obj2dData_t {
     struct vec2 position;
     struct vec2 velocity;
     float acceleration;
     float rotation;
     float rotation_speed;
-};
+} obj2dData;
 
 struct spritestate {
     glImage *texture;
-    struct obj2dData data;
+    obj2dData data;
 };
 
 struct polygonstate {
     Triangle triangle;
-    struct obj2dData data;
+    obj2dData data;
 };
 
 struct vec3 vec3_mod(struct vec3 v1){
