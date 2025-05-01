@@ -39,13 +39,17 @@
 
 typedef struct vec3 color;
 
-struct spritestate {
-    glImage *texture;
+struct obj2dData {
     struct vec2 position;
     struct vec2 velocity;
     float acceleration;
     float rotation;
     float rotation_speed;
+};
+
+struct spritestate {
+    glImage *texture;
+    struct obj2dData data;
 };
 
 struct vec3 vec3_mod(struct vec3 v1){
@@ -92,31 +96,31 @@ bool handleKeys(uint32_t keys, struct vec3 *color, struct spritestate* sprite){
             color->z = 0;
         }
         
-        s16 bin_rotation = degreesToAngle(sprite->rotation);
+        s16 bin_rotation = degreesToAngle(sprite->data.rotation);
         float cos = fixedToFloat(cosLerp(bin_rotation), 12);
         float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
         if (keys & KEY_UP)
         {
-            sprite->velocity.x += sprite->acceleration * cos;
-            sprite->velocity.y += sprite->acceleration * sin;
+            sprite->data.velocity.x += sprite->data.acceleration * cos;
+            sprite->data.velocity.y += sprite->data.acceleration * sin;
         }
         
 
         if (keys & KEY_DOWN)
         {
-            sprite->velocity.x -= sprite->acceleration * cos;
-            sprite->velocity.y -= sprite->acceleration * sin;
+            sprite->data.velocity.x -= sprite->data.acceleration * cos;
+            sprite->data.velocity.y -= sprite->data.acceleration * sin;
         }
 
         if (keys & KEY_LEFT)
         {
-            sprite->rotation -= sprite->rotation_speed;
+            sprite->data.rotation -= sprite->data.rotation_speed;
         }
 
         if (keys & KEY_RIGHT)
         {
-            sprite->rotation += sprite->rotation_speed;
+            sprite->data.rotation += sprite->data.rotation_speed;
         }
 
 
@@ -200,24 +204,24 @@ struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, flo
     struct spritestate ret;
 
     ret.texture = texture;
-    ret.position = pos;
-    ret.velocity.x = 0;
-    ret.velocity.y = 0;
-    ret.acceleration = accel;
-    ret.rotation = 0;
-    ret.rotation_speed = rotation_speed;
+    ret.data.position = pos;
+    ret.data.velocity.x = 0;
+    ret.data.velocity.y = 0;
+    ret.data.acceleration = accel;
+    ret.data.rotation = 0;
+    ret.data.rotation_speed = rotation_speed;
 
     return ret;
 }
 
 void render(struct spritestate *sprite) {
     glSpriteRotate(
-        sprite->position.x - PLAYER_HALF_WIDTH,
-        sprite->position.y - PLAYER_HALF_HEIGHT,
-        degreesToAngle(sprite->rotation), 
+        sprite->data.position.x - PLAYER_HALF_WIDTH,
+        sprite->data.position.y - PLAYER_HALF_HEIGHT,
+        degreesToAngle(sprite->data.rotation), 
         GL_FLIP_NONE,
         sprite->texture
-    );    
+    );
 }
 
 int main(int argc, char **argv)
@@ -258,9 +262,9 @@ int main(int argc, char **argv)
         printf("START:  Exit to loader\n");
         printf("r:%f,g:%f,b:%f,count:%d\n", currColor.x, currColor.y, currColor.z,nColorCountChange);
         #ifdef DEBUG_MODE
-        printf("Player X: %f\n", sprite.velocity.x);
-        printf("Player Y: %f\n", sprite.velocity.y);
-        printf("Precieved player Y: %f, max = %d\n", sprite.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("Player X: %f\n", sprite.data.velocity.x);
+        printf("Player Y: %f\n", sprite.data.velocity.y);
+        printf("Precieved player Y: %f, max = %d\n", sprite.data.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
         printf("\n");
         #endif
 
@@ -290,8 +294,8 @@ int main(int argc, char **argv)
         glEnd2D();
 
         glFlush(0);
-        sprite.position = vec2_add(sprite.position, sprite.velocity);
-        crossScreen(&sprite.position);
+        sprite.data.position = vec2_add(sprite.data.position, sprite.data.velocity);
+        crossScreen(&sprite.data.position);
     }
 
     return 0;
