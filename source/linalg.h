@@ -47,4 +47,7 @@ void mat_scale(matrix res, matrix m1, float scalar);
 void mat_zeros(matrix res);
 
 void rotation_matrix_2d(matrix res, float degrees);
+
+void translate_matrix_2d(matrix res, float x, float y);
+
 #endif

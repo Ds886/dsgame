@@ -113,6 +113,20 @@ struct vec3 vec3_transform(matrix m, struct vec3 v) {
     return res;
 }
 
+void translate_matrix_2d(matrix res, float x, float y) {
+    res[0][0] = 1;
+    res[0][1] = 0;
+    res[0][2] = x;
+
+    res[1][0] = 0;
+    res[1][1] = 1;
+    res[1][2] = y;
+
+    res[2][0] = 0;
+    res[2][1] = 0;
+    res[2][2] = 1;    
+}
+
 struct vec3 vec_inc_dim(struct vec2 v) {
     struct vec3 v3;
     v3.x = v.x;
