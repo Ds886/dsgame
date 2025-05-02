@@ -235,7 +235,7 @@ struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, flo
 }
 
 void renderPolygon(struct polygonstate *poly, color col) {
-    glTriangle(
+    glTriangleFilled(
         poly->triangle.a.x,
         poly->triangle.a.y,
         poly->triangle.b.x,
