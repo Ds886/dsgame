@@ -106,9 +106,9 @@ void rotation_matrix_2d(matrix res, float degrees) {
 struct vec3 vec3_transform(matrix m, struct vec3 v) {
     struct vec3 res;
 
-    res.x = m[0][0] * v.x + m[0][1] * v.x + m[0][2] * v.x;
-    res.y = m[1][0] * v.y + m[1][1] * v.y + m[1][2] * v.y;
-    res.z = m[2][0] * v.z + m[2][1] * v.z + m[2][2] * v.z;
+    res.x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
+    res.y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
+    res.z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
 
     return res;
 }
