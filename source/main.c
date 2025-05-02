@@ -256,6 +256,17 @@ void renderSprite(struct spritestate *sprite) {
     );
 }
 
+void printMatrix(matrix m) {
+    for (int i = 0; i< MAT_SIZE; i++) {
+        printf("[");
+        for (int j = 0; j < MAT_SIZE; j++) {
+            printf("%f ", m[i][j]);
+        }
+        printf("]\n");
+    }
+}
+
+
 void set_in_position(struct polygonstate *poly) {
   matrix m;
   float diff_x = poly->data.position.x - poly->triangle.a.x;
@@ -334,8 +345,11 @@ int main(int argc, char **argv)
 
         matrix m;
         set_in_position(&poly);
+        printMatrix(m);
+        
         transform(&poly.triangle, m);
         renderPolygon(&poly, currColor);
+        printf("aft:\n%f, %f\n%f, %f\n", poly.triangle.a.x, poly.triangle.a.y, poly.triangle.b.x, poly.triangle.b.y);
 
         glEnd2D();
 
