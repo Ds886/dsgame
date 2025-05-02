@@ -15,6 +15,7 @@
 #include "s16.h"
 #include "s64.h"
 
+#include "game.h"
 #include "linalg.h"
 #include "polygon.h"
 
@@ -40,24 +41,6 @@
 
 typedef struct vec3 color;
 
-typedef struct obj2dData_t {
-    struct vec2 position;
-    struct vec2 velocity;
-    float acceleration;
-    float rotation;
-    float rotation_speed;
-} obj2dData;
-
-struct spritestate {
-    glImage *texture;
-    obj2dData data;
-};
-
-struct polygonstate {
-    Triangle triangle;
-    obj2dData data;
-};
-
 struct vec3 vec3_mod(struct vec3 v1){
     while(v1.x > 1) v1.x -= 1;
     while(v1.y > 1) v1.y -= 1;
@@ -70,7 +53,20 @@ struct vec3 vec3_mod(struct vec3 v1){
     return v1;
 }
 
-bool handleKeys(uint32_t keys, struct vec3 *color, obj2dData* spritedata){
+
+bool polygonHandleKeys(uint32_t keys, struct vec3 *color, PolygonState* spritedata){
+    return false;
+}
+
+void set_in_position_2d(PolygonState *poly, struct vec2 pos) {
+   matrix m;
+   float diff_x = pos.x - poly->triangle.a.x;
+   float diff_y = pos.y - poly->triangle.a.y;
+   translate_matrix_2d(m, diff_x, diff_y);
+   transform(&poly->triangle, m);
+}
+
+bool spriteHandleKeys(uint32_t keys, struct vec3 *color, SpriteState* spritedata){
         if (keys & KEY_START)
             return false;
 
@@ -206,35 +202,35 @@ void crossScreen(struct vec2 *pos) {
 }
 
 
-struct polygonstate newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed) {
-    struct polygonstate ret;
+PolygonState newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed) {
+    PolygonState ret;
 
     ret.triangle = tri;
-    ret.data.position = pos;
-    ret.data.velocity.x = 0;
-    ret.data.velocity.y = 0;
-    ret.data.acceleration = accel;
-    ret.data.rotation = 0;
-    ret.data.rotation_speed = rotation_speed;
+    ret.velocity.x = 0;
+    ret.velocity.y = 0;
+    ret.acceleration = accel;
+    ret.rotation_speed = rotation_speed;
+    
+    set_in_position_2d(&ret, pos);
 
     return ret;
 }
 
-struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, float rotation_speed) {
-    struct spritestate ret;
+SpriteState newSprite(glImage *texture, struct vec2 pos, float accel, float rotation_speed) {
+    SpriteState ret;
 
     ret.texture = texture;
-    ret.data.position = pos;
-    ret.data.velocity.x = 0;
-    ret.data.velocity.y = 0;
-    ret.data.acceleration = accel;
-    ret.data.rotation = 0;
-    ret.data.rotation_speed = rotation_speed;
+    ret.position = pos;
+    ret.velocity.x = 0;
+    ret.velocity.y = 0;
+    ret.acceleration = accel;
+    ret.rotation = 0;
+    ret.rotation_speed = rotation_speed;
 
     return ret;
 }
 
-void renderPolygon(struct polygonstate *poly, color col) {
+void renderPolygon(PolygonState *poly, color col) {
     glTriangleFilled(
         poly->triangle.a.x,
         poly->triangle.a.y,
@@ -246,11 +242,11 @@ void renderPolygon(struct polygonstate *poly, color col) {
     );
 } 
 
-void renderSprite(struct spritestate *sprite) {
+void renderSprite(SpriteState *sprite) {
     glSpriteRotate(
-        sprite->data.position.x - PLAYER_HALF_WIDTH,
-        sprite->data.position.y - PLAYER_HALF_HEIGHT,
-        degreesToAngle(sprite->data.rotation), 
+        sprite->position.x - PLAYER_HALF_WIDTH,
+        sprite->position.y - PLAYER_HALF_HEIGHT,
+        degreesToAngle(sprite->rotation), 
         GL_FLIP_NONE,
         sprite->texture
     );
@@ -264,15 +260,6 @@ void printMatrix(matrix m) {
         }
         printf("]\n");
     }
-}
-
-
-void set_in_position(struct polygonstate *poly) {
-  matrix m;
-  float diff_x = poly->data.position.x - poly->triangle.a.x;
-  float diff_y = poly->data.position.y - poly->triangle.a.y;
-  translate_matrix_2d(m, diff_x, diff_y);
-  transform(&poly->triangle, m);
 }
 
 
@@ -299,7 +286,7 @@ int main(int argc, char **argv)
 
     Triangle tri = isoscelesTriangle(10, 16);
 
-    struct polygonstate poly = newTriangle (
+    PolygonState poly = newTriangle (
         tri,
         vecPosition,
         PLAYER_ACCEL,
@@ -316,9 +303,9 @@ int main(int argc, char **argv)
         printf("START:  Exit to loader\n");
         printf("r:%f,g:%f,b:%f,count:%d\n", currColor.x, currColor.y, currColor.z,nColorCountChange);
         #ifdef DEBUG_MODE
-        printf("Player X: %f\n", poly.data.velocity.x);
-        printf("Player Y: %f\n", poly.data.velocity.y);
-        printf("Precieved player Y: %f, max = %d\n", poly.data.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("Player X: %f\n", poly.velocity.x);
+        printf("Player Y: %f\n", poly.velocity.y);
+        printf("Precieved player Y: %f, max = %d\n", poly.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
         printf("\n");
         #endif
 
@@ -337,14 +324,14 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &currColor, &poly.data);
+        polygonHandleKeys(keys, &currColor, &poly);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
         glColor(COLOR_TO_15BIT(&currColor));
 
         matrix m;
-        set_in_position(&poly);
+        set_in_position_2d(&poly, vecPosition);
         printMatrix(m);
         
         transform(&poly.triangle, m);
@@ -354,8 +341,8 @@ int main(int argc, char **argv)
         glEnd2D();
 
         glFlush(0);
-        poly.data.position = vec2_add(poly.data.position, poly.data.velocity);
-        crossScreen(&poly.data.position);
+//        poly.position = vec2_add(poly.position, poly.velocity);
+//        crossScreen(&poly.position);
     }
 
     return 0;
