@@ -17,3 +17,10 @@ Triangle isoscelesTriangle(float base, float height) {
   return res;
 }
 
+void transform(Triangle *poly, matrix trans) {
+  poly->a = vec3_transform(trans, poly->a);
+  poly->b = vec3_transform(trans, poly->b);
+  poly->c = vec3_transform(trans, poly->c);
+}
+
+

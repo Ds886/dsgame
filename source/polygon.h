@@ -10,4 +10,6 @@ typedef struct triangle_t {
 } Triangle;
 
 Triangle isoscelesTriangle(float base, float height);
+
+void transform(Triangle *poly, matrix trans);
 #endif
