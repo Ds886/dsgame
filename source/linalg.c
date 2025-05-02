@@ -133,7 +133,7 @@ struct vec2 vec2_rotate(struct vec2 v, float degrees) {
     matrix m;
     
     rotation_matrix_2d(m, degrees);
-    vec_transform(m, v3);
+    vec3_transform(m, v3);
 
     return vec_reduce_dim(v3);
 }

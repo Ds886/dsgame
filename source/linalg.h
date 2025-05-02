@@ -32,7 +32,7 @@ struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2);
 
 struct vec3 vec3_div(struct vec3 v1, float scalar);
 
-struct vec3 vec_transform(matrix m, struct vec3 v);
+struct vec3 vec3_transform(matrix m, struct vec3 v);
 
 struct vec2 vec2_rotate(struct vec2 v, float degrees);
 
