@@ -256,6 +256,15 @@ void renderSprite(struct spritestate *sprite) {
     );
 }
 
+void set_in_position(struct polygonstate *poly) {
+  matrix m;
+  float diff_x = poly->data.position.x - poly->triangle.a.x;
+  float diff_y = poly->data.position.y - poly->triangle.a.y;
+  translate_matrix_2d(m, diff_x, diff_y);
+  transform(&poly->triangle, m);
+}
+
+
 int main(int argc, char **argv)
 {
     consoleDemoInit();
@@ -277,8 +286,10 @@ int main(int argc, char **argv)
     uint8_t nColorPhase = 0;
     InitColors(&colorMod, &nColorPhase);
 
-    struct spritestate sprite = newSprite(
-        &texture,
+    Triangle tri = isoscelesTriangle(10, 16);
+
+    struct polygonstate poly = newTriangle (
+        tri,
         vecPosition,
         PLAYER_ACCEL,
         ROTATION_SPEED
@@ -294,9 +305,9 @@ int main(int argc, char **argv)
         printf("START:  Exit to loader\n");
         printf("r:%f,g:%f,b:%f,count:%d\n", currColor.x, currColor.y, currColor.z,nColorCountChange);
         #ifdef DEBUG_MODE
-        printf("Player X: %f\n", sprite.data.velocity.x);
-        printf("Player Y: %f\n", sprite.data.velocity.y);
-        printf("Precieved player Y: %f, max = %d\n", sprite.data.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
+        printf("Player X: %f\n", poly.data.velocity.x);
+        printf("Player Y: %f\n", poly.data.velocity.y);
+        printf("Precieved player Y: %f, max = %d\n", poly.data.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
         printf("\n");
         #endif
 
@@ -315,19 +326,22 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &currColor, &sprite.data);
+        handleKeys(keys, &currColor, &poly.data);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
         glColor(COLOR_TO_15BIT(&currColor));
 
-        renderSprite(&sprite);
+        matrix m;
+        set_in_position(&poly);
+        transform(&poly.triangle, m);
+        renderPolygon(&poly, currColor);
 
         glEnd2D();
 
         glFlush(0);
-        sprite.data.position = vec2_add(sprite.data.position, sprite.data.velocity);
-        crossScreen(&sprite.data.position);
+        poly.data.position = vec2_add(poly.data.position, poly.data.velocity);
+        crossScreen(&poly.data.position);
     }
 
     return 0;
