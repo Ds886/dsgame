@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     glEnable(GL_TEXTURE_2D);
 
     Game game;
-    Color colorBase = {0.468, 0.375, 0.406};
+    Color colorBase = {0.999, 0.1, 0.0};
     GameObj poly;
 
     gameStart(
