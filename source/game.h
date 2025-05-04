@@ -5,6 +5,7 @@
 
 #include "polygon.h"
 #include "linalg.h"
+#include "renderer.h"
 
 
 #define GAME_SCREEN_WIDTH 256
@@ -14,8 +15,6 @@
 #define PLAYER_HEIGHT 16
 #define PLAYER_HALF_WIDTH (PLAYER_WIDTH / 2)
 #define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
-
-typedef struct vec3 Color;
 
 typedef struct game_obj_t {
     Triangle triangle;

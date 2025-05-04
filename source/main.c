@@ -24,7 +24,6 @@
 #define GAME_SCREEN_BOUNDS 2
 
 #define MAX_COLOR_PHASE 2
-#define MAX_COLOR_BITS 5
 
 #define PLAYER_WIDTH 16
 #define PLAYER_HEIGHT 16
@@ -35,9 +34,6 @@
 #define ROTATION_SPEED 4
 
 #define DEBUG_MODE 1
-
-#define FLOAT_TO_5BITS(n) ((uint16_t)(((1 << MAX_COLOR_BITS)-1)*n))
-#define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS((col)->x), FLOAT_TO_5BITS((col)->y), FLOAT_TO_5BITS((col)->z)))
 
 bool handleKeys(uint32_t keys, struct vec3 *color, GameObj* spritedata){
     //     if (keys & KEY_START)
@@ -125,18 +121,6 @@ void crossScreen(struct vec2 *pos) {
 }
 
 
-void renderPolygon(GameObj *poly, Color color) {
-    glTriangleFilled(
-        poly->triangle.a.x,
-        poly->triangle.a.y,
-        poly->triangle.b.x,
-        poly->triangle.b.y,
-        poly->triangle.c.x,
-        poly->triangle.c.y,
-        COLOR_TO_15BIT(&color)
-    );
-} 
-
 int main(int argc, char **argv)
 {
     consoleDemoInit();
@@ -174,7 +158,6 @@ int main(int argc, char **argv)
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
-        glColor(COLOR_TO_15BIT(&colorBase));
 
         printf("aft:\n%f, %f\n%f, %f\n", poly.triangle.a.x, poly.triangle.a.y, poly.triangle.b.x, poly.triangle.b.y);
         gameRender(&game);

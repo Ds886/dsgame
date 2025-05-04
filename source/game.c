@@ -62,6 +62,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
 }
 
 Game *gameRender(Game *game) {
+  renderPolygon(&game->ship->triangle, &game->ship->color);
   return game;  
 }
 
