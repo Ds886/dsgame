@@ -3,14 +3,14 @@
 
 #include "polygon.h"
 
-struct polygonstate {
+typedef struct game_obj_t {
     Triangle triangle;
     struct vec2 position;
     struct vec2 velocity;
     float acceleration;
     float rotation;
     float rotation_speed;
-};
+} GameObj;
 
 
 typedef struct game_t {

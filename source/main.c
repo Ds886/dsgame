@@ -41,7 +41,7 @@
 
 typedef struct vec3 color;
 
-bool handleKeys(uint32_t keys, struct vec3 *color, struct polygonstate* spritedata){
+bool handleKeys(uint32_t keys, struct vec3 *color, GameObj* spritedata){
     //     if (keys & KEY_START)
     //         return false;
 
@@ -127,8 +127,8 @@ void crossScreen(struct vec2 *pos) {
 }
 
 
-struct polygonstate newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed) {
-    struct polygonstate ret;
+GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed) {
+    GameObj ret;
 
     ret.triangle = tri;
     ret.position = pos;
@@ -141,7 +141,7 @@ struct polygonstate newTriangle(Triangle tri, struct vec2 pos, float accel, floa
     return ret;
 }
 
-void renderPolygon(struct polygonstate *poly, color col) {
+void renderPolygon(GameObj *poly, color col) {
     glTriangleFilled(
         poly->triangle.a.x,
         poly->triangle.a.y,
@@ -164,7 +164,7 @@ void printMatrix(matrix m) {
 }
 
 
-void set_in_position(struct polygonstate *poly) {
+void set_in_position(GameObj *poly) {
   matrix m;
   float diff_x = poly->position.x - poly->triangle.a.x;
   float diff_y = poly->position.y - poly->triangle.a.y;
@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 
     Triangle tri = isoscelesTriangle(10, 16);
 
-    struct polygonstate poly = newTriangle (
+    GameObj poly = newTriangle (
         tri,
         vecPosition,
         PLAYER_ACCEL,
