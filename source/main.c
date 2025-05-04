@@ -159,7 +159,6 @@ int main(int argc, char **argv)
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
 
-        printf("aft:\n%f, %f\n%f, %f\n", poly.triangle.a.x, poly.triangle.a.y, poly.triangle.b.x, poly.triangle.b.y);
         gameRender(&game);
         glEnd2D();
 
