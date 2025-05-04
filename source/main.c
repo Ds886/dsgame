@@ -48,11 +48,6 @@ typedef struct obj2dData_t {
     float rotation_speed;
 } obj2dData;
 
-struct spritestate {
-    glImage *texture;
-    obj2dData data;
-};
-
 struct polygonstate {
     Triangle triangle;
     obj2dData data;
@@ -133,48 +128,6 @@ bool handleKeys(uint32_t keys, struct vec3 *color, obj2dData* spritedata){
     return true;
 }
 
-int loadTextures(glImage* texture, uint8_t texSize){
-    vramSetBankA(VRAM_A_TEXTURE);
-    vramSetBankE(VRAM_E_TEX_PALETTE);
-    int tempTex ;
-    const short unsigned int *pPal;
-    const unsigned int *pBitmap;
-
-    switch(texSize){
-        case 8:
-            pPal = s8Pal;
-            pBitmap = s8Bitmap;
-            break;
-        case 16:
-            pPal = s16Pal;
-            pBitmap = s16Bitmap;
-            break;
-        case 64:
-            pPal = s64Pal;
-            pBitmap = s64Bitmap;
-            break;
-        default:
-            return -1;
-    }
-
-
-    tempTex =
-        glLoadTileSet(texture,
-                      texSize, texSize,
-                      texSize, texSize,
-                      GL_RGB16,
-                      texSize, texSize,
-                      TEXGEN_TEXCOORD | GL_TEXTURE_COLOR0_TRANSPARENT,
-                      16,
-                      pPal,
-                      pBitmap);
-
-    if (tempTex < 0)
-        printf("Failed to load texture:  %d\n", tempTex);
-
-    return tempTex;
-}
-
 void clampColor(struct vec3 *color){
     color->x = (color->x < 0) ? 0 : (color->x > 1) ? 1 : color->x;
     color->y = (color->y < 0) ? 0 : (color->y > 1) ? 1 : color->y;
@@ -220,20 +173,6 @@ struct polygonstate newTriangle(Triangle tri, struct vec2 pos, float accel, floa
     return ret;
 }
 
-struct spritestate newSprite(glImage *texture, struct vec2 pos, float accel, float rotation_speed) {
-    struct spritestate ret;
-
-    ret.texture = texture;
-    ret.data.position = pos;
-    ret.data.velocity.x = 0;
-    ret.data.velocity.y = 0;
-    ret.data.acceleration = accel;
-    ret.data.rotation = 0;
-    ret.data.rotation_speed = rotation_speed;
-
-    return ret;
-}
-
 void renderPolygon(struct polygonstate *poly, color col) {
     glTriangleFilled(
         poly->triangle.a.x,
@@ -245,16 +184,6 @@ void renderPolygon(struct polygonstate *poly, color col) {
         COLOR_TO_15BIT(&col)
     );
 } 
-
-void renderSprite(struct spritestate *sprite) {
-    glSpriteRotate(
-        sprite->data.position.x - PLAYER_HALF_WIDTH,
-        sprite->data.position.y - PLAYER_HALF_HEIGHT,
-        degreesToAngle(sprite->data.rotation), 
-        GL_FLIP_NONE,
-        sprite->texture
-    );
-}
 
 void printMatrix(matrix m) {
     for (int i = 0; i< MAT_SIZE; i++) {
@@ -285,10 +214,6 @@ int main(int argc, char **argv)
 
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
-
-    glImage texture;
-
-    loadTextures(&texture, 16);
 
     uint16_t nColorCountChange = 0;
     color colorBase = {0.468, 0.375, 0.406};
