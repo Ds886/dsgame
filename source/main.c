@@ -125,7 +125,7 @@ void crossScreen(struct vec2 *pos) {
 }
 
 
-void renderPolygon(GameObj *poly, color col) {
+void renderPolygon(GameObj *poly, Color col) {
     glTriangleFilled(
         poly->triangle.a.x,
         poly->triangle.a.y,
@@ -167,9 +167,7 @@ int main(int argc, char **argv)
 
     Game game;
 
-    color colorBase = {0.468, 0.375, 0.406};
-
-
+    Color colorBase = {0.468, 0.375, 0.406};
 
     
     GameObj poly;
