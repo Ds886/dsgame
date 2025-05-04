@@ -207,14 +207,6 @@ int main(int argc, char **argv)
         gameLogic(&game);
 
         // Print some controls
-        printf("START:  Exit to loader\n");
-        #ifdef DEBUG_MODE
-        printf("Player X: %f\n", poly.data.velocity.x);
-        printf("Player Y: %f\n", poly.data.velocity.y);
-        printf("Precieved player Y: %f, max = %d\n", poly.data.velocity.y - PLAYER_HALF_HEIGHT, GAME_SCREEN_HEIGHT -2);
-        printf("\n");
-        #endif
-
         scanKeys();
 
         uint16_t keys = keysHeld();
