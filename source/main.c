@@ -22,18 +22,8 @@
 #define GAME_SCREEN_WIDTH 256
 #define GAME_SCREEN_HEIGHT 192
 #define GAME_SCREEN_BOUNDS 2
-
-#define MAX_COLOR_PHASE 2
-
-#define PLAYER_WIDTH 16
-#define PLAYER_HEIGHT 16
-#define PLAYER_HALF_WIDTH (PLAYER_WIDTH / 2)
-#define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
 #define PLAYER_ACCEL 0.08f
-
 #define ROTATION_SPEED 4
-
-#define DEBUG_MODE 1
 
 bool handleKeys(uint32_t keys, struct vec3 *color, GameObj* spritedata){
     //     if (keys & KEY_START)
@@ -102,17 +92,13 @@ int main(int argc, char **argv)
 {
     consoleDemoInit();
     videoSetMode(MODE_5_3D);
-
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
 
     Game game;
-
     Color colorBase = {0.468, 0.375, 0.406};
-
-    
     GameObj poly;
-    
+
     gameStart(
         &game,
         &poly,
@@ -124,21 +110,18 @@ int main(int argc, char **argv)
     while (1)
     {
         swiWaitForVBlank();
-
         consoleClear();
         scanKeys();
-
         uint16_t keys = keysHeld();
 
         gameLogic(&game, keys);
-
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
 
         gameRender(&game);
-        glEnd2D();
 
+        glEnd2D();
         glFlush(0);
     }
 
