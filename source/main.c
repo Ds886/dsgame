@@ -41,77 +41,64 @@
 
 typedef struct vec3 color;
 
-typedef struct obj2dData_t {
-    struct vec2 position;
-    struct vec2 velocity;
-    float acceleration;
-    float rotation;
-    float rotation_speed;
-} obj2dData;
+bool handleKeys(uint32_t keys, struct vec3 *color, struct polygonstate* spritedata){
+    //     if (keys & KEY_START)
+    //         return false;
 
-struct polygonstate {
-    Triangle triangle;
-    obj2dData data;
-};
+    //     if (keys & KEY_X)
+    //     {
+    //         color->x = 255;
+    //         color->y = 180;
+    //         color->z = 120;
+    //     }
 
-bool handleKeys(uint32_t keys, struct vec3 *color, obj2dData* spritedata){
-        if (keys & KEY_START)
-            return false;
+    //     if (keys & KEY_B)
+    //     {
+    //         color->x = 20;
+    //         color->y = 180;
+    //         color->z = 255;
+    //     }
 
-        if (keys & KEY_X)
-        {
-            color->x = 255;
-            color->y = 180;
-            color->z = 120;
-        }
+    //     if (keys & KEY_Y)
+    //     {
+    //         color->x = 0;
+    //         color->y = 180;
+    //         color->z = 255;
+    //     }
 
-        if (keys & KEY_B)
-        {
-            color->x = 20;
-            color->y = 180;
-            color->z = 255;
-        }
-
-        if (keys & KEY_Y)
-        {
-            color->x = 0;
-            color->y = 180;
-            color->z = 255;
-        }
-
-        if (keys & KEY_A)
-        {
-            color->x = 255;
-            color->y = 180;
-            color->z = 0;
-        }
+    //     if (keys & KEY_A)
+    //     {
+    //         color->x = 255;
+    //         color->y = 180;
+    //         color->z = 0;
+    //     }
         
-        s16 bin_rotation = degreesToAngle(spritedata->rotation);
-        float cos = fixedToFloat(cosLerp(bin_rotation), 12);
-        float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+    //     s16 bin_rotation = degreesToAngle(spritedata->rotation);
+    //     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+    //     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
-        if (keys & KEY_UP)
-        {
-            spritedata->velocity.x += spritedata->acceleration * cos;
-            spritedata->velocity.y += spritedata->acceleration * sin;
-        }
+    //     if (keys & KEY_UP)
+    //     {
+    //         spritedata->velocity.x += spritedata->acceleration * cos;
+    //         spritedata->velocity.y += spritedata->acceleration * sin;
+    //     }
         
 
-        if (keys & KEY_DOWN)
-        {
-            spritedata->velocity.x -= spritedata->acceleration * cos;
-            spritedata->velocity.y -= spritedata->acceleration * sin;
-        }
+    //     if (keys & KEY_DOWN)
+    //     {
+    //         spritedata->velocity.x -= spritedata->acceleration * cos;
+    //         spritedata->velocity.y -= spritedata->acceleration * sin;
+    //     }
 
-        if (keys & KEY_LEFT)
-        {
-            spritedata->rotation -= spritedata->rotation_speed;
-        }
+    //     if (keys & KEY_LEFT)
+    //     {
+    //         spritedata->rotation -= spritedata->rotation_speed;
+    //     }
 
-        if (keys & KEY_RIGHT)
-        {
-            spritedata->rotation += spritedata->rotation_speed;
-        }
+    //     if (keys & KEY_RIGHT)
+    //     {
+    //         spritedata->rotation += spritedata->rotation_speed;
+    //     }
 
 
     return true;
@@ -231,7 +218,7 @@ int main(int argc, char **argv)
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &colorBase, &poly.data);
+        handleKeys(keys, &colorBase, &poly);
 
         gameRender(&game);
 
