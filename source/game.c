@@ -53,6 +53,11 @@ void set_in_position(GameObj *poly) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
+  if (keys & KEY_LEFT)
+    game->ship->position.x+=0.4;
+
+  if (keys & KEY_RIGHT)
+    game->ship->position.x-=0.4;
 
   matrix m;
   set_in_position(game->ship);

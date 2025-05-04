@@ -2,6 +2,7 @@
 #define GAME_H
 
 #include <stdint.h>
+#include "nds/input.h"
 
 #include "polygon.h"
 #include "linalg.h"
