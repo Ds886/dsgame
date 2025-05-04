@@ -1,5 +1,6 @@
 #include "game.h"
 
+#include <nds.h>
 
 void crossScreen(struct vec2 *pos) {
     if (pos->x < 0) {
@@ -96,12 +97,19 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
+#define PRINT_MAT(m) printf("[%f, %f, %f]\n[%f, %f, %f]\n[%f, %f, %f]\n", \
+    (m)[0][0], (m)[0][1], (m)[0][2], \
+    (m)[1][0], (m)[1][1], (m)[1][2], \
+    (m)[2][0], (m)[2][1], (m)[2][2]);
+  
 Game *gameRender(Game *game) {
   matrix m, n, t;
   printf("rotation: %f\n", game->ship->rotation);
   rotation_matrix_2d(m, game->ship->rotation);
   translate_matrix_2d(n, game->ship->position.x, game->ship->position.y);
   mat_mul(t, m, n);
+  
+  PRINT_MAT(t);
 
   renderPolygon(&game->ship->triangle, t, &game->ship->color);
   
