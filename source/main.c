@@ -137,26 +137,6 @@ void renderPolygon(GameObj *poly, Color color) {
     );
 } 
 
-void printMatrix(matrix m) {
-    for (int i = 0; i< MAT_SIZE; i++) {
-        printf("[");
-        for (int j = 0; j < MAT_SIZE; j++) {
-            printf("%f ", m[i][j]);
-        }
-        printf("]\n");
-    }
-}
-
-
-void set_in_position(GameObj *poly) {
-  matrix m;
-  float diff_x = poly->position.x - poly->triangle.a.x;
-  float diff_y = poly->position.y - poly->triangle.a.y;
-  translate_matrix_2d(m, diff_x, diff_y);
-  transform(&poly->triangle, m);
-}
-
-
 int main(int argc, char **argv)
 {
     consoleDemoInit();
@@ -196,12 +176,6 @@ int main(int argc, char **argv)
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
         glColor(COLOR_TO_15BIT(&colorBase));
 
-        matrix m;
-        set_in_position(&poly);
-        printMatrix(m);
-        
-        transform(&poly.triangle, m);
-        renderPolygon(&poly, colorBase);
         printf("aft:\n%f, %f\n%f, %f\n", poly.triangle.a.x, poly.triangle.a.y, poly.triangle.b.x, poly.triangle.b.y);
         gameRender(&game);
         glEnd2D();

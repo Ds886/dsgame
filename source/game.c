@@ -43,8 +43,20 @@ Game *gameStart(
   return game;
 }
 
+
+void set_in_position(GameObj *poly) {
+  matrix m;
+  float diff_x = poly->position.x - poly->triangle.a.x;
+  float diff_y = poly->position.y - poly->triangle.a.y;
+  translate_matrix_2d(m, diff_x, diff_y);
+  transform(&poly->triangle, m);
+}
+
 Game *gameLogic(Game *game, uint16_t keys) {
 
+  matrix m;
+  set_in_position(game->ship);
+  transform(&game->ship->triangle, m);
   game->frame++;
   return game;
 }
