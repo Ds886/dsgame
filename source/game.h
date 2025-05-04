@@ -22,7 +22,7 @@ typedef struct game_obj_t {
     float acceleration;
     float rotation;
     float rotation_speed;
-    Color col;
+    Color color;
 } GameObj;
 
 

@@ -125,7 +125,7 @@ void crossScreen(struct vec2 *pos) {
 }
 
 
-void renderPolygon(GameObj *poly, Color col) {
+void renderPolygon(GameObj *poly, Color color) {
     glTriangleFilled(
         poly->triangle.a.x,
         poly->triangle.a.y,
@@ -133,7 +133,7 @@ void renderPolygon(GameObj *poly, Color col) {
         poly->triangle.b.y,
         poly->triangle.c.x,
         poly->triangle.c.y,
-        COLOR_TO_15BIT(&col)
+        COLOR_TO_15BIT(&color)
     );
 } 
 

@@ -1,7 +1,7 @@
 #include "game.h"
 
 
-GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed, Color col) {
+GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed, Color color) {
     GameObj ret;
 
     ret.triangle = tri;
@@ -11,7 +11,7 @@ GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_s
     ret.acceleration = accel;
     ret.rotation = 0;
     ret.rotation_speed = rotation_speed;
-    ret.col = col;
+    ret.color = color;
 
     return ret;
 }
