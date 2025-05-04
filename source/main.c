@@ -131,12 +131,12 @@ struct polygonstate newTriangle(Triangle tri, struct vec2 pos, float accel, floa
     struct polygonstate ret;
 
     ret.triangle = tri;
-    ret.data.position = pos;
-    ret.data.velocity.x = 0;
-    ret.data.velocity.y = 0;
-    ret.data.acceleration = accel;
-    ret.data.rotation = 0;
-    ret.data.rotation_speed = rotation_speed;
+    ret.position = pos;
+    ret.velocity.x = 0;
+    ret.velocity.y = 0;
+    ret.acceleration = accel;
+    ret.rotation = 0;
+    ret.rotation_speed = rotation_speed;
 
     return ret;
 }
@@ -166,8 +166,8 @@ void printMatrix(matrix m) {
 
 void set_in_position(struct polygonstate *poly) {
   matrix m;
-  float diff_x = poly->data.position.x - poly->triangle.a.x;
-  float diff_y = poly->data.position.y - poly->triangle.a.y;
+  float diff_x = poly->position.x - poly->triangle.a.x;
+  float diff_y = poly->position.y - poly->triangle.a.y;
   translate_matrix_2d(m, diff_x, diff_y);
   transform(&poly->triangle, m);
 }
@@ -229,8 +229,8 @@ int main(int argc, char **argv)
         glEnd2D();
 
         glFlush(0);
-        poly.data.position = vec2_add(poly.data.position, poly.data.velocity);
-        crossScreen(&poly.data.position);
+        poly.position = vec2_add(poly.position, poly.velocity);
+        crossScreen(&poly.position);
     }
 
     gameEnd(&game);
