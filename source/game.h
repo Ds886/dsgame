@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <stdint.h>
+
 #include "polygon.h"
 #include "linalg.h"
 
@@ -37,7 +39,7 @@ Game *gameStart(
     int player_accel,
     int player_rotation_speed,
     Color player_color);
-Game *gameLogic(Game *game);
+Game *gameLogic(Game *game, uint16_t keys);
 Game *gameRender(Game *game);
 Game *gameEnd(Game *game);
 

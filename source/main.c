@@ -185,16 +185,12 @@ int main(int argc, char **argv)
         swiWaitForVBlank();
 
         consoleClear();
-
-        gameLogic(&game);
-
-        // Print some controls
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &colorBase, &poly);
 
-        gameRender(&game);
+        gameLogic(&game, keys);
+
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
@@ -207,7 +203,7 @@ int main(int argc, char **argv)
         transform(&poly.triangle, m);
         renderPolygon(&poly, colorBase);
         printf("aft:\n%f, %f\n%f, %f\n", poly.triangle.a.x, poly.triangle.a.y, poly.triangle.b.x, poly.triangle.b.y);
-
+        gameRender(&game);
         glEnd2D();
 
         glFlush(0);

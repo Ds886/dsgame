@@ -43,9 +43,9 @@ Game *gameStart(
   return game;
 }
 
-Game *gameLogic(Game *game) {
-  game->frame++;
+Game *gameLogic(Game *game, uint16_t keys) {
 
+  game->frame++;
   return game;
 }
 
