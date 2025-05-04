@@ -1,6 +1,21 @@
 #include "game.h"
 
 
+void crossScreen(struct vec2 *pos) {
+    if (pos->x < 0) {
+        pos->x += GAME_SCREEN_WIDTH;
+    }
+    if (pos->x >= GAME_SCREEN_WIDTH) {
+        pos->x -= GAME_SCREEN_WIDTH;
+    }
+
+    if (pos->y < 0) {
+        pos->y += GAME_SCREEN_HEIGHT;
+    }
+    if (pos->y >= GAME_SCREEN_HEIGHT) {
+        pos->y -= GAME_SCREEN_HEIGHT;
+    }
+}
 GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed, Color color) {
     GameObj ret;
 

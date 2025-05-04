@@ -98,29 +98,6 @@ bool handleKeys(uint32_t keys, struct vec3 *color, GameObj* spritedata){
     return true;
 }
 
-void clampColor(struct vec3 *color){
-    color->x = (color->x < 0) ? 0 : (color->x > 1) ? 1 : color->x;
-    color->y = (color->y < 0) ? 0 : (color->y > 1) ? 1 : color->y;
-    color->z = (color->z < 0) ? 0 : (color->z > 1) ? 1 : color->z;
-}
-
-void crossScreen(struct vec2 *pos) {
-    if (pos->x < 0) {
-        pos->x += GAME_SCREEN_WIDTH;
-    }
-    if (pos->x >= GAME_SCREEN_WIDTH) {
-        pos->x -= GAME_SCREEN_WIDTH;
-    }
-
-    if (pos->y < 0) {
-        pos->y += GAME_SCREEN_HEIGHT;
-    }
-    if (pos->y >= GAME_SCREEN_HEIGHT) {
-        pos->y -= GAME_SCREEN_HEIGHT;
-    }
-}
-
-
 int main(int argc, char **argv)
 {
     consoleDemoInit();
@@ -163,8 +140,6 @@ int main(int argc, char **argv)
         glEnd2D();
 
         glFlush(0);
-        poly.position = vec2_add(poly.position, poly.velocity);
-        crossScreen(&poly.position);
     }
 
     gameEnd(&game);
