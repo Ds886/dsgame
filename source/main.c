@@ -53,18 +53,6 @@ struct polygonstate {
     obj2dData data;
 };
 
-struct vec3 vec3_mod(struct vec3 v1){
-    while(v1.x > 1) v1.x -= 1;
-    while(v1.y > 1) v1.y -= 1;
-    while(v1.z > 1) v1.z -= 1;    
-
-    while(v1.x < 0) v1.x += 1;
-    while(v1.y < 0) v1.y += 1;
-    while(v1.z < 0) v1.z += 1;
-
-    return v1;
-}
-
 bool handleKeys(uint32_t keys, struct vec3 *color, obj2dData* spritedata){
         if (keys & KEY_START)
             return false;
@@ -132,14 +120,6 @@ void clampColor(struct vec3 *color){
     color->x = (color->x < 0) ? 0 : (color->x > 1) ? 1 : color->x;
     color->y = (color->y < 0) ? 0 : (color->y > 1) ? 1 : color->y;
     color->z = (color->z < 0) ? 0 : (color->z > 1) ? 1 : color->z;
-}
-
-
-void InitColors(struct vec3* colorMod, uint8_t* nColorPhase){
-    *nColorPhase = 1;
-    colorMod->x = 0.0625;
-    colorMod->y = 0.0312;
-    colorMod->z = 0.1562;
 }
 
 void crossScreen(struct vec2 *pos) {
@@ -215,12 +195,7 @@ int main(int argc, char **argv)
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
 
-    uint16_t nColorCountChange = 0;
     color colorBase = {0.468, 0.375, 0.406};
-    color colorMod;
-    color currColor = {0, 0, 0};
-    uint8_t nColorPhase = 0;
-    InitColors(&colorMod, &nColorPhase);
 
     Triangle tri = isoscelesTriangle(10, 16);
 
@@ -239,7 +214,6 @@ int main(int argc, char **argv)
 
         // Print some controls
         printf("START:  Exit to loader\n");
-        printf("r:%f,g:%f,b:%f,count:%d\n", currColor.x, currColor.y, currColor.z,nColorCountChange);
         #ifdef DEBUG_MODE
         printf("Player X: %f\n", poly.data.velocity.x);
         printf("Player Y: %f\n", poly.data.velocity.y);
@@ -247,33 +221,21 @@ int main(int argc, char **argv)
         printf("\n");
         #endif
 
-        if (nColorPhase > MAX_COLOR_PHASE)
-        {
-            currColor = vec3_mul(colorMod, nColorCountChange);
-            currColor = vec3_mod(currColor);
-            currColor = vec3_add(currColor, colorBase);
-            clampColor(&currColor);
-
-            nColorPhase = 0;
-            nColorCountChange++;
-        }
-        nColorPhase++;
- 
         scanKeys();
 
         uint16_t keys = keysHeld();
-        handleKeys(keys, &currColor, &poly.data);
+        handleKeys(keys, &colorBase, &poly.data);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
-        glColor(COLOR_TO_15BIT(&currColor));
+        glColor(COLOR_TO_15BIT(&colorBase));
 
         matrix m;
         set_in_position(&poly);
         printMatrix(m);
         
         transform(&poly.triangle, m);
-        renderPolygon(&poly, currColor);
+        renderPolygon(&poly, colorBase);
         printf("aft:\n%f, %f\n%f, %f\n", poly.triangle.a.x, poly.triangle.a.y, poly.triangle.b.x, poly.triangle.b.y);
 
         glEnd2D();
