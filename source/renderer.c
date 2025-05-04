@@ -2,7 +2,7 @@
 
 #include <gl2d.h>
 
-void renderPolygon(Triangle *triangle, Color *color) {
+void renderPolygon(Triangle *triangle, Color *color, struct vec2 pos, float rotation) {
     glTriangleFilled(
         triangle->a.x,
         triangle->a.y,
