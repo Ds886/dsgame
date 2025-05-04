@@ -39,8 +39,6 @@
 #define FLOAT_TO_5BITS(n) ((uint16_t)(((1 << MAX_COLOR_BITS)-1)*n))
 #define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS((col)->x), FLOAT_TO_5BITS((col)->y), FLOAT_TO_5BITS((col)->z)))
 
-typedef struct vec3 color;
-
 bool handleKeys(uint32_t keys, struct vec3 *color, GameObj* spritedata){
     //     if (keys & KEY_START)
     //         return false;
@@ -127,20 +125,6 @@ void crossScreen(struct vec2 *pos) {
 }
 
 
-GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed) {
-    GameObj ret;
-
-    ret.triangle = tri;
-    ret.position = pos;
-    ret.velocity.x = 0;
-    ret.velocity.y = 0;
-    ret.acceleration = accel;
-    ret.rotation = 0;
-    ret.rotation_speed = rotation_speed;
-
-    return ret;
-}
-
 void renderPolygon(GameObj *poly, color col) {
     glTriangleFilled(
         poly->triangle.a.x,
@@ -176,8 +160,6 @@ void set_in_position(GameObj *poly) {
 int main(int argc, char **argv)
 {
     consoleDemoInit();
-    struct vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT};
-
     videoSetMode(MODE_5_3D);
 
     glScreen2D();
@@ -187,16 +169,18 @@ int main(int argc, char **argv)
 
     color colorBase = {0.468, 0.375, 0.406};
 
-    Triangle tri = isoscelesTriangle(10, 16);
 
-    GameObj poly = newTriangle (
-        tri,
-        vecPosition,
+
+    
+    GameObj poly;
+    
+    gameStart(
+        &game,
+        &poly,
         PLAYER_ACCEL,
-        ROTATION_SPEED
+        ROTATION_SPEED,
+        colorBase
     );
-
-    gameStart(&game);
 
     while (1)
     {
