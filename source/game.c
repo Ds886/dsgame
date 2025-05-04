@@ -97,7 +97,14 @@ Game *gameLogic(Game *game, uint16_t keys) {
 }
 
 Game *gameRender(Game *game) {
-  renderPolygon(&game->ship->triangle, &game->ship->color, game->ship->position, 0);
+  matrix m, n, t;
+  printf("rotation: %f\n", game->ship->rotation);
+  rotation_matrix_2d(m, game->ship->rotation);
+  translate_matrix_2d(n, game->ship->position.x, game->ship->position.y);
+  mat_mul(t, m, n);
+
+  renderPolygon(&game->ship->triangle, t, &game->ship->color);
+  
   return game;  
 }
 

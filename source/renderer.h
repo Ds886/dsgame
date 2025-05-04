@@ -11,6 +11,6 @@
 
 typedef struct vec3 Color;
 
-void renderPolygon(Triangle *triangle, Color *color, struct vec2 pos, float rotation);
+void renderPolygon(Triangle *triangle, matrix m, Color *color);
 
 #endif
