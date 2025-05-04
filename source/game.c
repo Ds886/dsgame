@@ -68,11 +68,29 @@ void set_in_position(GameObj *poly) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
-  if (keys & KEY_LEFT)
-    game->ship->position.x+=0.4;
+  if (keys & KEY_LEFT) {
+    game->ship->position.x+=1.4;
+  }
 
-  if (keys & KEY_RIGHT)
-    game->ship->position.x-=0.4;
+  if (keys & KEY_RIGHT) {
+    game->ship->position.x-=1.4;
+  }
+
+  if (keys & KEY_UP) {
+    game->ship->position.y-=1.4;
+  }
+
+  if (keys & KEY_DOWN) {
+    game->ship->position.y+=1.4;
+  }
+
+  if (keys & KEY_X) {
+    game->ship->rotation += 1;
+  }
+
+  if (keys & KEY_Y) {
+    game->ship->rotation -= 1;
+  }
 
   game->frame++;
   return game;
