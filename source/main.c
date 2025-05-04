@@ -17,6 +17,7 @@
 
 #include "linalg.h"
 #include "polygon.h"
+#include "game.h"
 
 #define GAME_SCREEN_WIDTH 256
 #define GAME_SCREEN_HEIGHT 192
@@ -195,6 +196,8 @@ int main(int argc, char **argv)
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
 
+    Game game;
+
     color colorBase = {0.468, 0.375, 0.406};
 
     Triangle tri = isoscelesTriangle(10, 16);
@@ -206,11 +209,15 @@ int main(int argc, char **argv)
         ROTATION_SPEED
     );
 
+    gameStart(&game);
+
     while (1)
     {
         swiWaitForVBlank();
 
         consoleClear();
+
+        gameLogic(&game);
 
         // Print some controls
         printf("START:  Exit to loader\n");
@@ -225,6 +232,8 @@ int main(int argc, char **argv)
 
         uint16_t keys = keysHeld();
         handleKeys(keys, &colorBase, &poly.data);
+
+        gameRender(&game);
 
         glBegin2D();
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
@@ -245,5 +254,7 @@ int main(int argc, char **argv)
         crossScreen(&poly.data.position);
     }
 
+    gameEnd(&game);
+    
     return 0;
 }
