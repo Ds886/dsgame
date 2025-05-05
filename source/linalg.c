@@ -91,6 +91,16 @@ void mat_identity(matrix res) {
             res[i][j] = (i == j) ? 1 : 0;
 }
 
+void rotation_axis_matrix_2d(matrix res, float degrees, struct vec3 axis) {
+    matrix m, n, t, r;
+    translate_matrix_2d(m, -axis.x, -axis.y);
+    translate_matrix_2d(n, +axis.x, +axis.y);
+    rotation_matrix_2d(t, degrees);
+
+    mat_mul(r, m, t);
+    mat_mul(res, r, n);
+}
+
 void rotation_matrix_2d(matrix res, float degrees) {
     s16 bin_rotation = degreesToAngle(degrees);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);

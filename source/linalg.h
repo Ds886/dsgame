@@ -48,6 +48,8 @@ void mat_zeros(matrix res);
 
 void rotation_matrix_2d(matrix res, float degrees);
 
+void rotation_axis_matrix_2d(matrix res, float degrees, struct vec3 axis);
+
 void translate_matrix_2d(matrix res, float x, float y);
 
 #endif

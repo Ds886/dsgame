@@ -104,14 +104,17 @@ Game *gameLogic(Game *game, uint16_t keys) {
   
 Game *gameRender(Game *game) {
   matrix m, n, t;
+  struct vec3 pos3 = {game->ship->position.x, game->ship->position.y, 1};
   printf("rotation: %f\n", game->ship->rotation);
-  rotation_matrix_2d(m, game->ship->rotation);
+  struct vec3 rotation_axis = vec3_add(pos3, polygonCenter(&game->ship->triangle));
+  printf("axis: %f, %f\n", rotation_axis.x, rotation_axis.y);
+  rotation_axis_matrix_2d(m, game->ship->rotation, rotation_axis);
   translate_matrix_2d(n, game->ship->position.x, game->ship->position.y);
   mat_mul(t, m, n);
   
   PRINT_MAT(t);
 
-  renderPolygon(&game->ship->triangle, t, &game->ship->color);
+  renderPolygon(&game->ship->triangle, m, &game->ship->color);
   
   return game;  
 }

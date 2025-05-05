@@ -8,6 +8,9 @@ typedef struct triangle_t {
   struct vec3 b;
 } Triangle;
 
+
+struct vec3 polygonCenter(Triangle *poly);
+
 Triangle isoscelesTriangle(float base, float height);
 
 void transform(Triangle *poly, matrix trans);
