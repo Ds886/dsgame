@@ -49,92 +49,115 @@ struct vec3 vec3_div(struct vec3 v1, float scalar){
     return temp;
 }
 
-void mat_add(matrix res, matrix m1, matrix m2) {
+matrix makeMatrix(float a00, float a01, float a02, 
+                  float a10, float a11, float a12,
+                  float a20, float a21, float a22) {
+    matrix m;
+    
+    MGET(m, 0, 0) = a00;
+    MGET(m, 0, 1) = a01;
+    MGET(m, 0, 2) = a02;
+    MGET(m, 1, 0) = a10;
+    MGET(m, 1, 1) = a11;
+    MGET(m, 1, 2) = a12;
+    MGET(m, 2, 0) = a20;
+    MGET(m, 2, 1) = a21;
+    MGET(m, 2, 2) = a22;
+
+    return m;
+}
+
+matrix mat_add(matrix m1, matrix m2) {
+    matrix res;
     for (int i = 0; i < MAT_SIZE; i++)
         for (int j = 0; j < MAT_SIZE; j++)
-            res[i][j] = m1[i][j] + m2[i][j];
+            MGET(res,i,j) = MGET(m1,i,j) + MGET(m2,i,j);
+    return res;
 }
 
-void mat_sub(matrix res, matrix m1, matrix m2) {
-    mat_scale(res, m2, -1);
-    mat_add(res, m1, res);
+matrix mat_sub(matrix m1, matrix m2) {
+    matrix res;
+    res = mat_scale(m2, -1);
+    res = mat_add(m1, res);
+    return res;
 }
 
-void mat_mul(matrix res, matrix m1, matrix m2) {
+matrix mat_mul(matrix m1, matrix m2) {
+    matrix res;
     for (int i = 0; i < MAT_SIZE; i++)
         for (int j = 0; j < MAT_SIZE; j++) {
-            res[i][j] = 0;
+            MGET(res,i,j) = 0;
             for (int k = 0; k < MAT_SIZE; k++)
-                res[i][j] += m1[i][k] * m2[k][j];
+                MGET(res, i, j) += MGET(m1, i, k) * MGET(m2, k, j);
         }
+    return res;
 }
 
-void mat_scale(matrix res, matrix m1, float scalar) {
+matrix mat_scale(matrix m1, float scalar) {
+    matrix res;
     for (int i = 0; i < MAT_SIZE; i++)
         for (int j = 0; j < MAT_SIZE; j++)
-            res[i][j] = m1[i][j] * scalar;
+            MGET(res, i, j) = MGET(m1, i, j) * scalar;
+    return res;
 }
 
-void mat_fill(matrix res, float val) {
+matrix mat_fill(float val) {
+    matrix res;
     for (int i = 0; i < MAT_SIZE; i++)
         for (int j = 0; j < MAT_SIZE; j++)
-            res[i][j] = val;
+            MGET(res, i, j) = val;
+    return res;
 }
 
-void mat_zeros(matrix res) {
-    mat_fill(res, 0);
+matrix mat_zeros() {
+    return mat_fill(0);
 }
 
-void mat_identity(matrix res) {
+matrix mat_identity() {
+    matrix res;
     for (int i = 0; i < MAT_SIZE; i++)
         for (int j = 0; j < MAT_SIZE; j++)
-            res[i][j] = (i == j) ? 1 : 0;
+            MGET(res, i, j) = (i == j) ? 1 : 0;
+    return res;
 }
 
-void rotation_axis_matrix_2d(matrix res, float degrees, struct vec3 axis) {
+matrix rotation_axis_matrix_2d(float degrees, struct vec3 axis) {
+    matrix res;
     matrix m, n, t, r;
-    translate_matrix_2d(m, -axis.x, -axis.y);
-    translate_matrix_2d(n, +axis.x, +axis.y);
-    rotation_matrix_2d(t, degrees);
+    m = translate_matrix_2d(-axis.x, -axis.y);
+    n = translate_matrix_2d(+axis.x, +axis.y);
+    t = rotation_matrix_2d(degrees);
 
-    mat_mul(r, m, t);
-    mat_mul(res, r, n);
+    r = mat_mul(m, t);
+    res = mat_mul(r, n);
+
+    return res;
 }
 
-void rotation_matrix_2d(matrix res, float degrees) {
+matrix rotation_matrix_2d(float degrees) {
     s16 bin_rotation = degreesToAngle(degrees);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
-    mat_identity(res);
-    res[0][0] = cos;
-    res[0][1] = -sin;
-    res[1][0] = sin;
-    res[1][1] = cos;
+    return makeMatrix(cos, -sin, 0,
+                      sin,  cos, 0,
+                      0  ,  0  , 1);
 }
 
 struct vec3 vec3_transform(matrix m, struct vec3 v) {
     struct vec3 res;
 
-    res.x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
-    res.y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
-    res.z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
+    res.x = MGET(m,0,0) * v.x + MGET(m,0,1) * v.y + MGET(m,0,2) * v.z;
+    res.y = MGET(m,1,0) * v.x + MGET(m,1,1) * v.y + MGET(m,1,2) * v.z;
+    res.z = MGET(m,2,0) * v.x + MGET(m,2,1) * v.y + MGET(m,2,2) * v.z;
 
     return res;
 }
 
-void translate_matrix_2d(matrix res, float x, float y) {
-    res[0][0] = 1;
-    res[0][1] = 0;
-    res[0][2] = x;
-
-    res[1][0] = 0;
-    res[1][1] = 1;
-    res[1][2] = y;
-
-    res[2][0] = 0;
-    res[2][1] = 0;
-    res[2][2] = 1;    
+matrix translate_matrix_2d(float x, float y) {
+    return makeMatrix(1, 0, x,
+                      0, 1, y,
+                      0, 0, 1);
 }
 
 struct vec3 vec_inc_dim(struct vec2 v) {
@@ -156,8 +179,8 @@ struct vec2 vec2_rotate(struct vec2 v, float degrees) {
     struct vec3 v3 = vec_inc_dim(v);
     matrix m;
     
-    rotation_matrix_2d(m, degrees);
-    vec3_transform(m, v3);
+    m = rotation_matrix_2d(degrees);
+    v3 = vec3_transform(m, v3);
 
     return vec_reduce_dim(v3);
 }

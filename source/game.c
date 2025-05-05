@@ -64,7 +64,7 @@ void set_in_position(GameObj *poly) {
   matrix m;
   float diff_x = poly->position.x - poly->triangle.a.x;
   float diff_y = poly->position.y - poly->triangle.a.y;
-  translate_matrix_2d(m, diff_x, diff_y);
+  m = translate_matrix_2d(diff_x, diff_y);
   transform(&poly->triangle, m);
 }
 
@@ -97,10 +97,10 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
-#define PRINT_MAT(m) printf("[%f, %f, %f]\n[%f, %f, %f]\n[%f, %f, %f]\n", \
-    (m)[0][0], (m)[0][1], (m)[0][2], \
-    (m)[1][0], (m)[1][1], (m)[1][2], \
-    (m)[2][0], (m)[2][1], (m)[2][2]);
+ #define PRINT_MAT(m) printf("[%f, %f, %f]\n[%f, %f, %f]\n[%f, %f, %f]\n", \
+     MGET(m, 0, 0), MGET(m, 0, 1), MGET(m, 0, 2), \
+     MGET(m, 1, 0), MGET(m, 1, 1), MGET(m, 1, 2), \
+     MGET(m, 2, 0), MGET(m, 2, 1), MGET(m, 2, 2));
   
 Game *gameRender(Game *game) {
   matrix m, n, t;
@@ -108,13 +108,13 @@ Game *gameRender(Game *game) {
   printf("rotation: %f\n", game->ship->rotation);
   struct vec3 rotation_axis = vec3_add(pos3, polygonCenter(&game->ship->triangle));
   printf("axis: %f, %f\n", rotation_axis.x, rotation_axis.y);
-  rotation_axis_matrix_2d(m, game->ship->rotation, rotation_axis);
-  translate_matrix_2d(n, game->ship->position.x, game->ship->position.y);
-  mat_mul(t, m, n);
+  m = rotation_axis_matrix_2d(game->ship->rotation, rotation_axis);
+  n = translate_matrix_2d(game->ship->position.x, game->ship->position.y);
+  t = mat_mul(m, n);
   
   PRINT_MAT(t);
 
-  renderPolygon(&game->ship->triangle, m, &game->ship->color);
+  renderPolygon(&game->ship->triangle, t, &game->ship->color);
   
   return game;  
 }

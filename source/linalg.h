@@ -14,7 +14,15 @@ struct vec3 {
 
 #define MAT_SIZE 3
 
-typedef float matrix[MAT_SIZE][MAT_SIZE];
+#define MGET(m, x, y) ((m).a[x][y])
+
+typedef struct matrix_t {
+    float a[MAT_SIZE][MAT_SIZE];
+} matrix;
+
+matrix makeMatrix(float, float, float, 
+                  float, float, float,
+                  float, float, float);
 
 struct vec2 vec2_mul(struct vec2 v1, int scalar);
 
@@ -36,20 +44,20 @@ struct vec3 vec3_transform(matrix m, struct vec3 v);
 
 struct vec2 vec2_rotate(struct vec2 v, float degrees);
 
-void mat_add(matrix res, matrix m1, matrix m2);
+matrix mat_add(matrix m1, matrix m2);
 
-void mat_sub(matrix res, matrix m1, matrix m2);
+matrix mat_sub(matrix m1, matrix m2);
 
-void mat_mul(matrix res, matrix m1, matrix m2);
+matrix mat_mul(matrix m1, matrix m2);
 
-void mat_scale(matrix res, matrix m1, float scalar);
+matrix mat_scale(matrix m1, float scalar);
 
-void mat_zeros(matrix res);
+matrix mat_zeros();
 
-void rotation_matrix_2d(matrix res, float degrees);
+matrix rotation_matrix_2d(float degrees);
 
-void rotation_axis_matrix_2d(matrix res, float degrees, struct vec3 axis);
+matrix rotation_axis_matrix_2d(float degrees, struct vec3 axis);
 
-void translate_matrix_2d(matrix res, float x, float y);
+matrix translate_matrix_2d(float x, float y);
 
 #endif
