@@ -2,28 +2,43 @@
 #include "nds/arm9/trig_lut.h"
 
 vector vec_mul(vector v1, float scalar){
-    vector temp = {v1.x * scalar,
-                        v1.y * scalar,
-                        v1.z * scalar};
+    vector temp = make_vec(
+        X(v1) * scalar,
+        Y(v1) * scalar,
+        Z(v1) * scalar
+    );
     return temp;
 }
 
+vector make_vec(float x, float y, float z) {
+    vector res;
+    X(res) = x;
+    Y(res) = y;
+    Z(res) = z;
+    return res;
+}
 vector vec_add(vector v1, vector v2){
-    vector temp = {v1.x + v2.x,
-                        v1.y + v2.y,
-                        v1.z + v2.z};
+    vector temp = make_vec(
+        X(v1) + X(v2),
+        Y(v1) + Y(v2),
+        Z(v1) + Z(v2)
+    );
     return temp;
 }
 vector vec_sub(vector v1, vector v2){
-    vector temp = {v1.x - v2.x,
-                        v1.y - v2.y,
-                        v1.z - v2.z};
+    vector temp = make_vec(
+        X(v1) - X(v2),
+        Y(v1) - Y(v2),
+        Z(v1) - Z(v2)
+    );
     return temp;
 }
 vector vec_div(vector v1, float scalar){
-    vector temp = {v1.x / scalar,
-                        v1.y / scalar,
-                        v1.z / scalar};
+    vector temp = make_vec(
+        X(v1) / scalar,
+        Y(v1) / scalar,
+        Z(v1) / scalar
+    );
     return temp;
 }
 
@@ -102,8 +117,8 @@ matrix mat_identity() {
 matrix rotation_axis_matrix_2d(float degrees, vector axis) {
     matrix res;
     matrix m, n, t, r;
-    m = translate_matrix_2d(-axis.x, -axis.y);
-    n = translate_matrix_2d(+axis.x, +axis.y);
+    m = translate_matrix_2d(-X(axis), -Y(axis));
+    n = translate_matrix_2d(+X(axis), +Y(axis));
     t = rotation_matrix_2d(degrees);
 
     r = mat_mul(m, t);
@@ -123,11 +138,13 @@ matrix rotation_matrix_2d(float degrees) {
 }
 
 vector vec_transform(matrix m, vector v) {
-    vector res;
+    vector res = make_vec(0, 0, 0);
 
-    res.x = MGET(m,0,0) * v.x + MGET(m,0,1) * v.y + MGET(m,0,2) * v.z;
-    res.y = MGET(m,1,0) * v.x + MGET(m,1,1) * v.y + MGET(m,1,2) * v.z;
-    res.z = MGET(m,2,0) * v.x + MGET(m,2,1) * v.y + MGET(m,2,2) * v.z;
+    for (int i = 0; i < VEC_SIZE; i++) {
+        for (int j = 0; j < VEC_SIZE; j++) {
+            VGET(res, i) += MGET(m, i, j) * VGET(v, j);
+        }
+    }
 
     return res;
 }

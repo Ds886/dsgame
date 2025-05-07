@@ -1,13 +1,18 @@
 #ifndef LINLANG_H
 #define LINLANG_H 1
 
+#define VEC_SIZE 3
+
+#define VGET(a, i) ((a).v[i])
+#define X(a) VGET(a, 0)
+#define Y(a) VGET(a, 1)
+#define Z(a) VGET(a, 2)
+
 typedef struct vector_t {
-    float x;
-    float y;
-    float z;
+    float v[VEC_SIZE];
 } vector;
 
-#define MAT_SIZE 3
+#define MAT_SIZE VEC_SIZE
 
 #define MGET(m, x, y) ((m).a[x][y])
 
@@ -16,6 +21,17 @@ typedef struct matrix_t {
 } matrix;
 
 typedef vector vec2;
+
+
+typedef struct coord3_t {
+    float x;
+    float y;
+    float z;
+} coord;
+
+#define COORD(p) ((coord *)(p))
+
+vector make_vec(float x, float y, float z);
 
 matrix makeMatrix(float, float, float, 
                   float, float, float,
