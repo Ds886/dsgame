@@ -105,8 +105,8 @@ Game *gameLogic(Game *game, uint16_t keys) {
 #define PRINT_VEC(v) printf("[%f\t%f\t%f];\n\n", (v).x, (v).y, (v).z)
 
 Game *gameRender(Game *game) {
-  struct vec3 pos = game->ship->position;
-  struct vec3 t = {50, 50, 1};
+  vector pos = game->ship->position;
+  vector t = {50, 50, 1};
   matrix rotate = rotation_axis_matrix_2d(game->ship->rotation, t);
   matrix move = translate_matrix_2d(pos.x, pos.y);
 

@@ -25,7 +25,7 @@
 #define PLAYER_ACCEL 0.08f
 #define ROTATION_SPEED 4
 
-bool handleKeys(uint32_t keys, struct vec3 *color, GameObj* spritedata){
+bool handleKeys(uint32_t keys, vector *color, GameObj* spritedata){
     //     if (keys & KEY_START)
     //         return false;
 

@@ -3,10 +3,10 @@
 #include <gl2d.h>
 
 void renderPolygon(Triangle *triangle, matrix trans, Color *color) {
-    struct vec3 origin = {0, 0, 1};
-    struct vec3 trans_o = vec3_transform(trans, origin);
-    struct vec3 trans_a = vec3_transform(trans, triangle->a);
-    struct vec3 trans_b = vec3_transform(trans, triangle->b);
+    vector origin = {0, 0, 1};
+    vector trans_o = vec_transform(trans, origin);
+    vector trans_a = vec_transform(trans, triangle->a);
+    vector trans_b = vec_transform(trans, triangle->b);
  
     glTriangleFilled(
         trans_o.x,

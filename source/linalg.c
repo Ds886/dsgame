@@ -1,27 +1,27 @@
 #include "linalg.h"
 #include "nds/arm9/trig_lut.h"
 
-struct vec3 vec3_mul(struct vec3 v1, float scalar){
-    struct vec3 temp = {v1.x * scalar,
+vector vec_mul(vector v1, float scalar){
+    vector temp = {v1.x * scalar,
                         v1.y * scalar,
                         v1.z * scalar};
     return temp;
 }
 
-struct vec3 vec3_add(struct vec3 v1, struct vec3 v2){
-    struct vec3 temp = {v1.x + v2.x,
+vector vec_add(vector v1, vector v2){
+    vector temp = {v1.x + v2.x,
                         v1.y + v2.y,
                         v1.z + v2.z};
     return temp;
 }
-struct vec3 vec3_sub(struct vec3 v1, struct vec3 v2){
-    struct vec3 temp = {v1.x - v2.x,
+vector vec_sub(vector v1, vector v2){
+    vector temp = {v1.x - v2.x,
                         v1.y - v2.y,
                         v1.z - v2.z};
     return temp;
 }
-struct vec3 vec3_div(struct vec3 v1, float scalar){
-    struct vec3 temp = {v1.x / scalar,
+vector vec_div(vector v1, float scalar){
+    vector temp = {v1.x / scalar,
                         v1.y / scalar,
                         v1.z / scalar};
     return temp;
@@ -99,7 +99,7 @@ matrix mat_identity() {
     return res;
 }
 
-matrix rotation_axis_matrix_2d(float degrees, struct vec3 axis) {
+matrix rotation_axis_matrix_2d(float degrees, vector axis) {
     matrix res;
     matrix m, n, t, r;
     m = translate_matrix_2d(-axis.x, -axis.y);
@@ -122,8 +122,8 @@ matrix rotation_matrix_2d(float degrees) {
                       0  ,  0  , 1);
 }
 
-struct vec3 vec3_transform(matrix m, struct vec3 v) {
-    struct vec3 res;
+vector vec_transform(matrix m, vector v) {
+    vector res;
 
     res.x = MGET(m,0,0) * v.x + MGET(m,0,1) * v.y + MGET(m,0,2) * v.z;
     res.y = MGET(m,1,0) * v.x + MGET(m,1,1) * v.y + MGET(m,1,2) * v.z;

@@ -4,12 +4,12 @@
 #include "linalg.h"
 
 typedef struct triangle_t {
-  struct vec3 a;
-  struct vec3 b;
+  vector a;
+  vector b;
 } Triangle;
 
 
-struct vec3 polygonCenter(Triangle *poly);
+vector polygonCenter(Triangle *poly);
 
 Triangle isoscelesTriangle(float base, float height);
 

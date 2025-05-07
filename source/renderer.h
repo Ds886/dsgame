@@ -9,7 +9,7 @@
 #define FLOAT_TO_5BITS(n) ((uint16_t)(((1 << MAX_COLOR_BITS)-1)*n))
 #define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS((col)->x), FLOAT_TO_5BITS((col)->y), FLOAT_TO_5BITS((col)->z)))
 
-typedef struct vec3 Color;
+typedef vector Color;
 
 void renderPolygon(Triangle *triangle, matrix m, Color *color);
 

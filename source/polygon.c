@@ -1,9 +1,9 @@
 #include "polygon.h"
 
-struct vec3 polygonCenter(Triangle *poly) {
-  struct vec3 sum = vec3_add(poly->a, poly->b);
+vector polygonCenter(Triangle *poly) {
+  vector sum = vec_add(poly->a, poly->b);
 
-  return vec3_mul(sum, 0.5);
+  return vec_mul(sum, 0.5);
 }
 
 Triangle isoscelesTriangle(float base, float height) {
@@ -20,8 +20,8 @@ Triangle isoscelesTriangle(float base, float height) {
 }
 
 void transform(Triangle *poly, matrix trans) {
-  poly->a = vec3_transform(trans, poly->a);
-  poly->b = vec3_transform(trans, poly->b);
+  poly->a = vec_transform(trans, poly->a);
+  poly->b = vec_transform(trans, poly->b);
 }
 
 
