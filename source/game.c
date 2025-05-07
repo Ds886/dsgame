@@ -97,7 +97,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
- #define PRINT_MAT(m) printf("[%f, %f, %f]\n[%f, %f, %f]\n[%f, %f, %f]\n", \
+#define PRINT_MAT(m) printf("[%f\t%f\t%f]\n[%f\t%f\t%f]\n[%f\t%f\t%f];\n\n", \
      MGET(m, 0, 0), MGET(m, 0, 1), MGET(m, 0, 2), \
      MGET(m, 1, 0), MGET(m, 1, 1), MGET(m, 1, 2), \
      MGET(m, 2, 0), MGET(m, 2, 1), MGET(m, 2, 2));
