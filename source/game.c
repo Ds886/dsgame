@@ -101,21 +101,23 @@ Game *gameLogic(Game *game, uint16_t keys) {
      MGET(m, 0, 0), MGET(m, 0, 1), MGET(m, 0, 2), \
      MGET(m, 1, 0), MGET(m, 1, 1), MGET(m, 1, 2), \
      MGET(m, 2, 0), MGET(m, 2, 1), MGET(m, 2, 2));
-  
-Game *gameRender(Game *game) {
-  matrix m, n, t;
-  struct vec3 pos3 = {game->ship->position.x, game->ship->position.y, 1};
-  printf("rotation: %f\n", game->ship->rotation);
-  struct vec3 rotation_axis = vec3_add(pos3, polygonCenter(&game->ship->triangle));
-  printf("axis: %f, %f\n", rotation_axis.x, rotation_axis.y);
-  m = rotation_axis_matrix_2d(game->ship->rotation, rotation_axis);
-  n = translate_matrix_2d(game->ship->position.x, game->ship->position.y);
-  t = mat_mul(m, n);
-  
-  PRINT_MAT(t);
 
-  renderPolygon(&game->ship->triangle, t, &game->ship->color);
-  
+#define PRINT_VEC(v) printf("[%f\t%f\t%f];\n\n", (v).x, (v).y, (v).z)
+
+Game *gameRender(Game *game) {
+  struct vec2 pos = game->ship->position;
+  struct vec3 pos3 = {pos.x, pos.y, 1};
+  struct vec3 t = {50, 50, 1};
+  matrix rotate = rotation_axis_matrix_2d(game->ship->rotation, t);
+  matrix move = translate_matrix_2d(pos.x, pos.y);
+
+  matrix m = mat_mul(move, rotate);
+ 
+  renderPolygon(&game->ship->triangle, m, &game->ship->color);
+
+  PRINT_VEC(pos3);
+  PRINT_MAT(m);
+
   return game;  
 }
 
