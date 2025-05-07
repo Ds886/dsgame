@@ -2,7 +2,7 @@
 
 #include <nds.h>
 
-void crossScreen(struct vec2 *pos) {
+void crossScreen(vec2 *pos) {
     if (pos->x < 0) {
         pos->x += GAME_SCREEN_WIDTH;
     }
@@ -17,7 +17,7 @@ void crossScreen(struct vec2 *pos) {
         pos->y -= GAME_SCREEN_HEIGHT;
     }
 }
-GameObj newTriangle(Triangle tri, struct vec2 pos, float accel, float rotation_speed, Color color) {
+GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, Color color) {
     GameObj ret;
 
     ret.triangle = tri;
@@ -44,7 +44,7 @@ Game *gameStart(
   game->ship = ship;
 
   
-  struct vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT};
+  vec2 vecPosition = {GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH, GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT, 0};
 
 
   *ship = newTriangle (
@@ -105,8 +105,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
 #define PRINT_VEC(v) printf("[%f\t%f\t%f];\n\n", (v).x, (v).y, (v).z)
 
 Game *gameRender(Game *game) {
-  struct vec2 pos = game->ship->position;
-  struct vec3 pos3 = {pos.x, pos.y, 1};
+  struct vec3 pos = game->ship->position;
   struct vec3 t = {50, 50, 1};
   matrix rotate = rotation_axis_matrix_2d(game->ship->rotation, t);
   matrix move = translate_matrix_2d(pos.x, pos.y);
@@ -115,7 +114,7 @@ Game *gameRender(Game *game) {
  
   renderPolygon(&game->ship->triangle, m, &game->ship->color);
 
-  PRINT_VEC(pos3);
+  PRINT_VEC(pos);
   PRINT_MAT(m);
 
   return game;  

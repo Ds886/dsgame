@@ -19,8 +19,8 @@
 
 typedef struct game_obj_t {
     Triangle triangle;
-    struct vec2 position;
-    struct vec2 velocity;
+    vec2 position;
+    vec2 velocity;
     float acceleration;
     float rotation;
     float rotation_speed;

@@ -1,28 +1,6 @@
 #include "linalg.h"
 #include "nds/arm9/trig_lut.h"
 
-struct vec2 vec2_mul(struct vec2 v1, int scalar){
-    struct vec2 temp = {v1.x * scalar,
-                        v1.y * scalar};
-    return temp;
-}
-
-struct vec2 vec2_add(struct vec2 v1, struct vec2 v2){
-    struct vec2 temp = {v1.x + v2.x, v1.y + v2.y};
-    return temp;
-}
-
-struct vec2 vec2_sub(struct vec2 v1, struct vec2 v2){
-    struct vec2 temp = {v1.x - v2.x, v1.y - v2.y};
-    return temp;
-}
-
-struct vec2 vec2_div(struct vec2 v1, float scalar){
-    struct vec2 temp = {v1.x / scalar,
-                        v1.y / scalar};
-    return temp;
-}
-
 struct vec3 vec3_mul(struct vec3 v1, float scalar){
     struct vec3 temp = {v1.x * scalar,
                         v1.y * scalar,
@@ -160,27 +138,3 @@ matrix translate_matrix_2d(float x, float y) {
                       0, 0, 1);
 }
 
-struct vec3 vec_inc_dim(struct vec2 v) {
-    struct vec3 v3;
-    v3.x = v.x;
-    v3.y = v.y;
-    v3.z = 0;
-    return v3;
-}
-
-struct vec2 vec_reduce_dim(struct vec3 v) {
-    struct vec2 v2;
-    v2.x = v.x;
-    v2.y = v.y;
-    return v2;
-}
-
-struct vec2 vec2_rotate(struct vec2 v, float degrees) {
-    struct vec3 v3 = vec_inc_dim(v);
-    matrix m;
-    
-    m = rotation_matrix_2d(degrees);
-    v3 = vec3_transform(m, v3);
-
-    return vec_reduce_dim(v3);
-}
