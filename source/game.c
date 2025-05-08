@@ -37,8 +37,8 @@ GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, C
 Game *gameStart(
     Game *game,
     GameObj *ship,
-    int player_accel,
-    int player_rotation_speed,
+    float player_accel,
+    float player_rotation_speed,
     Color player_color) 
 {
   game->frame = 0;
@@ -79,9 +79,11 @@ Game *gameLogic(Game *game, uint16_t keys) {
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
-//  if (game->ship->velocity > 0)
-//    game->ship->velocity -= 0.1;
+  if (game->ship->velocity > 0)
+    game->ship->velocity -= 0.01;
 
+  if (game->ship->velocity < 0)
+    game->ship->velocity += 0.01;
 
   if (keys & KEY_LEFT) {
     game->ship->rotation += 3;
@@ -93,16 +95,15 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
   if (keys & KEY_UP) {
     game->ship->velocity += game->ship->acceleration;
-    X(game->ship->position) -= game->ship->velocity * sin;
-    Y(game->ship->position) -= game->ship->velocity * cos;
   }
 
   if (keys & KEY_DOWN) {
     game->ship->velocity -= game->ship->acceleration;
-    X(game->ship->position) += game->ship->velocity * sin;
-    Y(game->ship->position) += game->ship->velocity * cos;
   }
   
+  X(game->ship->position) -= game->ship->velocity * sin;
+  Y(game->ship->position) -= game->ship->velocity * cos;
+   
   game->frame++;
   return game;
 }

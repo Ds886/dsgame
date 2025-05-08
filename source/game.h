@@ -36,8 +36,8 @@ typedef struct game_t {
 Game *gameStart(
     Game *game,
     GameObj *ship,
-    int player_accel,
-    int player_rotation_speed,
+    float player_accel,
+    float player_rotation_speed,
     Color player_color);
 Game *gameLogic(Game *game, uint16_t keys);
 Game *gameRender(Game *game);
