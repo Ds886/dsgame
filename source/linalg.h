@@ -10,6 +10,13 @@
 
 #define ZERO_VEC (make_vec(0, 0, 0))
 #define MAKE_VEC2(x, y) (make_vec(x, y, 0))
+#define PRINT_MAT(m) printf("[%f\t%f\t%f]\n[%f\t%f\t%f]\n[%f\t%f\t%f];\n\n", \
+     MGET(m, 0, 0), MGET(m, 0, 1), MGET(m, 0, 2), \
+     MGET(m, 1, 0), MGET(m, 1, 1), MGET(m, 1, 2), \
+     MGET(m, 2, 0), MGET(m, 2, 1), MGET(m, 2, 2));
+
+#define PRINT_VEC(v) printf("[%f\t%f\t%f];\n\n", X(v), Y(v), Z(v))
+
 
 typedef struct vector_t {
     float v[VEC_SIZE];

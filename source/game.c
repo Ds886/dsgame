@@ -107,13 +107,6 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
-#define PRINT_MAT(m) printf("[%f\t%f\t%f]\n[%f\t%f\t%f]\n[%f\t%f\t%f];\n\n", \
-     MGET(m, 0, 0), MGET(m, 0, 1), MGET(m, 0, 2), \
-     MGET(m, 1, 0), MGET(m, 1, 1), MGET(m, 1, 2), \
-     MGET(m, 2, 0), MGET(m, 2, 1), MGET(m, 2, 2));
-
-#define PRINT_VEC(v) printf("[%f\t%f\t%f];\n\n", X(v), Y(v), Z(v))
-
 Game *gameRender(Game *game) {
   vector pos = game->ship->position;
   matrix rotate = rotation_matrix_2d(game->ship->rotation);
