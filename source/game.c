@@ -105,6 +105,8 @@ Game *gameLogic(Game *game, uint16_t keys) {
   Y(game->ship->position) -= game->ship->velocity * cos;
    
   game->frame++;
+
+  printf("ship velo: %f\n ship accel: %f\n", game->ship->velocity, game->ship->acceleration);
   return game;
 }
 
