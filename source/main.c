@@ -25,69 +25,6 @@
 #define PLAYER_ACCEL 0.08f
 #define ROTATION_SPEED 4
 
-bool handleKeys(uint32_t keys, vector *color, GameObj* spritedata){
-    //     if (keys & KEY_START)
-    //         return false;
-
-    //     if (keys & KEY_X)
-    //     {
-    //         color->x = 255;
-    //         color->y = 180;
-    //         color->z = 120;
-    //     }
-
-    //     if (keys & KEY_B)
-    //     {
-    //         color->x = 20;
-    //         color->y = 180;
-    //         color->z = 255;
-    //     }
-
-    //     if (keys & KEY_Y)
-    //     {
-    //         color->x = 0;
-    //         color->y = 180;
-    //         color->z = 255;
-    //     }
-
-    //     if (keys & KEY_A)
-    //     {
-    //         color->x = 255;
-    //         color->y = 180;
-    //         color->z = 0;
-    //     }
-        
-    //     s16 bin_rotation = degreesToAngle(spritedata->rotation);
-    //     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
-    //     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
-
-    //     if (keys & KEY_UP)
-    //     {
-    //         spritedata->velocity.x += spritedata->acceleration * cos;
-    //         spritedata->velocity.y += spritedata->acceleration * sin;
-    //     }
-        
-
-    //     if (keys & KEY_DOWN)
-    //     {
-    //         spritedata->velocity.x -= spritedata->acceleration * cos;
-    //         spritedata->velocity.y -= spritedata->acceleration * sin;
-    //     }
-
-    //     if (keys & KEY_LEFT)
-    //     {
-    //         spritedata->rotation -= spritedata->rotation_speed;
-    //     }
-
-    //     if (keys & KEY_RIGHT)
-    //     {
-    //         spritedata->rotation += spritedata->rotation_speed;
-    //     }
-
-
-    return true;
-}
-
 int main(int argc, char **argv)
 {
     consoleDemoInit();
