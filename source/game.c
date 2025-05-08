@@ -111,16 +111,12 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
 Game *gameRender(Game *game) {
   vector pos = game->ship->position;
-  vector t = make_vec(50, 50, 1);
-  matrix rotate = rotation_axis_matrix_2d(game->ship->rotation, t);
-  matrix move = translate_matrix_2d(X(pos), Y(pos));
-
-  matrix m = mat_mul(move, rotate);
+  matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
-  renderPolygon(&game->ship->triangle, m, &game->ship->color);
+  renderPolygon(&game->ship->triangle, game->ship->position, rotate, &game->ship->color);
 
   PRINT_VEC(pos);
-  PRINT_MAT(m);
+  PRINT_MAT(rotate);
 
   return game;  
 }

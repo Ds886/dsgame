@@ -8,6 +8,9 @@
 #define Y(a) VGET(a, 1)
 #define Z(a) VGET(a, 2)
 
+#define ZERO_VEC (make_vec(0, 0, 0))
+#define MAKE_VEC2(x, y) (make_vec(x, y, 0))
+
 typedef struct vector_t {
     float v[VEC_SIZE];
 } vector;
