@@ -20,7 +20,7 @@
 typedef struct game_obj_t {
     Triangle triangle;
     vec2 position;
-    vec2 velocity;
+    float velocity;
     float acceleration;
     float rotation;
     float rotation_speed;

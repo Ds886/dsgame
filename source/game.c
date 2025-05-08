@@ -24,7 +24,7 @@ GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, C
 
     ret.triangle = tri;
     ret.position = pos;
-    ret.velocity = make_vec(0, 0, 0);
+    ret.velocity = 0;
     ret.acceleration = accel;
     ret.rotation = 0;
     ret.rotation_speed = rotation_speed;
@@ -74,30 +74,35 @@ void set_in_position(GameObj *poly) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
+
+  s16 bin_rotation = degreesToAngle(-game->ship->rotation);
+  float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+  float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+
+//  if (game->ship->velocity > 0)
+//    game->ship->velocity -= 0.1;
+
+
   if (keys & KEY_LEFT) {
-    X(game->ship->position)+=1.4;
+    game->ship->rotation += 3;
   }
 
   if (keys & KEY_RIGHT) {
-    X(game->ship->position)-=1.4;
+    game->ship->rotation -= 3;
   }
 
   if (keys & KEY_UP) {
-    Y(game->ship->position)-=1.4;
+    game->ship->velocity += game->ship->acceleration;
+    X(game->ship->position) -= game->ship->velocity * sin;
+    Y(game->ship->position) -= game->ship->velocity * cos;
   }
 
   if (keys & KEY_DOWN) {
-    Y(game->ship->position)+=1.4;
+    game->ship->velocity -= game->ship->acceleration;
+    X(game->ship->position) += game->ship->velocity * sin;
+    Y(game->ship->position) += game->ship->velocity * cos;
   }
-
-  if (keys & KEY_X) {
-    game->ship->rotation += 1;
-  }
-
-  if (keys & KEY_Y) {
-    game->ship->rotation -= 1;
-  }
-
+  
   game->frame++;
   return game;
 }
