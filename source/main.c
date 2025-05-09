@@ -24,6 +24,7 @@
 #define GAME_SCREEN_BOUNDS 2
 #define PLAYER_ACCEL 0.2
 #define ROTATION_SPEED 4
+#define FRICTION 0.1
 
 int main(int argc, char **argv)
 {
@@ -39,6 +40,7 @@ int main(int argc, char **argv)
     gameStart(
         &game,
         &poly,
+        FRICTION,
         PLAYER_ACCEL,
         ROTATION_SPEED,
         colorBase

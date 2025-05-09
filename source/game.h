@@ -30,12 +30,14 @@ typedef struct game_obj_t {
 
 typedef struct game_t {
   int frame;
+  float friction;
   GameObj *ship;
 } Game;
 
 Game *gameStart(
     Game *game,
     GameObj *ship,
+    float friction,
     float player_accel,
     float player_rotation_speed,
     Color player_color);
