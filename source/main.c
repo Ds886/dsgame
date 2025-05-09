@@ -23,7 +23,7 @@
 #define GAME_SCREEN_HEIGHT 192
 #define GAME_SCREEN_BOUNDS 2
 #define PLAYER_ACCEL 0.2
-#define ROTATION_SPEED 4
+#define ROTATION_SPEED 3
 #define FRICTION 0.1
 
 int main(int argc, char **argv)
