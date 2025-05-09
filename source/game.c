@@ -136,7 +136,7 @@ Game *gameRender(Game *game) {
   vector pos = game->ship->position;
   matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
-  renderPolygon(&game->ship->triangle, game->ship->position, rotate, &game->ship->color);
+  renderPolygonTransformed(&game->ship->triangle, game->ship->position, rotate, &game->ship->color);
 
   PRINT_VEC(pos);
   PRINT_MAT(rotate);

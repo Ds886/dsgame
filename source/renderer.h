@@ -11,6 +11,7 @@
 
 typedef vector Color;
 
-void renderPolygon(Triangle *triangle, vector pos,  matrix m, Color *color);
+void renderPolygonTransformed(Triangle *triangle, vector pos,  matrix m, Color *color);
+void renderPolygon(Triangle *triangle, vector pos, Color *color);
 
 #endif
