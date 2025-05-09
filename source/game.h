@@ -27,6 +27,7 @@ typedef struct game_obj_t {
     float rotation_speed;
     float max_velocity;
     Color color;
+    struct game_obj_t *next;
 } GameObj;
 
 
