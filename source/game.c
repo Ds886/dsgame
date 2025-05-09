@@ -55,7 +55,7 @@ Game *gameStart(
 
 
   *ship = newTriangle (
-        isoscelesTriangle(PLAYER_WIDTH, PLAYER_HEIGHT),
+        isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT),
         vecPosition,
         player_accel,
         player_rotation_speed,
