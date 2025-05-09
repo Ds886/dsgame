@@ -126,8 +126,40 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   printf("ship velo: %f\n ship accel: %f\n", ship->velocity, ship->acceleration);
 }
 
+void astroidGameLogic(GameObj *astro) {
+  s16 bin_rotation = degreesToAngle(-astro->rotation);
+  float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+  float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+
+  if (ABS(astro->velocity) > 0.1) {
+    X(astro->position) += astro->velocity * sin;
+    Y(astro->position) += astro->velocity * cos;
+  }
+}
+
+void spawnAstroid(Game *game) {
+  GameObj *astro = &game->astroids[game->num_astroids++];
+
+  astro->triangle = isoscelesTriangleCentered(40, 40);
+  astro->position = MAKE_VEC2(10, 10);
+  astro->velocity = 7;
+  astro->acceleration = 0;
+  astro->rotation = -30;
+  astro->rotation_speed = 0;
+  astro->max_velocity = 30;
+  astro->color = make_vec(0, 1, 1);
+}
+
 Game *gameLogic(Game *game, uint16_t keys) {
   shipGameLogic(game->ship, game->friction, keys);
+  if (game->frame % 80 == 79 && game->num_astroids < game->max_num_astroids) {
+    spawnAstroid(game);
+  }
+
+  for (int i = 0; i < game->num_astroids; i++) {
+    astroidGameLogic(&game->astroids[i]);
+  }
+  
   game->frame++;
   return game;
 }
@@ -137,6 +169,10 @@ Game *gameRender(Game *game) {
   matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
   renderPolygonTransformed(&game->ship->triangle, game->ship->position, rotate, &game->ship->color);
+  for (int i = 0; i < game->num_astroids; i++) {
+    GameObj *astro = &game->astroids[i];
+    renderPolygon(&astro->triangle, astro->position, &astro->color);
+  }
 
   PRINT_VEC(pos);
   PRINT_MAT(rotate);
