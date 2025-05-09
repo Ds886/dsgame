@@ -82,17 +82,17 @@ Game *gameLogic(Game *game, uint16_t keys) {
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
   if (ship->velocity > 0)
-    ship->velocity -= 0.01;
+    ship->velocity -= game->friction;
 
   if (ship->velocity < 0)
-    ship->velocity += 0.01;
+    ship->velocity += game->friction;
 
   if (keys & KEY_LEFT) {
-    ship->rotation += 3;
+    ship->rotation += ship->rotation_speed;
   }
 
   if (keys & KEY_RIGHT) {
-    ship->rotation -= 3;
+    ship->rotation -= ship->rotation_speed;;
   }
 
   if (keys & KEY_UP) {
