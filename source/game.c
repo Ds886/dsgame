@@ -34,6 +34,7 @@ GameObj newTriangle(
     ret.rotation_speed = rotation_speed;
     ret.max_velocity = max_velocity;
     ret.color = color;
+    ret.alive = true;
 
     return ret;
 }
@@ -127,6 +128,9 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
 }
 
 void astroidGameLogic(GameObj *astro) {
+  if (!astro->alive)
+    return;
+
   s16 bin_rotation = degreesToAngle(-astro->rotation);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
@@ -134,6 +138,10 @@ void astroidGameLogic(GameObj *astro) {
   if (ABS(astro->velocity) > 0.1) {
     X(astro->position) += astro->velocity * sin;
     Y(astro->position) += astro->velocity * cos;
+  }
+  
+  if (X(astro->position) > GAME_SCREEN_WIDTH+40 || Y(astro->position) > GAME_SCREEN_HEIGHT+40) {
+    astro->alive = false;
   }
 }
 
@@ -148,9 +156,26 @@ void spawnAstroid(Game *game) {
   astro->rotation_speed = 0;
   astro->max_velocity = 30;
   astro->color = make_vec(0, 1, 1);
+  astro->alive = true;
+}
+
+void cleanDeadObjs(GameObj *objs, int *num_objs) {
+  int num_dead_objs = 0;
+  for (int i = *num_objs-1; i >= 0; i--) {
+    if (!objs[i].alive) {
+      num_dead_objs++;
+      for (int j = i+1; j < *num_objs; j++) {
+        objs[j-1] = objs[j];
+      }
+    }
+  }
+
+  *num_objs -= num_dead_objs;
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
+  cleanDeadObjs(game->astroids, &game->num_astroids);
+  
   shipGameLogic(game->ship, game->friction, keys);
   if (game->frame % 80 == 79 && game->num_astroids < game->max_num_astroids) {
     spawnAstroid(game);
@@ -172,7 +197,8 @@ Game *gameRender(Game *game) {
   renderPolygonTransformed(&game->ship->triangle, game->ship->position, rotate, &game->ship->color);
   for (int i = 0; i < game->num_astroids; i++) {
     GameObj *astro = &game->astroids[i];
-    renderPolygon(&astro->triangle, astro->position, &astro->color);
+    if (astro->alive)
+      renderPolygon(&astro->triangle, astro->position, &astro->color);
   }
 
   PRINT_VEC(pos);

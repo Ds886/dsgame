@@ -18,6 +18,7 @@
 #define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
 
 typedef struct game_obj_t {
+    bool alive;
     Triangle triangle;
     vec2 position;
     float velocity;
