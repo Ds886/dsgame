@@ -105,10 +105,13 @@ Game *gameLogic(Game *game, uint16_t keys) {
   
   X(ship->position) -= ship->velocity * sin;
   Y(ship->position) -= ship->velocity * cos;
-   
-  game->frame++;
+
+  crossScreen(&ship->position);
 
   printf("ship velo: %f\n ship accel: %f\n", ship->velocity, ship->acceleration);
+
+  game->frame++;
+
   return game;
 }
 
