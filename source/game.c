@@ -42,6 +42,8 @@ GameObj newTriangle(
 Game *gameStart(
     Game *game,
     GameObj *ship,
+    GameObj *astroids,
+    int max_num_astroids,
     float friction,
     float player_accel,
     float player_rotation_speed,
@@ -51,6 +53,9 @@ Game *gameStart(
   game->frame = 0;
   game->friction = friction;
   game->ship = ship;
+  game->astroids = astroids;
+  game->max_num_astroids = max_num_astroids;
+  game->num_astroids = 0;
 
   
   vec2 vecPosition = make_vec(

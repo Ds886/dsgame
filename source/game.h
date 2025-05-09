@@ -33,11 +33,16 @@ typedef struct game_t {
   int frame;
   float friction;
   GameObj *ship;
+  GameObj *astroids;
+  int num_astroids;
+  int max_num_astroids;
 } Game;
 
 Game *gameStart(
     Game *game,
     GameObj *ship,
+    GameObj *astroids,
+    int max_num_astroids,
     float friction,
     float player_accel,
     float player_rotation_speed,
