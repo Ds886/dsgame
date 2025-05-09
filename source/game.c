@@ -88,11 +88,11 @@ Game *gameLogic(Game *game, uint16_t keys) {
     ship->velocity += game->friction;
 
   if (keys & KEY_LEFT) {
-    ship->rotation += ship->rotation_speed;
+    ship->rotation -= ship->rotation_speed;
   }
 
   if (keys & KEY_RIGHT) {
-    ship->rotation -= ship->rotation_speed;;
+    ship->rotation += ship->rotation_speed;;
   }
 
   if (keys & KEY_UP) {
