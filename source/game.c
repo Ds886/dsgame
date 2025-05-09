@@ -150,12 +150,12 @@ void spawnAstroid(Game *game) {
   GameObj *astro = &game->astroids[game->num_astroids++];
 
   astro->triangle = isoscelesTriangleCentered(40, 40);
-  astro->position = MAKE_VEC2(10, 10);
-  astro->velocity = 7;
+  astro->position = MAKE_VEC2(-20, -20); 
+  astro->velocity = 0.8;
   astro->acceleration = 0;
-  astro->rotation = -30;
+  astro->rotation = -45;
   astro->rotation_speed = 0;
-  astro->max_velocity = 30;
+  astro->max_velocity = 5;
   astro->color = make_vec(0, 1, 1);
   astro->alive = true;
 }
@@ -178,7 +178,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   cleanDeadObjs(game->astroids, &game->num_astroids);
   
   shipGameLogic(game->ship, game->friction, keys);
-  if (game->frame % 80 == 79 && game->num_astroids < game->max_num_astroids) {
+  if (game->frame % 20 == 19 && game->num_astroids < game->max_num_astroids) {
     spawnAstroid(game);
   }
 
