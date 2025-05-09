@@ -35,6 +35,7 @@ GameObj newTriangle(
     ret.max_velocity = max_velocity;
     ret.color = color;
     ret.alive = true;
+    ret.next = NULL;
 
     return ret;
 }
