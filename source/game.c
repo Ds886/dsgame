@@ -19,7 +19,11 @@ void crossScreen(vec2 *pos) {
         cpos->y -= GAME_SCREEN_HEIGHT;
     }
 }
-GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, float max_velocity, Color color) {
+GameObj newTriangle(
+    Triangle tri, vec2 pos,
+    float accel, float rotation_speed,
+    float max_velocity, Color color
+) {
     GameObj ret;
 
     ret.triangle = tri;
