@@ -107,10 +107,11 @@ Game *gameLogic(Game *game, uint16_t keys) {
     if (ship->velocity > -ship->max_velocity)
       ship->velocity -= ship->acceleration;
   }
+
+  if (ABS(ship->velocity) > 0.1) {
+    X(ship->position) -= ship->velocity * sin;
+    Y(ship->position) -= ship->velocity * cos;
   }
-  
-  X(ship->position) -= ship->velocity * sin;
-  Y(ship->position) -= ship->velocity * cos;
 
   crossScreen(&ship->position);
 
