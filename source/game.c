@@ -160,6 +160,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
     astroidGameLogic(&game->astroids[i]);
   }
   
+  printf("num astroids: %d/%d\n", game->num_astroids, game->max_num_astroids);
   game->frame++;
   return game;
 }
