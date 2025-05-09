@@ -24,6 +24,7 @@ typedef struct game_obj_t {
     float acceleration;
     float rotation;
     float rotation_speed;
+    float max_velocity;
     Color color;
 } GameObj;
 
@@ -40,6 +41,7 @@ Game *gameStart(
     float friction,
     float player_accel,
     float player_rotation_speed,
+    float player_max_velocity,
     Color player_color);
 Game *gameLogic(Game *game, uint16_t keys);
 Game *gameRender(Game *game);

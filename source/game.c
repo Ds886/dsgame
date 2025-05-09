@@ -19,7 +19,7 @@ void crossScreen(vec2 *pos) {
         cpos->y -= GAME_SCREEN_HEIGHT;
     }
 }
-GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, Color color) {
+GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, float max_velocity, Color color) {
     GameObj ret;
 
     ret.triangle = tri;
@@ -28,6 +28,7 @@ GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, C
     ret.acceleration = accel;
     ret.rotation = 0;
     ret.rotation_speed = rotation_speed;
+    ret.max_velocity = max_velocity;
     ret.color = color;
 
     return ret;
@@ -40,6 +41,7 @@ Game *gameStart(
     float friction,
     float player_accel,
     float player_rotation_speed,
+    float player_max_velocity,
     Color player_color) 
 {
   game->frame = 0;
@@ -59,6 +61,7 @@ Game *gameStart(
         vecPosition,
         player_accel,
         player_rotation_speed,
+        player_max_velocity,
         player_color
     );
 
@@ -96,11 +99,13 @@ Game *gameLogic(Game *game, uint16_t keys) {
   }
 
   if (keys & KEY_UP) {
-    ship->velocity += ship->acceleration;
+    if (ship->velocity < ship->max_velocity)
+      ship->velocity += ship->acceleration;
   }
 
   if (keys & KEY_DOWN) {
-    ship->velocity -= ship->acceleration;
+    if (ship->velocity > -ship->max_velocity)
+      ship->velocity -= ship->acceleration;
   }
   
   X(ship->position) -= ship->velocity * sin;
