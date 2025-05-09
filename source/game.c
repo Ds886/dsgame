@@ -87,17 +87,16 @@ void set_in_position(GameObj *poly) {
   transform(&poly->triangle, m);
 }
 
-Game *gameLogic(Game *game, uint16_t keys) {
-  GameObj *ship = game->ship;
+void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   s16 bin_rotation = degreesToAngle(-ship->rotation);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
   if (ship->velocity > 0)
-    ship->velocity -= game->friction;
+    ship->velocity -= gameFriction;
 
   if (ship->velocity < 0)
-    ship->velocity += game->friction;
+    ship->velocity += gameFriction;
 
   if (keys & KEY_LEFT) {
     ship->rotation -= ship->rotation_speed;
@@ -125,9 +124,11 @@ Game *gameLogic(Game *game, uint16_t keys) {
   crossScreen(&ship->position);
 
   printf("ship velo: %f\n ship accel: %f\n", ship->velocity, ship->acceleration);
+}
 
+Game *gameLogic(Game *game, uint16_t keys) {
+  shipGameLogic(game->ship, game->friction, keys);
   game->frame++;
-
   return game;
 }
 
