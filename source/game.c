@@ -3,20 +3,14 @@
 #include <nds.h>
 
 
-void crossScreen(vec2 *pos) {
-    coord *cpos = COORD(pos);
-    if (cpos->x < 0) {
-        cpos->x += GAME_SCREEN_WIDTH;
-    }
-    if (cpos->x >= GAME_SCREEN_WIDTH) {
-        cpos->x -= GAME_SCREEN_WIDTH;
-    }
+void bounceScreen(GameObj *obj) {
+    coord *cpos = COORD(&obj->position);
+    if (cpos->x < 0 ||
+        cpos->x >= GAME_SCREEN_WIDTH ||
+        cpos->y < 0 ||
+        cpos->y >= GAME_SCREEN_HEIGHT) {
 
-    if (cpos->y < 0) {
-        cpos->y += GAME_SCREEN_HEIGHT;
-    }
-    if (cpos->y >= GAME_SCREEN_HEIGHT) {
-        cpos->y -= GAME_SCREEN_HEIGHT;
+        obj->velocity *= -1;
     }
 }
 GameObj newTriangle(Triangle tri, vec2 pos, float accel, float rotation_speed, Color color) {
@@ -106,7 +100,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   X(ship->position) -= ship->velocity * sin;
   Y(ship->position) -= ship->velocity * cos;
 
-  crossScreen(&ship->position);
+  bounceScreen(ship);
 
   printf("ship velo: %f\n ship accel: %f\n", ship->velocity, ship->acceleration);
 
