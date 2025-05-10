@@ -25,7 +25,7 @@
 #define PLAYER_ACCEL 0.2
 #define ROTATION_SPEED 3
 #define PLAYER_MAX_VELOCITY 10
-#define MAX_NUM_ASTROIDS 14
+#define MAX_NUM_ASTROIDS 30
 #define FRICTION 0.1
 
 int main(int argc, char **argv)
