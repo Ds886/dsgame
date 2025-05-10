@@ -80,15 +80,6 @@ Game *gameStart(
   return game;
 }
 
-
-void set_in_position(GameObj *poly) {
-  matrix m;
-  float diff_x = X(poly->position) - X(poly->triangle.a);
-  float diff_y = Y(poly->position) - Y(poly->triangle.a);
-  m = translate_matrix_2d(diff_x, diff_y);
-  transform(&poly->triangle, m);
-}
-
 void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   s16 bin_rotation = degreesToAngle(-ship->rotation);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
