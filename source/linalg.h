@@ -68,6 +68,8 @@ matrix mat_scale(matrix m1, float scalar);
 
 matrix mat_zeros();
 
+matrix mat_identity();
+
 matrix rotation_matrix_2d(float degrees);
 
 matrix rotation_axis_matrix_2d(float degrees, vector axis);
