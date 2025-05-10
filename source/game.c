@@ -124,7 +124,6 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   }
 
   crossScreen(&ship->position);
-  printf("ship velo: %f\n ship accel: %f\n", ship->velocity, ship->acceleration);
 }
 
 void astroidGameLogic(GameObj *astro) {
@@ -180,7 +179,6 @@ void cleanDeadObjs(GameObj *objs, int *num_objs) {
 Game *gameLogic(Game *game, uint16_t keys) {
   cleanDeadObjs(game->astroids, &game->num_astroids);
   
-  PRINT_VEC(game->astroids[0].position);
   shipGameLogic(game->ship, game->friction, keys);
   if (game->frame % 30 == 19 && game->num_astroids < game->max_num_astroids) {
     spawnAstroid(game);
@@ -190,13 +188,11 @@ Game *gameLogic(Game *game, uint16_t keys) {
     astroidGameLogic(&game->astroids[i]);
   }
   
-  printf("num astroids: %d/%d\n", game->num_astroids, game->max_num_astroids);
   game->frame++;
   return game;
 }
 
 Game *gameRender(Game *game) {
-  vector pos = game->ship->position;
   matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
   renderPolygonTransformed(&game->ship->polygon, game->ship->position, rotate, &game->ship->color);
@@ -206,9 +202,6 @@ Game *gameRender(Game *game) {
     if (astro->alive)
       renderPolygonTransformed(&astro->polygon, astro->position, rotate, &astro->color);
   }
-
-  PRINT_VEC(pos);
-  PRINT_MAT(rotate);
 
   return game;  
 }
