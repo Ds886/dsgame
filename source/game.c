@@ -202,8 +202,9 @@ Game *gameRender(Game *game) {
   renderPolygonTransformed(&game->ship->polygon, game->ship->position, rotate, &game->ship->color);
   for (int i = 0; i < game->num_astroids; i++) {
     GameObj *astro = &game->astroids[i];
+    matrix rotate = rotation_matrix_2d(game->frame + 2*astro->rotation);
     if (astro->alive)
-      renderPolygon(&astro->polygon, astro->position, &astro->color);
+      renderPolygonTransformed(&astro->polygon, astro->position, rotate, &astro->color);
   }
 
   PRINT_VEC(pos);
