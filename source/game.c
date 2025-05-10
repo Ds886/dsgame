@@ -185,8 +185,9 @@ void cleanDeadObjs(GameObj *objs, int *num_objs) {
 Game *gameLogic(Game *game, uint16_t keys) {
   cleanDeadObjs(game->astroids, &game->num_astroids);
   
+  PRINT_VEC(game->astroids[0].position);
   shipGameLogic(game->ship, game->friction, keys);
-  if (game->frame % 20 == 19 && game->num_astroids < game->max_num_astroids) {
+  if (game->frame % 30 == 19 && game->num_astroids < game->max_num_astroids) {
     spawnAstroid(game);
   }
 
