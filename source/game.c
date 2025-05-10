@@ -160,7 +160,7 @@ void spawnAstroid(Game *game) {
 
   *astro = newGameObj(
     isoscelesTriangleCentered(40, 40),
-    pos, 0.8, 0, rot + 90, 0, 0, make_vec(0, 1, 1));
+    pos, 0.8, 0, rot + 90, 0, 0, make_vec(0.5, 0.3, 0.15));
 }
 
 void cleanDeadObjs(GameObj *objs, int *num_objs) {
