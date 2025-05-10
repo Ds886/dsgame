@@ -19,7 +19,7 @@ void crossScreen(vec2 *pos) {
         cpos->y -= GAME_SCREEN_HEIGHT;
     }
 }
-GameObj newTriangle(
+GameObj newGameObj(
     Polygon poly, vec2 pos,
     float accel, float rotation_speed,
     float max_velocity, Color color
@@ -67,7 +67,7 @@ Game *gameStart(
   );
 
 
-  *ship = newTriangle (
+  *ship = newGameObj (
         isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT),
         vecPosition,
         player_accel,
