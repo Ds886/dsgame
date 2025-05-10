@@ -158,7 +158,7 @@ void spawnAstroid(Game *game) {
   pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
 
   *astro = newGameObj(
-    regularPolygon(3, 40),
+    almostRegularPolygon(12, 40, 0),
     pos, 0.8, 0, rot + 90, 0, 0, make_vec(0.5, 0.3, 0.15));
 }
 

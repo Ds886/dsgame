@@ -26,5 +26,7 @@ Polygon isoscelesTriangleCentered(float base, float height);
 
 Polygon regularPolygon(int num_vertices, float size);
 
+Polygon almostRegularPolygon(int num_vertices, float size, float deviation);
+
 void transform(Polygon *poly, matrix trans);
 #endif
