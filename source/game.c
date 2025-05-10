@@ -115,7 +115,6 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   }
 
   crossScreen(&ship->position);
-
   printf("ship velo: %f\n ship accel: %f\n", ship->velocity, ship->acceleration);
 }
 
