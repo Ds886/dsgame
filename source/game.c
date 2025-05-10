@@ -20,7 +20,7 @@ void crossScreen(vec2 *pos) {
     }
 }
 GameObj newTriangle(
-    Triangle tri, vec2 pos,
+    Polygon tri, vec2 pos,
     float accel, float rotation_speed,
     float max_velocity, Color color
 ) {

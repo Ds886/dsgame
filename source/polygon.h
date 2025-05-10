@@ -3,18 +3,26 @@
 // your code
 #include "linalg.h"
 
+#define POLYGON_MAX_VERTICES 20
+
+#define VERTEX(p, i) ((p)->v[i])
+
 typedef struct triangle_t {
   vector a;
   vector b;
   vector c;
 } Triangle;
 
+typedef struct polygon_t {
+  vector v[POLYGON_MAX_VERTICES];
+  int num_vertices;
+} Polygon;
 
-vector polygonCenter(Triangle *poly);
+vector polygonCenter(Polygon *poly);
 
-Triangle isoscelesTriangle(float base, float height, vector center);
+Polygon isoscelesTriangle(float base, float height, vector center);
 
-Triangle isoscelesTriangleCentered(float base, float height);
+Polygon isoscelesTriangleCentered(float base, float height);
 
-void transform(Triangle *poly, matrix trans);
+void transform(Polygon *poly, matrix trans);
 #endif
