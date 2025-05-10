@@ -27,6 +27,7 @@
 #define PLAYER_MAX_VELOCITY 10
 #define MAX_NUM_ASTROIDS 30
 #define FRICTION 0.1
+#define ASTROID_SIZE 40
 
 int main(int argc, char **argv)
 {
@@ -45,6 +46,7 @@ int main(int argc, char **argv)
         &poly,
         astroids,
         MAX_NUM_ASTROIDS,
+        ASTROID_SIZE,
         FRICTION,
         PLAYER_ACCEL,
         ROTATION_SPEED,

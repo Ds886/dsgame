@@ -38,6 +38,7 @@ typedef struct game_t {
   GameObj *astroids;
   int num_astroids;
   int max_num_astroids;
+  float astroid_size;
 } Game;
 
 Game *gameStart(
@@ -45,6 +46,7 @@ Game *gameStart(
     GameObj *ship,
     GameObj *astroids,
     int max_num_astroids,
+    float astroid_initial_size,
     float friction,
     float player_accel,
     float player_rotation_speed,
