@@ -55,6 +55,7 @@ Game *gameStart(
     GameObj *ship,
     GameObj *astroids,
     int max_num_astroids,
+    float astroid_initial_size,
     float friction,
     float player_accel,
     float player_rotation_speed,
@@ -67,7 +68,7 @@ Game *gameStart(
   game->astroids = astroids;
   game->max_num_astroids = max_num_astroids;
   game->num_astroids = 0;
-
+  game->astroid_size = astroid_initial_size;
   
   vec2 vecPosition = make_vec(
       GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
@@ -154,11 +155,11 @@ void spawnAstroid(Game *game) {
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
   pos = MAKE_VEC2(GAME_SCREEN_WIDTH/2, GAME_SCREEN_HEIGHT/2);
-  float fact = 40 + GAME_SCREEN_WIDTH / 2;
+  float fact = game->astroid_size + GAME_SCREEN_WIDTH / 2;
   pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
 
   *astro = newGameObj(
-    almostRegularPolygon(12, 40, 0),
+    almostRegularPolygon(12, game->astroid_size, 0),
     pos, 0.8, 0, rot + 90, 0, 0, make_vec(0.5, 0.3, 0.15));
 }
 
