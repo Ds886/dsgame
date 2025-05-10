@@ -28,6 +28,7 @@
 #define MAX_NUM_ASTROIDS 30
 #define FRICTION 0.1
 #define ASTROID_SIZE 40
+#define ASTROID_VELOCITY 0.8
 
 int main(int argc, char **argv)
 {
@@ -47,6 +48,7 @@ int main(int argc, char **argv)
         astroids,
         MAX_NUM_ASTROIDS,
         ASTROID_SIZE,
+        ASTROID_VELOCITY,
         FRICTION,
         PLAYER_ACCEL,
         ROTATION_SPEED,

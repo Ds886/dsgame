@@ -56,6 +56,7 @@ Game *gameStart(
     GameObj *astroids,
     int max_num_astroids,
     float astroid_initial_size,
+    float astroid_velocity,
     float friction,
     float player_accel,
     float player_rotation_speed,
@@ -69,6 +70,7 @@ Game *gameStart(
   game->max_num_astroids = max_num_astroids;
   game->num_astroids = 0;
   game->astroid_size = astroid_initial_size;
+  game->astroid_velocity = astroid_velocity;
   
   vec2 vecPosition = make_vec(
       GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
@@ -160,7 +162,7 @@ void spawnAstroid(Game *game) {
 
   *astro = newGameObj(
     almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0),
-    pos, 0.8, 0, rot + 90, 0, 0, ASTROID_COLOR);
+    pos, game->astroid_velocity, 0, rot + 90, 0, 0, ASTROID_COLOR);
 }
 
 void cleanDeadObjs(GameObj *objs, int *num_objs) {
