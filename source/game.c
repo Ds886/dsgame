@@ -149,11 +149,19 @@ void astroidGameLogic(GameObj *astro) {
 void spawnAstroid(Game *game) {
   GameObj *astro = &game->astroids[game->num_astroids++];
 
+  float rot = (float)(random() % 360);
+  
+  s16 bin_rotation = degreesToAngle(rot);
+  float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+  float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+  astro->position = MAKE_VEC2(GAME_SCREEN_WIDTH/2, GAME_SCREEN_HEIGHT/2);
+  float fact = 40 + GAME_SCREEN_WIDTH / 2;
+  astro->position = vec_add(astro->position, MAKE_VEC2(cos * fact, sin * fact));
+
   astro->triangle = isoscelesTriangleCentered(40, 40);
-  astro->position = MAKE_VEC2(-20, -20); 
   astro->velocity = 0.8;
   astro->acceleration = 0;
-  astro->rotation = -45;
+  astro->rotation = rot + 90;
   astro->rotation_speed = 0;
   astro->max_velocity = 5;
   astro->color = make_vec(0, 1, 1);
