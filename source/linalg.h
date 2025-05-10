@@ -19,7 +19,6 @@
 
 #define PRINT_VEC(v) printf("[%f\t%f\t%f];\n\n", X(v), Y(v), Z(v))
 
-
 typedef struct vector_t {
     float v[VEC_SIZE];
 } vector;

@@ -37,4 +37,5 @@ void renderPolygon(Polygon *poly, vector pos, Color *color) {
         X(trans_c),
         Y(trans_c),
         COLOR_TO_15BIT(color)
-    );}
+    );
+}
