@@ -2,7 +2,8 @@
 
 #include <gl2d.h>
 
-void renderPolygonTransformed(Triangle *triangle, vector pos,  matrix trans, Color *color) {
+void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color *color) {
+    Triangle *triangle = (Triangle *)poly;
     vector trans_a = vec_transform(trans, triangle->a);
     vector trans_b = vec_transform(trans, triangle->b);
     vector trans_c = vec_transform(trans, triangle->c);
@@ -22,7 +23,8 @@ void renderPolygonTransformed(Triangle *triangle, vector pos,  matrix trans, Col
     );
 }
 
-void renderPolygon(Triangle *triangle, vector pos, Color *color) {
+void renderPolygon(Polygon *poly, vector pos, Color *color) {
+    Triangle *triangle = (Triangle *)poly;
     vector trans_a = vec_add(triangle->a, pos);
     vector trans_b = vec_add(triangle->b, pos);
     vector trans_c = vec_add(triangle->c, pos);
