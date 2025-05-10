@@ -24,5 +24,7 @@ Polygon isoscelesTriangle(float base, float height, vector center);
 
 Polygon isoscelesTriangleCentered(float base, float height);
 
+Polygon regularPolygon(int num_vertices, float size);
+
 void transform(Polygon *poly, matrix trans);
 #endif
