@@ -19,18 +19,19 @@ void crossScreen(vec2 *pos) {
         cpos->y -= GAME_SCREEN_HEIGHT;
     }
 }
+
 GameObj newGameObj(
-    Polygon poly, vec2 pos,
-    float accel, float rotation_speed,
+    Polygon poly, vec2 pos, float velocity,
+    float accel, float rotation, float rotation_speed,
     float max_velocity, Color color
 ) {
     GameObj ret;
 
     ret.polygon = poly;
     ret.position = pos;
-    ret.velocity = 0;
+    ret.velocity = velocity;
     ret.acceleration = accel;
-    ret.rotation = 0;
+    ret.rotation = rotation;
     ret.rotation_speed = rotation_speed;
     ret.max_velocity = max_velocity;
     ret.color = color;
@@ -38,6 +39,14 @@ GameObj newGameObj(
     ret.next = NULL;
 
     return ret;
+}
+
+GameObj newIdleGameObj(
+    Polygon poly, vec2 pos,
+    float accel, float rotation_speed,
+    float max_velocity, Color color
+) {
+  return newGameObj(poly, pos, 0, accel, 0, rotation_speed, max_velocity, color);
 }
 
 
@@ -67,7 +76,7 @@ Game *gameStart(
   );
 
 
-  *ship = newGameObj (
+  *ship = newIdleGameObj (
         isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT),
         vecPosition,
         player_accel,
@@ -138,24 +147,20 @@ void astroidGameLogic(GameObj *astro) {
 
 void spawnAstroid(Game *game) {
   GameObj *astro = &game->astroids[game->num_astroids++];
+  vector pos;
 
   float rot = (float)(random() % 360);
   
   s16 bin_rotation = degreesToAngle(rot);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
-  astro->position = MAKE_VEC2(GAME_SCREEN_WIDTH/2, GAME_SCREEN_HEIGHT/2);
+  pos = MAKE_VEC2(GAME_SCREEN_WIDTH/2, GAME_SCREEN_HEIGHT/2);
   float fact = 40 + GAME_SCREEN_WIDTH / 2;
-  astro->position = vec_add(astro->position, MAKE_VEC2(cos * fact, sin * fact));
+  pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
 
-  astro->polygon = isoscelesTriangleCentered(40, 40);
-  astro->velocity = 0.8;
-  astro->acceleration = 0;
-  astro->rotation = rot + 90;
-  astro->rotation_speed = 0;
-  astro->max_velocity = 5;
-  astro->color = make_vec(0, 1, 1);
-  astro->alive = true;
+  *astro = newGameObj(
+    isoscelesTriangleCentered(40, 40),
+    pos, 0.8, 0, rot + 90, 0, 0, make_vec(0, 1, 1));
 }
 
 void cleanDeadObjs(GameObj *objs, int *num_objs) {
