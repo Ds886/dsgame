@@ -19,7 +19,7 @@
 
 typedef struct game_obj_t {
     bool alive;
-    Polygon triangle;
+    Polygon polygon;
     vec2 position;
     float velocity;
     float acceleration;

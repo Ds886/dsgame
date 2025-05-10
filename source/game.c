@@ -20,13 +20,13 @@ void crossScreen(vec2 *pos) {
     }
 }
 GameObj newTriangle(
-    Polygon tri, vec2 pos,
+    Polygon poly, vec2 pos,
     float accel, float rotation_speed,
     float max_velocity, Color color
 ) {
     GameObj ret;
 
-    ret.triangle = tri;
+    ret.polygon = poly;
     ret.position = pos;
     ret.velocity = 0;
     ret.acceleration = accel;
@@ -148,7 +148,7 @@ void spawnAstroid(Game *game) {
   float fact = 40 + GAME_SCREEN_WIDTH / 2;
   astro->position = vec_add(astro->position, MAKE_VEC2(cos * fact, sin * fact));
 
-  astro->triangle = isoscelesTriangleCentered(40, 40);
+  astro->polygon = isoscelesTriangleCentered(40, 40);
   astro->velocity = 0.8;
   astro->acceleration = 0;
   astro->rotation = rot + 90;
@@ -194,11 +194,11 @@ Game *gameRender(Game *game) {
   vector pos = game->ship->position;
   matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
-  renderPolygonTransformed(&game->ship->triangle, game->ship->position, rotate, &game->ship->color);
+  renderPolygonTransformed(&game->ship->polygon, game->ship->position, rotate, &game->ship->color);
   for (int i = 0; i < game->num_astroids; i++) {
     GameObj *astro = &game->astroids[i];
     if (astro->alive)
-      renderPolygon(&astro->triangle, astro->position, &astro->color);
+      renderPolygon(&astro->polygon, astro->position, &astro->color);
   }
 
   PRINT_VEC(pos);
