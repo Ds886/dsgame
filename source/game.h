@@ -17,6 +17,9 @@
 #define PLAYER_HALF_WIDTH (PLAYER_WIDTH / 2)
 #define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
 
+#define ASTROID_COLOR make_vec(0.5, 0.5, 0.15)
+#define ASTRO_NUM_VERTICES 12
+
 typedef struct game_obj_t {
     bool alive;
     Polygon polygon;
