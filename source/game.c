@@ -195,15 +195,22 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
+void renderGameObj(GameObj *obj, matrix trans) {
+  renderPolygonTransformed(
+    &obj->polygon, obj->position,
+    trans, &obj->color
+  );
+}
+
 Game *gameRender(Game *game) {
   matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
-  renderPolygonTransformed(&game->ship->polygon, game->ship->position, rotate, &game->ship->color);
+  renderGameObj(game->ship, rotate);
   for (int i = 0; i < game->num_astroids; i++) {
     GameObj *astro = &game->astroids[i];
     matrix rotate = rotation_matrix_2d(game->frame + 2*astro->rotation);
     if (astro->alive)
-      renderPolygonTransformed(&astro->polygon, astro->position, rotate, &astro->color);
+      renderGameObj(astro, rotate);
   }
 
   return game;  
