@@ -28,5 +28,10 @@ Polygon regularPolygon(int num_vertices, float size);
 
 Polygon almostRegularPolygon(int num_vertices, float size, float deviation);
 
+Polygon rectangle(vec2 a, vec2 b);
+
+//TODO: currntly there's no distinction between box and rectangle 
+Polygon boundingBox(Polygon *poly);
+
 void transform(Polygon *poly, matrix trans);
 #endif
