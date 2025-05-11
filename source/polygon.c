@@ -14,10 +14,46 @@ vector polygonCenter(Polygon *poly) {
   return vec_mul(sum, 1.0/poly->num_vertices);
 }
 
+Polygon boundingRectangle(Polygon *poly) {
+  float max[VEC_SIZE];
+  float min[VEC_SIZE];
+
+  for (int i = 0; i < VEC_SIZE; i++) {
+    max[i] = VGET(VERTEX(poly, 0), i);
+    min[i] = max[i];
+  }
+
+  for (int i=1; i< poly->num_vertices; i++) {
+    vector *v = &VERTEX(poly, i);
+    for (int j=0; j < VEC_SIZE; j++) {
+      int c = VGET(*v, j);
+      if (c > max[j])
+        max[j] = c;
+      if (c < min[j])
+        min[j] =  c;    
+    }
+  }
+
+  //TODO for now we ignore the elements after the 2nd
+  return rectangle(MAKE_VEC2(min[0], min[1]), MAKE_VEC2(max[0], max[1]));
+}
+
 void polygonMove(Polygon *poly, vector v) {
   for (int i=0; i < poly->num_vertices; i++) {
     VERTEX(poly, i) = vec_add(VERTEX(poly, i), v);
   }
+}
+
+Polygon rectangle(vec2 a, vec2 b) {
+  Polygon rect;
+  vector diff = vec_sub(b, a);
+
+  VERTEX(&rect, 0) = a;
+  VERTEX(&rect, 1) = vec_add(MAKE_VEC2(X(diff), 0), a);  
+  VERTEX(&rect, 2) = b;
+  VERTEX(&rect, 3) = vec_add(MAKE_VEC2(0, Y(diff)), a);
+
+  return rect;
 }
 
 Polygon isoscelesTriangleCentered(float base, float height) {
