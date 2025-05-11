@@ -200,6 +200,14 @@ void renderGameObj(GameObj *obj, matrix trans) {
     &obj->polygon, obj->position,
     trans, obj->color
   );
+
+  Color rect_color = make_vec(0.2, 0.2, 0.2);
+  Polygon rect = boundingBox(&obj->polygon);
+
+  renderPolygonTransformed(
+    &rect, obj->position,
+    mat_identity(), rect_color
+  );
 }
 
 Game *gameRender(Game *game) {
