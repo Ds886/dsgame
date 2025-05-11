@@ -2,7 +2,7 @@
 
 #include <gl2d.h>
 
-void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color *color) {
+void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color color) {
     vector first_vertex = make_vec(0,0,0);
     vector prev_vertex = make_vec(0,0,0);
     for (int i = 0; i < poly->num_vertices; i++) {
@@ -34,7 +34,7 @@ void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color *c
     );
 }
 
-void renderPolygon(Polygon *poly, vector pos, Color *color) {
+void renderPolygon(Polygon *poly, vector pos, Color color) {
     matrix m = mat_identity();
     renderPolygonTransformed(poly, pos, m, color);
 }

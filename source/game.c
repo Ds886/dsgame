@@ -198,7 +198,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
 void renderGameObj(GameObj *obj, matrix trans) {
   renderPolygonTransformed(
     &obj->polygon, obj->position,
-    trans, &obj->color
+    trans, obj->color
   );
 }
 
