@@ -14,7 +14,7 @@ vector polygonCenter(Polygon *poly) {
   return vec_mul(sum, 1.0/poly->num_vertices);
 }
 
-Polygon boundingRectangle(Polygon *poly) {
+Polygon boundingBox(Polygon *poly) {
   float max[VEC_SIZE];
   float min[VEC_SIZE];
 
@@ -53,6 +53,7 @@ Polygon rectangle(vec2 a, vec2 b) {
   VERTEX(&rect, 2) = b;
   VERTEX(&rect, 3) = vec_add(MAKE_VEC2(0, Y(diff)), a);
 
+  rect.num_vertices = 4;
   return rect;
 }
 
