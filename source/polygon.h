@@ -3,6 +3,8 @@
 
 #include "linalg.h"
 
+#include <nds.h>
+
 #define POLYGON_MAX_VERTICES 20
 
 #define VERTEX(p, i) ((p)->v[i])
@@ -36,4 +38,6 @@ Polygon rectangle(vec2 a, vec2 b);
 Polygon boundingBox(Polygon *poly);
 
 Polygon transform(Polygon *poly, matrix trans);
+
+bool checkCollision(Polygon *poly1, vector pos1, Polygon *poly2, vector pos2);
 #endif
