@@ -196,18 +196,12 @@ Game *gameLogic(Game *game, uint16_t keys) {
 }
 
 void renderGameObj(GameObj *obj, matrix trans) {
-  renderPolygonTransformed(
-    &obj->polygon, obj->position,
-    trans, obj->color
-  );
-
+  Polygon trans_poly = transform(&obj->polygon, trans);
   Color rect_color = make_vec(0.2, 0.2, 0.2);
-  Polygon rect = boundingBox(&obj->polygon);
-
-  renderPolygonTransformed(
-    &rect, obj->position,
-    mat_identity(), rect_color
-  );
+  Polygon rect = boundingBox(&trans_poly);
+  
+  renderPolygon(&rect, obj->position, rect_color);
+  renderPolygon(&trans_poly, obj->position, obj->color);
 }
 
 Game *gameRender(Game *game) {
