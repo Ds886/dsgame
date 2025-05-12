@@ -70,6 +70,8 @@ matrix mat_zeros();
 
 matrix mat_identity();
 
+matrix mat_scaling(float strech);
+
 matrix rotation_matrix_2d(float degrees);
 
 matrix rotation_axis_matrix_2d(float degrees, vector axis);
