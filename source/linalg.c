@@ -155,3 +155,10 @@ matrix translate_matrix_2d(float x, float y) {
                       0, 0, 1);
 }
 
+matrix mat_scaling(float strech) {
+    return makeMatrix(
+        strech, 0, 0,
+        0, strech, 0,
+        0, 0, strech
+    );
+}
