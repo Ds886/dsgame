@@ -1,7 +1,5 @@
 #include "polygon.h"
 
-
-
 #include <nds.h>
 
 vector polygonCenter(Polygon *poly) {

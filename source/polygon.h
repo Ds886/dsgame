@@ -1,6 +1,6 @@
 #ifndef POLYGON_H
 #define POLYGON_H 1
-// your code
+
 #include "linalg.h"
 
 #define POLYGON_MAX_VERTICES 20
