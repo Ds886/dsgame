@@ -3,12 +3,15 @@
 #include <gl2d.h>
 
 void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color color) {
+    Polygon trans_poly = transform(poly, trans);
+    renderPolygon(&trans_poly, pos, color);
+}
+
+void renderPolygon(Polygon *poly, vector pos, Color color) {
     vector first_vertex = make_vec(0,0,0);
     vector prev_vertex = make_vec(0,0,0);
     for (int i = 0; i < poly->num_vertices; i++) {
-        vector trans_vertex;
-        trans_vertex = vec_transform(trans, VERTEX(poly, i));
-        trans_vertex = vec_add(trans_vertex, pos);
+        vector trans_vertex = vec_add(VERTEX(poly, i), pos);
         
         if (i > 0) {
             glLine(
@@ -32,9 +35,4 @@ void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color co
         Y(prev_vertex),
         COLOR_TO_15BIT(color)
     );
-}
-
-void renderPolygon(Polygon *poly, vector pos, Color color) {
-    matrix m = mat_identity();
-    renderPolygonTransformed(poly, pos, m, color);
 }
