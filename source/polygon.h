@@ -7,6 +7,8 @@
 
 #define VERTEX(p, i) ((p)->v[i])
 
+#define BOUNDING_BOX_SIZE 0.7
+
 typedef struct triangle_t {
   vector a;
   vector b;

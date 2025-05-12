@@ -33,7 +33,10 @@ Polygon boundingBox(Polygon *poly) {
   }
 
   //TODO for now we ignore the elements after the 2nd
-  return rectangle(MAKE_VEC2(min[0], min[1]), MAKE_VEC2(max[0], max[1]));
+  Polygon rect = rectangle(MAKE_VEC2(min[0], min[1]), MAKE_VEC2(max[0], max[1]));
+  matrix scaler_mat = mat_scaling(BOUNDING_BOX_SIZE);
+
+  return transform(&rect, scaler_mat);
 }
 
 void polygonMove(Polygon *poly, vector v) {
