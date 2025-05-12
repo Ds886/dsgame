@@ -1,7 +1,5 @@
 #include "polygon.h"
 
-#include <nds.h>
-
 vector polygonCenter(Polygon *poly) {
   vector sum = make_vec(0,0,0); 
 
@@ -123,4 +121,28 @@ Polygon transform(Polygon *poly, matrix trans) {
   return trans_poly;
 }
 
+bool checkCollision(Polygon *poly1, vector pos1, Polygon *poly2, vector pos2) {
+  Polygon rect1 = boundingBox(poly1);
+  Polygon rect2 = boundingBox(poly2);
 
+  vector pos_diff = vec_sub(pos1, pos2);
+  float pdc;
+
+  float a1, a2;
+  float b1, b2;
+
+  for (int i = 0; i < 2; i++) {
+    a1 = VGET(VERTEX(&rect1, 0), i);
+    b1 = VGET(VERTEX(&rect1, 2), i);
+    
+    a2 = VGET(VERTEX(&rect2, 0), i);
+    b2 = VGET(VERTEX(&rect2, 2), i);
+
+    pdc = VGET(pos_diff, i);
+    
+    if (a2 - b1 >= pdc || b2 - a1 <= pdc)
+      return false;
+  }
+
+  return true;
+}
