@@ -179,6 +179,13 @@ void cleanDeadObjs(GameObj *objs, int *num_objs) {
   *num_objs -= num_dead_objs;
 }
 
+bool checkObjCollision(GameObj *obj1, GameObj *obj2) {
+  return checkCollision(
+    &obj1->polygon, obj1->position,
+    &obj2->polygon, obj2->position
+  );
+}
+
 Game *gameLogic(Game *game, uint16_t keys) {
   cleanDeadObjs(game->astroids, &game->num_astroids);
   
@@ -189,6 +196,10 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
   for (int i = 0; i < game->num_astroids; i++) {
     astroidGameLogic(&game->astroids[i]);
+    if (checkObjCollision(&game->astroids[i], game->ship)) {
+      game->astroids[i].alive = false;
+      printf("Collision with astroid %d!\n", i);
+    }
   }
   
   game->frame++;
