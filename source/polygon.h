@@ -33,5 +33,5 @@ Polygon rectangle(vec2 a, vec2 b);
 //TODO: currntly there's no distinction between box and rectangle 
 Polygon boundingBox(Polygon *poly);
 
-void transform(Polygon *poly, matrix trans);
+Polygon transform(Polygon *poly, matrix trans);
 #endif
