@@ -109,10 +109,15 @@ Polygon isoscelesTriangle(float base, float height, vector center) {
   return res;
 }
 
-void transform(Polygon *poly, matrix trans) { 
+Polygon transform(Polygon *poly, matrix trans) { 
+  Polygon trans_poly;
+
+  trans_poly.num_vertices = poly->num_vertices;
   for (int i=0; i < poly->num_vertices; i++) {
-    VERTEX(poly, i) = vec_transform(trans, VERTEX(poly, i));
+    VERTEX(&trans_poly, i) = vec_transform(trans, VERTEX(poly, i));
   }
+
+  return trans_poly;
 }
 
 
