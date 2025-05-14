@@ -32,7 +32,21 @@ Game *gameLogic(Game *game, uint16_t keys) {
 }
 
 Game *gameRender(Game *game) {
-  printf("MOCKING!");
+  Polygon rect1 = rectangle(MAKE_VEC2(50, 35), MAKE_VEC2(200,90));
+  Polygon rect2 = rectangle(MAKE_VEC2(150, 75), MAKE_VEC2(250,140));
+
+  Polygon collision;
+
+  renderPolygon(&rect1, ZERO_VEC, BLUE);
+  renderPolygon(&rect2, ZERO_VEC, RED);
+
+  if (checkCollision(&rect1, ZERO_VEC, &rect2, ZERO_VEC, &collision)) {
+      printf("Collide!\n");
+      renderPolygon(&collision, ZERO_VEC, YELLOW);
+  } else {
+    printf("no collision :(\n");
+  }
+
   
   return game;
 }
