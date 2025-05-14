@@ -179,10 +179,11 @@ void cleanDeadObjs(GameObj *objs, int *num_objs) {
   *num_objs -= num_dead_objs;
 }
 
-bool checkObjCollision(GameObj *obj1, GameObj *obj2) {
+bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
   return checkCollision(
     &obj1->polygon, obj1->position,
-    &obj2->polygon, obj2->position
+    &obj2->polygon, obj2->position,
+    collision
   );
 }
 

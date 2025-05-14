@@ -121,27 +121,40 @@ Polygon transform(Polygon *poly, matrix trans) {
   return trans_poly;
 }
 
-bool checkCollision(Polygon *poly1, vector pos1, Polygon *poly2, vector pos2) {
+bool checkCollision(Polygon *poly1, vector pos1, Polygon *poly2, vector pos2, Polygon *collision) {
   Polygon rect1 = boundingBox(poly1);
   Polygon rect2 = boundingBox(poly2);
 
-  vector pos_diff = vec_sub(pos1, pos2);
-  float pdc;
+  float a1, a2, max_a;
+  float b1, b2, min_b;
 
-  float a1, a2;
-  float b1, b2;
+  vector max_a_vec;
+  vector min_b_vec;
 
   for (int i = 0; i < 2; i++) {
-    a1 = VGET(VERTEX(&rect1, 0), i);
-    b1 = VGET(VERTEX(&rect1, 2), i);
+    a1 = VGET(VERTEX(&rect1, 0), i) + VGET(pos1, i);
+    b1 = VGET(VERTEX(&rect1, 2), i) + VGET(pos1, i);
     
-    a2 = VGET(VERTEX(&rect2, 0), i);
-    b2 = VGET(VERTEX(&rect2, 2), i);
+    a2 = VGET(VERTEX(&rect2, 0), i) + VGET(pos2, i);
+    b2 = VGET(VERTEX(&rect2, 2), i) + VGET(pos2, i);
 
-    pdc = VGET(pos_diff, i);
+    max_a = a1;
+    if (a2 > a1)
+      max_a = a2;
+
+    min_b = b1;
+    if (b2 < b1)
+      min_b = b2;
     
-    if (a2 - b1 >= pdc || b2 - a1 <= pdc)
+    if (max_a > min_b)
       return false;
+
+    VGET(max_a_vec, i) = max_a;
+    VGET(min_b_vec, i) = min_b;
+  }
+
+  if (collision) {
+    *collision = rectangle(max_a_vec, min_b_vec);
   }
 
   return true;
