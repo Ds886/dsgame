@@ -197,6 +197,10 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
   for (int i = 0; i < game->num_astroids; i++) {
     astroidGameLogic(&game->astroids[i]);
+    // if (checkObjCollision(&game->astroids[i], game->ship, NULL)) {
+    //   game->astroids[i].alive = false;
+    //   printf("Collision with astroid %d!\n", i);
+    // }
   }
   
   game->frame++;
