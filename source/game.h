@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
+#define USE_MOCK 1
+
 #include <stdint.h>
 #include "nds/input.h"
 

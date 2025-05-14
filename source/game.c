@@ -2,6 +2,7 @@
 
 #include <nds.h>
 
+#if USE_MOCK == 0
 
 void crossScreen(vec2 *pos) {
     coord *cpos = COORD(pos);
@@ -240,3 +241,4 @@ Game *gameEnd(Game *game) {
   return game;  
 }
 
+#endif
