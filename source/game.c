@@ -197,10 +197,6 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
   for (int i = 0; i < game->num_astroids; i++) {
     astroidGameLogic(&game->astroids[i]);
-    if (checkObjCollision(&game->astroids[i], game->ship, NULL)) {
-      game->astroids[i].alive = false;
-      printf("Collision with astroid %d!\n", i);
-    }
   }
   
   game->frame++;
@@ -225,6 +221,12 @@ Game *gameRender(Game *game) {
     matrix rotate = rotation_matrix_2d(game->frame + 2*astro->rotation);
     if (astro->alive)
       renderGameObj(astro, rotate);
+
+    Polygon poly;
+    if (checkObjCollision(&game->astroids[i], game->ship, &poly)) {
+      renderPolygon(&poly, ZERO_VEC, make_vec(0, 1, 1));
+      printf("Collision with astroid %d!\n", i);
+    }
   }
 
   return game;  
