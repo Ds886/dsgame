@@ -185,11 +185,9 @@ void cleanDeadObjs(GameObj *objs, int *num_objs) {
 }
 
 bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
-  Polygon rect1 = boundingBox(&obj1->polygon);
-  Polygon rect2 = boundingBox(&obj2->polygon);
   return checkCollision(
-    &rect1, obj1->position,
-    &rect2, obj2->position,
+    &obj1->polygon, obj1->position,
+    &obj2->polygon, obj2->position,
     collision
   );
 }
