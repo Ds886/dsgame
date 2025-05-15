@@ -92,11 +92,13 @@ Game *gameStart(
   return game;
 }
 
-void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
-  s16 bin_rotation = degreesToAngle(-ship->rotation);
-  float cos = fixedToFloat(cosLerp(bin_rotation), 12);
-  float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+void rotateGameObj(GameObj *obj, float degrees) {
+  matrix rotate = rotation_matrix_2d(degrees);
+  obj->polygon = transform(&obj->polygon, rotate);
+  obj->rotation += degrees;
+}
 
+void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   if (ship->velocity > 0)
     ship->velocity -= gameFriction;
 
@@ -104,11 +106,11 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
     ship->velocity += gameFriction;
 
   if (keys & KEY_LEFT) {
-    ship->rotation -= ship->rotation_speed;
+    rotateGameObj(ship, -ship->rotation_speed);
   }
 
   if (keys & KEY_RIGHT) {
-    ship->rotation += ship->rotation_speed;;
+    rotateGameObj(ship, ship->rotation_speed);
   }
 
   if (keys & KEY_UP) {
@@ -122,6 +124,9 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
   }
 
   if (ABS(ship->velocity) > 0.1) {
+    s16 bin_rotation = degreesToAngle(-ship->rotation);;
+    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
     X(ship->position) -= ship->velocity * sin;
     Y(ship->position) -= ship->velocity * cos;
   }
