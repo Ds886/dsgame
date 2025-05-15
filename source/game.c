@@ -123,8 +123,8 @@ void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
       ship->velocity -= ship->acceleration;
   }
 
-  if (ABS(ship->velocity) > 0.1) {
-    s16 bin_rotation = degreesToAngle(-ship->rotation);;
+  if (ABS(ship->velocity) > 0.1) {  
+    s16 bin_rotation = degreesToAngle(-ship->rotation);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
     X(ship->position) -= ship->velocity * sin;
