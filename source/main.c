@@ -28,7 +28,7 @@
 #define MAX_NUM_ASTROIDS 8
 #define FRICTION 0.1
 #define ASTROID_SIZE 40
-#define ASTROID_VELOCITY 0.8
+#define ASTROID_VELOCITY 0.4
 
 int main(int argc, char **argv)
 {
