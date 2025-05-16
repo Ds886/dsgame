@@ -7,10 +7,11 @@
 
 #define MAX_COLOR_BITS 5
 #define FLOAT_TO_5BITS(n) ((uint16_t)(((1 << MAX_COLOR_BITS)-1)*n))
-#define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS(COORD(col)->x), FLOAT_TO_5BITS(COORD(col)->y), FLOAT_TO_5BITS(COORD(col)->z)))
+#define COLOR_TO_15BIT(col) (RGB15(FLOAT_TO_5BITS(VGET(col, 0)), FLOAT_TO_5BITS(VGET(col, 1)), FLOAT_TO_5BITS(VGET(col, 2))))
 
 typedef vector Color;
 
-void renderPolygon(Triangle *triangle, vector pos,  matrix m, Color *color);
+void renderPolygonTransformed(Polygon *poly, vector pos,  matrix m, Color color);
+void renderPolygon(Polygon *poly, vector pos, Color color);
 
 #endif

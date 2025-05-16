@@ -2,24 +2,37 @@
 
 #include <gl2d.h>
 
-void renderPolygon(Triangle *triangle, vector pos,  matrix trans, Color *color) {
-    vector origin = ZERO_VEC;
-    vector trans_a = vec_transform(trans, triangle->a);
-    vector trans_b = vec_transform(trans, triangle->b);
-    vector trans_c = vec_transform(trans, triangle->c);
-    
-    origin = vec_add(origin, pos);
-    trans_a = vec_add(trans_a, pos);
-    trans_b = vec_add(trans_b, pos);
-    trans_c = vec_add(trans_c, pos);
- 
-    glTriangleFilled(
-        X(trans_a),
-        Y(trans_a),
-        X(trans_b),
-        Y(trans_b),
-        X(trans_c),
-        Y(trans_c),
+void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color color) {
+    Polygon trans_poly = transform(poly, trans);
+    renderPolygon(&trans_poly, pos, color);
+}
+
+void renderPolygon(Polygon *poly, vector pos, Color color) {
+    vector first_vertex = make_vec(0,0,0);
+    vector prev_vertex = make_vec(0,0,0);
+    for (int i = 0; i < poly->num_vertices; i++) {
+        vector trans_vertex = vec_add(VERTEX(poly, i), pos);
+        
+        if (i > 0) {
+            glLine(
+                X(trans_vertex),
+                Y(trans_vertex),
+                X(prev_vertex),
+                Y(prev_vertex),
+                COLOR_TO_15BIT(color)
+            );
+        } else {
+            first_vertex = trans_vertex;
+        }
+
+        prev_vertex = trans_vertex;
+    }
+
+    glLine(
+        X(first_vertex),
+        Y(first_vertex),
+        X(prev_vertex),
+        Y(prev_vertex),
         COLOR_TO_15BIT(color)
     );
 }
