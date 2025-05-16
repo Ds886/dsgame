@@ -210,24 +210,21 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
-void renderGameObj(GameObj *obj, matrix trans) {
-  Polygon trans_poly = transform(&obj->polygon, trans);
+void renderGameObj(GameObj *obj) {
   Color rect_color = make_vec(0.2, 0.2, 0.2);
-  Polygon rect = boundingBox(&trans_poly);
+  Polygon rect = boundingBox(&obj->polygon);
   
   renderPolygon(&rect, obj->position, rect_color);
-  renderPolygon(&trans_poly, obj->position, obj->color);
+  renderPolygon(&obj->polygon, obj->position, obj->color);
 }
 
 Game *gameRender(Game *game) {
-  matrix rotate = rotation_matrix_2d(game->ship->rotation);
  
-  renderGameObj(game->ship, rotate);
+  renderGameObj(game->ship);
   for (int i = 0; i < game->num_astroids; i++) {
     GameObj *astro = &game->astroids[i];
-    matrix rotate = rotation_matrix_2d(game->frame + 2*astro->rotation);
     if (astro->alive)
-      renderGameObj(astro, rotate);
+      renderGameObj(astro);
 
     Polygon poly;
     if (checkObjCollision(&game->astroids[i], game->ship, &poly)) {
