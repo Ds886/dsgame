@@ -34,6 +34,8 @@ Polygon almostRegularPolygon(int num_vertices, float size, float deviation);
 
 Polygon rectangle(vec2 a, vec2 b);
 
+void centralizePolygon(Polygon *poly);
+
 //TODO: currntly there's no distinction between box and rectangle 
 Polygon boundingBox(Polygon *poly);
 

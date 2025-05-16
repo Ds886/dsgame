@@ -150,6 +150,9 @@ void astroidGameLogic(GameObj *astro) {
   if (X(astro->position) > GAME_SCREEN_WIDTH+40 || Y(astro->position) > GAME_SCREEN_HEIGHT+40) {
     astro->alive = false;
   }
+
+  matrix m = rotation_matrix_2d(ASTROID_ANIMATION_SPEED);
+  astro->polygon = transform(&astro->polygon, m);
 }
 
 void spawnAstroid(Game *game) {
@@ -168,6 +171,8 @@ void spawnAstroid(Game *game) {
   *astro = newGameObj(
     almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0),
     pos, game->astroid_velocity, 0, rot + 90, 0, 0, ASTROID_COLOR);
+
+  centralizePolygon(&astro->polygon);
 }
 
 void cleanDeadObjs(GameObj *objs, int *num_objs) {

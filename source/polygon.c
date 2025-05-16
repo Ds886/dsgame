@@ -159,3 +159,12 @@ bool checkCollision(Polygon *poly1, vector pos1, Polygon *poly2, vector pos2, Po
 
   return true;
 }
+
+void centralizePolygon(Polygon *poly) {
+  vector center = polygonCenter(poly);
+
+  for (int i=0; i<poly->num_vertices;i++) {
+    vector *p = &VERTEX(poly, i);
+    *p = vec_sub(*p, center);
+  }
+}
