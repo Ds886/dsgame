@@ -11,12 +11,6 @@
 
 #define BOUNDING_BOX_SIZE 0.7
 
-typedef struct triangle_t {
-  vector a;
-  vector b;
-  vector c;
-} Triangle;
-
 typedef struct polygon_t {
   vector v[POLYGON_MAX_VERTICES];
   int num_vertices;
