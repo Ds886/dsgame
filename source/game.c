@@ -75,6 +75,7 @@ Game *gameStart(
     Color player_color) 
 {
   game->frame = 0;
+  game->keys = 0;
   game->friction = friction;
   game->ship = ship;
   game->astroids = astroids;
@@ -251,8 +252,10 @@ Game *gameLogic(Game *game, uint16_t keys) {
   for (int i = 0; i < game->num_astroids; i++) {
     astroidGameLogic(&game->astroids[i]);
   }
-  
+
+  game->keys = keys;
   game->frame++;
+
   return game;
 }
 

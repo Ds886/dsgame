@@ -22,6 +22,10 @@
 #define ASTROID_ANIMATION_SPEED 2
 #define SHOOT_SIZE 10
 
+#define CHANGED_KEYS(g, k)  (((g)->keys) ^ (k))
+#define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))
+#define RELEASED_KEYS(g, k) (((g)->keys) & (~k))
+
 struct ship_t;
 
 typedef struct game_obj_t {
@@ -57,6 +61,7 @@ typedef struct astroid_t {
 
 typedef struct game_t {
   int frame;
+  uint16_t keys;
   float friction;
   Ship *ship;
   Astroid *astroids;
