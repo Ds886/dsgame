@@ -39,8 +39,8 @@ int main(int argc, char **argv)
 
     Game game;
     Color colorBase = make_vec(0.999, 0.1, 0.0);
-    GameObj poly;
-    GameObj astroids[MAX_NUM_ASTROIDS];
+    Ship poly;
+    Astroid astroids[MAX_NUM_ASTROIDS];
 
     gameStart(
         &game,
