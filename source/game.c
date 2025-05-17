@@ -285,6 +285,13 @@ Game *gameRender(Game *game) {
       renderPolygon(&poly, ZERO_VEC, make_vec(0, 1, 1));
       printf("Collision with astroid %d!\n", i);
     }
+
+    for (int j=0 ;j < game->ship->num_shoots; j++){
+      if (checkObjCollision(&game->astroids[i].obj, &game->ship->shoots[j].obj, &poly)) {
+        renderPolygon(&poly, ZERO_VEC, make_vec(1, 1, 0));
+        printf("hit astroid %d if shoot %d!\n", i, j);
+      }
+    }
   }
 
   return game;  
