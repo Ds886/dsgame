@@ -20,7 +20,7 @@
 #define ASTROID_COLOR make_vec(0.5, 0.5, 0.15)
 #define ASTRO_NUM_VERTICES 7
 #define ASTROID_ANIMATION_SPEED 2
-
+#define SHOOT_SIZE 10
 
 struct ship_t;
 

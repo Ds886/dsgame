@@ -112,6 +112,19 @@ void rotateGameObj(GameObj *obj, float degrees) {
   obj->rotation += degrees;
 }
 
+void spawnShoot(Ship *ship) {
+  Shoot *shoot = &ship->shoots[ship->num_shoots++];
+  float rot = ship->obj.rotation;
+  Polygon line = newLine(MAKE_VEC2(SHOOT_SIZE, 0));
+  line = transform(&line, rotation_matrix_2d(rot-90));
+
+  shoot->shooter = ship;
+  shoot->obj = newGameObj(
+    line, ship->obj.position, 10,
+    rot, ship->obj.color
+  );
+}
+
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys) {
   if (ship->obj.velocity > 0)
     ship->obj.velocity -= gameFriction;
@@ -137,12 +150,27 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys) {
       ship->obj.velocity -= ship->acceleration;
   }
 
+  if (keys & KEY_X) {
+    if (ship->num_shoots < ship->max_num_shoots) {
+      spawnShoot(ship);
+    }
+  }
+
   if (ABS(ship->obj.velocity) > 0.1) {  
     s16 bin_rotation = degreesToAngle(-ship->obj.rotation);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
     X(ship->obj.position) -= ship->obj.velocity * sin;
     Y(ship->obj.position) -= ship->obj.velocity * cos;
+  }
+
+  for (int i=0; i<ship->num_shoots; i++) {
+    Shoot *sh = &ship->shoots[i];
+    s16 bin_rotation = degreesToAngle(-sh->obj.rotation);
+    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+    X(sh->obj.position) -= sh->obj.velocity * sin;
+    Y(sh->obj.position) -= sh->obj.velocity * cos;
   }
 
   crossScreen(&ship->obj.position);
@@ -238,6 +266,12 @@ void renderGameObj(GameObj *obj) {
 
 Game *gameRender(Game *game) { 
   renderGameObj(&game->ship->obj);
+  for (int i = 0; i < game->ship->num_shoots; i++) {
+    Shoot *shoot = &game->ship->shoots[i];
+    if (shoot->obj.alive)
+      renderGameObj(&shoot->obj);
+  }
+
   for (int i = 0; i < game->num_astroids; i++) {
     GameObj *astro = &game->astroids[i].obj;
     if (astro->alive)
