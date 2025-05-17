@@ -26,21 +26,21 @@ typedef struct game_obj_t {
     Polygon polygon;
     vec2 position;
     float velocity;
-    float acceleration;
     float rotation;
-    float rotation_speed;
-    float max_velocity;
     Color color;
-    struct game_obj_t *next;
 } GameObj;
 
 typedef struct ship_t {
     GameObj obj;
+    float acceleration;
+    float rotation_speed;
+    float max_velocity;
 } Ship;
 
 
 typedef struct astroid_t {
     GameObj obj;
+    struct game_obj_t *next;
 } Astroid;
 
 typedef struct game_t {

@@ -20,35 +20,38 @@ void crossScreen(vec2 *pos) {
     }
 }
 
+
 GameObj newGameObj(
     Polygon poly, vec2 pos, float velocity,
-    float accel, float rotation, float rotation_speed,
-    float max_velocity, Color color
+    float rotation, Color color
 ) {
     GameObj ret;
 
     ret.polygon = poly;
     ret.position = pos;
     ret.velocity = velocity;
-    ret.acceleration = accel;
     ret.rotation = rotation;
-    ret.rotation_speed = rotation_speed;
-    ret.max_velocity = max_velocity;
     ret.color = color;
     ret.alive = true;
-    ret.next = NULL;
 
     return ret;
 }
 
-GameObj newIdleGameObj(
-    Polygon poly, vec2 pos,
-    float accel, float rotation_speed,
-    float max_velocity, Color color
-) {
-  return newGameObj(poly, pos, 0, accel, 0, rotation_speed, max_velocity, color);
-}
 
+Ship newShip(
+    vec2 pos, float width, float height, float accel,
+    float rotation_speed, float max_velocity, Color color
+) {
+  Ship ship;
+  Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
+
+  ship.acceleration = accel;
+  ship.rotation_speed = rotation_speed;
+  ship.max_velocity = max_velocity;
+  ship.obj = newGameObj(poly, pos, 0, 0, color);
+
+  return ship;
+}
 
 Game *gameStart(
     Game *game,
@@ -79,9 +82,9 @@ Game *gameStart(
   );
 
 
-  ship->obj = newIdleGameObj (
-        isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT),
+  *ship = newShip (
         vecPosition,
+        PLAYER_WIDTH, PLAYER_HEIGHT,
         player_accel,
         player_rotation_speed,
         player_max_velocity,
@@ -106,21 +109,21 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys) {
     ship->obj.velocity += gameFriction;
 
   if (keys & KEY_LEFT) {
-    rotateGameObj(&ship->obj, -ship->obj.rotation_speed);
+    rotateGameObj(&ship->obj, -ship->rotation_speed);
   }
 
   if (keys & KEY_RIGHT) {
-    rotateGameObj(&ship->obj, ship->obj.rotation_speed);
+    rotateGameObj(&ship->obj, ship->rotation_speed);
   }
 
   if (keys & KEY_UP) {
-    if (ship->obj.velocity < ship->obj.max_velocity)
-      ship->obj.velocity += ship->obj.acceleration;
+    if (ship->obj.velocity < ship->max_velocity)
+      ship->obj.velocity += ship->acceleration;
   }
 
   if (keys & KEY_DOWN) {
-    if (ship->obj.velocity > -ship->obj.max_velocity)
-      ship->obj.velocity -= ship->obj.acceleration;
+    if (ship->obj.velocity > -ship->max_velocity)
+      ship->obj.velocity -= ship->acceleration;
   }
 
   if (ABS(ship->obj.velocity) > 0.1) {  
@@ -168,9 +171,10 @@ void spawnAstroid(Game *game) {
   float fact = game->astroid_size + GAME_SCREEN_WIDTH / 2;
   pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
 
+  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0);
   astro->obj = newGameObj(
-    almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0),
-    pos, game->astroid_velocity, 0, rot + 90, 0, 0, ASTROID_COLOR);
+    poly, pos, game->astroid_velocity,
+    rot + 90, ASTROID_COLOR);
 
   centralizePolygon(&astro->obj.polygon);
 }
