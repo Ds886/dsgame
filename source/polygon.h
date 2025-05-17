@@ -24,6 +24,8 @@ typedef struct polygon_t {
 
 vector polygonCenter(Polygon *poly);
 
+Polygon newLine(vector end);
+
 Polygon isoscelesTriangle(float base, float height, vector center);
 
 Polygon isoscelesTriangleCentered(float base, float height);
