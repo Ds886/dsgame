@@ -126,7 +126,7 @@ void spawnShoot(Ship *ship) {
   );
 }
 
-void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys) {
+void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
   if (ship->obj.velocity > 0)
     ship->obj.velocity -= gameFriction;
 
@@ -151,7 +151,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys) {
       ship->obj.velocity -= ship->acceleration;
   }
 
-  if (keys & KEY_X) {
+  if (pressed_keys & KEY_X) {
     if (ship->num_shoots < ship->max_num_shoots) {
       spawnShoot(ship);
     }
@@ -244,7 +244,7 @@ bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
 Game *gameLogic(Game *game, uint16_t keys) {
   cleanDeadAstroids(game->astroids, &game->num_astroids);
   
-  shipGameLogic(game->ship, game->friction, keys);
+  shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->frame % 300 == 19 && game->num_astroids < game->max_num_astroids) {
     spawnAstroid(game);
   }
