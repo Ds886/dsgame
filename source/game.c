@@ -167,6 +167,8 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
 
   for (int i=0; i<ship->num_shoots; i++) {
     Shoot *sh = &ship->shoots[i];
+    if (!sh->obj.alive)
+      continue;
     s16 bin_rotation = degreesToAngle(-sh->obj.rotation);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
@@ -242,6 +244,11 @@ bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
+  if (!game->ship->obj.alive) {
+    printf("Game Over.\n");
+    return game;
+  }
+
   cleanDeadAstroids(game->astroids, &game->num_astroids);
   
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
@@ -251,6 +258,26 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
   for (int i = 0; i < game->num_astroids; i++) {
     astroidGameLogic(&game->astroids[i]);
+  }
+
+  for (int i = 0; i < game->num_astroids; i++) {
+    GameObj *astro = &game->astroids[i].obj;
+    if (!astro->alive)
+      continue;
+
+    if (checkObjCollision(&game->astroids[i].obj, &game->ship->obj, NULL)) {
+      game->ship->obj.alive = false;
+    }
+
+    for (int j=0 ;j < game->ship->num_shoots; j++){
+      GameObj *shoot = &game->ship->shoots[j].obj;
+      if (!shoot->alive)
+        continue;
+      if (checkObjCollision(astro, shoot, NULL)) {
+        astro->alive = false;
+        shoot->alive = false;
+      }
+    }
   }
 
   game->keys = keys;
