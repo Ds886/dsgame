@@ -40,7 +40,9 @@ GameObj newGameObj(
 
 Ship newShip(
     vec2 pos, float width, float height, float accel,
-    float rotation_speed, float max_velocity, Color color
+    float rotation_speed, float max_velocity,
+    Shoot *shoots, int max_num_shoots,
+    int initial_shoot_freq, Color color
 ) {
   Ship ship;
   Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
@@ -48,6 +50,9 @@ Ship newShip(
   ship.acceleration = accel;
   ship.rotation_speed = rotation_speed;
   ship.max_velocity = max_velocity;
+  ship.shoots = shoots;
+  ship.max_num_shoots = max_num_shoots;
+  ship.shoot_freq = initial_shoot_freq;
   ship.obj = newGameObj(poly, pos, 0, 0, color);
 
   return ship;
@@ -57,6 +62,9 @@ Game *gameStart(
     Game *game,
     Ship *ship,
     Astroid *astroids,
+    Shoot *shoots,
+    int max_num_shoots,
+    float initial_shoot_freq,
     int max_num_astroids,
     float astroid_initial_size,
     float astroid_velocity,
@@ -88,6 +96,9 @@ Game *gameStart(
         player_accel,
         player_rotation_speed,
         player_max_velocity,
+        shoots,
+        max_num_shoots,
+        initial_shoot_freq,
         player_color
     );
 

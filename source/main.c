@@ -29,6 +29,8 @@
 #define FRICTION 0.1
 #define ASTROID_SIZE 40
 #define ASTROID_VELOCITY 0.4
+#define MAX_NUM_SHOOTS 5
+#define INITIAL_SHOOT_FREQ 10
 
 int main(int argc, char **argv)
 {
@@ -41,11 +43,15 @@ int main(int argc, char **argv)
     Color colorBase = make_vec(0.999, 0.1, 0.0);
     Ship poly;
     Astroid astroids[MAX_NUM_ASTROIDS];
+    Shoot shoots[MAX_NUM_SHOOTS];
 
     gameStart(
         &game,
         &poly,
         astroids,
+        shoots,
+        MAX_NUM_SHOOTS,
+        INITIAL_SHOOT_FREQ,
         MAX_NUM_ASTROIDS,
         ASTROID_SIZE,
         ASTROID_VELOCITY,

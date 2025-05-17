@@ -21,6 +21,9 @@
 #define ASTRO_NUM_VERTICES 7
 #define ASTROID_ANIMATION_SPEED 2
 
+
+struct ship_t;
+
 typedef struct game_obj_t {
     bool alive;
     Polygon polygon;
@@ -30,13 +33,22 @@ typedef struct game_obj_t {
     Color color;
 } GameObj;
 
+typedef struct shoot_t {
+    GameObj obj;
+    struct ship_t *shooter;
+} Shoot;
+
+
 typedef struct ship_t {
     GameObj obj;
     float acceleration;
     float rotation_speed;
     float max_velocity;
+    Shoot *shoots;
+    float shoot_freq;
+    int num_shoots;
+    int max_num_shoots;
 } Ship;
-
 
 typedef struct astroid_t {
     GameObj obj;
@@ -58,6 +70,9 @@ Game *gameStart(
     Game *game,
     Ship *ship,
     Astroid *astroids,
+    Shoot *shoots,
+    int max_num_shoots,
+    float initial_shoot_freq,
     int max_num_astroids,
     float astroid_initial_size,
     float astroid_velocity,
