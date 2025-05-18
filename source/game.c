@@ -204,8 +204,22 @@ bool astroidGameLogic(Astroid *astro) {
   return astro->obj.alive;
 }
 
+Astroid *findAstroidToReuse(Astroid *astros, int len_astros) {
+  Astroid *astro;
+  for (int i = 0; i< len_astros; i++) {
+    astro = &astros[i];
+    if (!astro->obj.alive)
+      return astro;
+  }
+
+  return NULL;
+}
+
 void spawnAstroid(Game *game) {
-  Astroid *astro = &game->astroids[game->num_astroids++];
+  Astroid *astro = findAstroidToReuse(game->astroids, game->max_num_astroids);
+  if (!astro)
+    return;
+
   vector pos;
 
   float rot = (float)(random() % 360);
@@ -223,20 +237,7 @@ void spawnAstroid(Game *game) {
     rot + 90, ASTROID_COLOR);
 
   centralizePolygon(&astro->obj.polygon);
-}
-
-void cleanDeadAstroids(Astroid *astros, int *num_astros) {
-  int num_dead_astros = 0;
-  for (int i = *num_astros-1; i >= 0; i--) {
-    if (!astros[i].obj.alive) {
-      num_dead_astros++;
-      for (int j = i+1; j < *num_astros; j++) {
-        astros[j-1] = astros[j];
-      }
-    }
-  }
-
-  *num_astros -= num_dead_astros;
+  game->num_astroids++;
 }
 
 bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
@@ -252,8 +253,6 @@ Game *gameLogic(Game *game, uint16_t keys) {
     printf("Game Over.\n");
     return game;
   }
-
-  cleanDeadAstroids(game->astroids, &game->num_astroids);
   
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->frame % 300 == 19 && game->num_astroids < game->max_num_astroids) {
@@ -261,7 +260,8 @@ Game *gameLogic(Game *game, uint16_t keys) {
   }
 
   for (int i = 0; i < game->num_astroids; i++) {
-    astroidGameLogic(&game->astroids[i]);
+    if (!astroidGameLogic(&game->astroids[i]))
+      game->num_astroids--;
   }
 
   for (int i = 0; i < game->num_astroids; i++) {
@@ -280,6 +280,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
       if (checkObjCollision(astro, shoot, NULL)) {
         astro->alive = false;
         shoot->alive = false;
+        game->num_astroids--;
       }
     }
   }
