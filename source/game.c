@@ -181,9 +181,9 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   crossScreen(&ship->obj.position);
 }
 
-void astroidGameLogic(Astroid *astro) {
+bool astroidGameLogic(Astroid *astro) {
   if (!astro->obj.alive)
-    return;
+    return false;
 
   s16 bin_rotation = degreesToAngle(-astro->obj.rotation);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
@@ -200,6 +200,8 @@ void astroidGameLogic(Astroid *astro) {
 
   matrix m = rotation_matrix_2d(ASTROID_ANIMATION_SPEED);
   astro->obj.polygon = transform(&astro->obj.polygon, m);
+
+  return astro->obj.alive;
 }
 
 void spawnAstroid(Game *game) {
