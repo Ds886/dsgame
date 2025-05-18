@@ -26,7 +26,7 @@
 #define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))
 #define RELEASED_KEYS(g, k) (((g)->keys) & (~k))
 
-#define OUT_OF_BOUNDS(p, a) (X(p) > GAME_SCREEN_WIDTH+(a) || Y(p) > GAME_SCREEN_HEIGHT+(a))
+#define OUT_OF_BOUNDS(p, a) ((X(p) < 0) || (Y(p) < 0) || (X(p) >= GAME_SCREEN_WIDTH+(a)) ||( Y(p) >= GAME_SCREEN_HEIGHT+(a)))
 
 struct ship_t;
 
