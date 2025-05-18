@@ -37,6 +37,17 @@ GameObj newGameObj(
     return ret;
 }
 
+Shoot *findShootToReuse(Shoot *shoots, int len_shoots) {
+  Shoot *shoot;
+  for (int i = 0; i< len_shoots; i++) {
+    shoot = &shoots[i];
+    if (!shoot->obj.alive)
+      return shoot;
+  }
+
+  return NULL;
+}
+
 
 Ship newShip(
     vec2 pos, float width, float height, float accel,
@@ -116,7 +127,10 @@ void rotateGameObj(GameObj *obj, float degrees) {
 }
 
 void spawnShoot(Ship *ship) {
-  Shoot *shoot = &ship->shoots[ship->num_shoots++];
+  Shoot *shoot = findShootToReuse(ship->shoots, ship->max_num_shoots);
+  if (!shoot)
+    return;
+  
   float rot = ship->obj.rotation;
   Polygon line = newLine(MAKE_VEC2(SHOOT_SIZE, 0));
   line = transform(&line, rotation_matrix_2d(rot-90));
@@ -126,6 +140,8 @@ void spawnShoot(Ship *ship) {
     line, ship->obj.position, 10,
     rot, ship->obj.color
   );
+
+  ship->num_shoots++;
 }
 
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
@@ -176,6 +192,12 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
     X(sh->obj.position) -= sh->obj.velocity * sin;
     Y(sh->obj.position) -= sh->obj.velocity * cos;
+
+    
+    if (OUT_OF_BOUNDS(sh->obj.position, SHOOT_SIZE)) {
+      sh->obj.alive = false;
+      ship->num_shoots--;
+    }
   }
 
   crossScreen(&ship->obj.position);
@@ -281,6 +303,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
         astro->alive = false;
         shoot->alive = false;
         game->num_astroids--;
+        game->ship->num_shoots--;
       }
     }
   }
