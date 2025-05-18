@@ -90,6 +90,8 @@ Game *gameStart(
       0
   );
 
+  for(int i = 0; i< max_num_astroids; i++)
+    astroids[i].obj.alive = false;
 
   *ship = newShip (
         vecPosition,
