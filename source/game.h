@@ -56,7 +56,6 @@ typedef struct ship_t {
 
 typedef struct astroid_t {
     GameObj obj;
-    struct game_obj_t *next;
 } Astroid;
 
 typedef struct game_t {
