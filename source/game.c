@@ -194,7 +194,7 @@ bool astroidGameLogic(Astroid *astro) {
     Y(astro->obj.position) += astro->obj.velocity * cos;
   }
   
-  if (X(astro->obj.position) > GAME_SCREEN_WIDTH+40 || Y(astro->obj.position) > GAME_SCREEN_HEIGHT+40) {
+  if (OUT_OF_BOUNDS(astro->obj.position, 40)) {
     astro->obj.alive = false;
   }
 
