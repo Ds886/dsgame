@@ -52,7 +52,6 @@ typedef struct ship_t {
     float max_velocity;
     Shoot *shoots;
     float shoot_freq;
-    int num_shoots;
     int max_num_shoots;
 } Ship;
 
@@ -66,7 +65,6 @@ typedef struct game_t {
   float friction;
   Ship *ship;
   Astroid *astroids;
-  int num_astroids;
   int max_num_astroids;
   float astroid_size;
   float astroid_velocity;
