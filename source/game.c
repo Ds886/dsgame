@@ -37,6 +37,17 @@ GameObj newGameObj(
     return ret;
 }
 
+Astroid *findAstroidToReuse(Astroid *astros, int len_astros) {
+  Astroid *astro;
+  for (int i = 0; i< len_astros; i++) {
+    astro = &astros[i];
+    if (!astro->obj.alive)
+      return astro;
+  }
+
+  return NULL;
+}
+
 Shoot *findShootToReuse(Shoot *shoots, int len_shoots) {
   Shoot *shoot;
   for (int i = 0; i< len_shoots; i++) {
@@ -224,17 +235,6 @@ bool astroidGameLogic(Astroid *astro) {
   astro->obj.polygon = transform(&astro->obj.polygon, m);
 
   return astro->obj.alive;
-}
-
-Astroid *findAstroidToReuse(Astroid *astros, int len_astros) {
-  Astroid *astro;
-  for (int i = 0; i< len_astros; i++) {
-    astro = &astros[i];
-    if (!astro->obj.alive)
-      return astro;
-  }
-
-  return NULL;
 }
 
 void spawnAstroid(Game *game) {
