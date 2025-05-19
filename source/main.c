@@ -31,6 +31,7 @@
 #define ASTROID_VELOCITY 0.4
 #define MAX_NUM_SHOOTS 5
 #define INITIAL_SHOOT_FREQ 10
+#define ASTROID_NUM_STAGES 3
 
 int main(int argc, char **argv)
 {
@@ -53,6 +54,7 @@ int main(int argc, char **argv)
         MAX_NUM_SHOOTS,
         INITIAL_SHOOT_FREQ,
         MAX_NUM_ASTROIDS,
+        ASTROID_NUM_STAGES,
         ASTROID_SIZE,
         ASTROID_VELOCITY,
         FRICTION,

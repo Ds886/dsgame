@@ -88,6 +88,7 @@ Game *gameStart(
     int max_num_shoots,
     float initial_shoot_freq,
     int max_num_astroids,
+    int astroid_num_stages,
     float astroid_initial_size,
     float astroid_velocity,
     float friction,
@@ -104,6 +105,7 @@ Game *gameStart(
   game->max_num_astroids = max_num_astroids;
   game->astroid_size = astroid_initial_size;
   game->astroid_velocity = astroid_velocity;
+  game->astroid_num_stages = astroid_num_stages;
   
   vec2 vecPosition = make_vec(
       GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
