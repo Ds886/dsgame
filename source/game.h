@@ -21,6 +21,9 @@
 #define ASTRO_NUM_VERTICES 7
 #define ASTROID_ANIMATION_SPEED 2
 #define SHOOT_SIZE 10
+#define ASTROID_SPLIT_SCALE 0.5
+#define ASTROID_SPLIT_NUM_PARTITIONS 2
+
 
 #define CHANGED_KEYS(g, k)  (((g)->keys) ^ (k))
 #define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))

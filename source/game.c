@@ -315,7 +315,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
         continue;
       if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
         if (astro->stage < game->astroid_num_stages)
-          splitAstroid(game, astro, 0.5, 2);
+          splitAstroid(game, astro, ASTROID_SPLIT_SCALE, ASTROID_SPLIT_NUM_PARTITIONS);
         else
           astro->obj.alive = false;
         shoot->obj.alive = false;
