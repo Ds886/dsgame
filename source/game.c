@@ -287,9 +287,27 @@ bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
   );
 }
 
+void respawnShip(Game *game) {
+  Ship *ship = game->ship;
+  
+  vec2 pos = make_vec(
+      GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
+      GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT,
+      0
+  );
+
+  ship->lives--;
+  ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color);
+}
+
 Game *gameLogic(Game *game, uint16_t keys) {
   if (!game->ship->obj.alive) {
-    printf("Game Over.\n");
+
+    if (game->ship->lives <= 1)
+      printf("Game Over.\n");
+    else
+      respawnShip(game);
+
     return game;
   }
   
