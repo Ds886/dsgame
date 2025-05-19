@@ -79,7 +79,7 @@ int main(int argc, char **argv)
         gameRender(&game);
 
         for (int i =0; i < MAX_NUM_ASTROIDS; i++) {
-            printf("%d, ", astroids[i].obj.alive);
+            printf("%d, ", astroids[i].stage);
         }
         printf("\n");
 
