@@ -255,12 +255,13 @@ Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot)
 
 void splitAstroid(Game *game, Astroid *astro, float scale, int num_partitions) {
   float rot;
-  astro->obj.alive = false;
 
   for (int i = 0; i < num_partitions; i++) {
     rot = (float)(random() % 30);
     spawnAstroid(game, astro->stage+1, scale, astro->obj.position, astro->obj.rotation + rot);
   }
+
+  astro->obj.alive = false;
 }
 
 void spawnFirstStageAstroid(Game *game) {
