@@ -20,40 +20,73 @@ void crossScreen(vec2 *pos) {
     }
 }
 
+
 GameObj newGameObj(
     Polygon poly, vec2 pos, float velocity,
-    float accel, float rotation, float rotation_speed,
-    float max_velocity, Color color
+    float rotation, Color color
 ) {
     GameObj ret;
 
     ret.polygon = poly;
     ret.position = pos;
     ret.velocity = velocity;
-    ret.acceleration = accel;
     ret.rotation = rotation;
-    ret.rotation_speed = rotation_speed;
-    ret.max_velocity = max_velocity;
     ret.color = color;
     ret.alive = true;
-    ret.next = NULL;
 
     return ret;
 }
 
-GameObj newIdleGameObj(
-    Polygon poly, vec2 pos,
-    float accel, float rotation_speed,
-    float max_velocity, Color color
-) {
-  return newGameObj(poly, pos, 0, accel, 0, rotation_speed, max_velocity, color);
+Astroid *findAstroidToReuse(Astroid *astros, int len_astros) {
+  Astroid *astro;
+  for (int i = 0; i< len_astros; i++) {
+    astro = &astros[i];
+    if (!astro->obj.alive)
+      return astro;
+  }
+
+  return NULL;
+}
+
+Shoot *findShootToReuse(Shoot *shoots, int len_shoots) {
+  Shoot *shoot;
+  for (int i = 0; i< len_shoots; i++) {
+    shoot = &shoots[i];
+    if (!shoot->obj.alive)
+      return shoot;
+  }
+
+  return NULL;
 }
 
 
+Ship newShip(
+    vec2 pos, float width, float height, float accel,
+    float rotation_speed, float max_velocity,
+    Shoot *shoots, int max_num_shoots,
+    int initial_shoot_freq, Color color
+) {
+  Ship ship;
+  Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
+
+  ship.acceleration = accel;
+  ship.rotation_speed = rotation_speed;
+  ship.max_velocity = max_velocity;
+  ship.shoots = shoots;
+  ship.max_num_shoots = max_num_shoots;
+  ship.shoot_freq = initial_shoot_freq;
+  ship.obj = newGameObj(poly, pos, 0, 0, color);
+
+  return ship;
+}
+
 Game *gameStart(
     Game *game,
-    GameObj *ship,
-    GameObj *astroids,
+    Ship *ship,
+    Astroid *astroids,
+    Shoot *shoots,
+    int max_num_shoots,
+    float initial_shoot_freq,
     int max_num_astroids,
     float astroid_initial_size,
     float astroid_velocity,
@@ -64,6 +97,7 @@ Game *gameStart(
     Color player_color) 
 {
   game->frame = 0;
+  game->keys = 0;
   game->friction = friction;
   game->ship = ship;
   game->astroids = astroids;
@@ -78,13 +112,18 @@ Game *gameStart(
       0
   );
 
+  for(int i = 0; i< max_num_astroids; i++)
+    astroids[i].obj.alive = false;
 
-  *ship = newIdleGameObj (
-        isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT),
+  *ship = newShip (
         vecPosition,
+        PLAYER_WIDTH, PLAYER_HEIGHT,
         player_accel,
         player_rotation_speed,
         player_max_velocity,
+        shoots,
+        max_num_shoots,
+        initial_shoot_freq,
         player_color
     );
 
@@ -98,65 +137,111 @@ void rotateGameObj(GameObj *obj, float degrees) {
   obj->rotation += degrees;
 }
 
-void shipGameLogic(GameObj *ship, float gameFriction, uint16_t keys) {
-  if (ship->velocity > 0)
-    ship->velocity -= gameFriction;
+void spawnShoot(Ship *ship) {
+  Shoot *shoot = findShootToReuse(ship->shoots, ship->max_num_shoots);
+  if (!shoot)
+    return;
+  
+  float rot = ship->obj.rotation;
+  Polygon line = newLine(MAKE_VEC2(SHOOT_SIZE, 0));
+  line = transform(&line, rotation_matrix_2d(rot-90));
 
-  if (ship->velocity < 0)
-    ship->velocity += gameFriction;
+  shoot->shooter = ship;
+  shoot->obj = newGameObj(
+    line, ship->obj.position, 10,
+    rot, ship->obj.color
+  );
+
+  ship->num_shoots++;
+}
+
+void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
+  if (ship->obj.velocity > 0)
+    ship->obj.velocity -= gameFriction;
+
+  if (ship->obj.velocity < 0)
+    ship->obj.velocity += gameFriction;
 
   if (keys & KEY_LEFT) {
-    rotateGameObj(ship, -ship->rotation_speed);
+    rotateGameObj(&ship->obj, -ship->rotation_speed);
   }
 
   if (keys & KEY_RIGHT) {
-    rotateGameObj(ship, ship->rotation_speed);
+    rotateGameObj(&ship->obj, ship->rotation_speed);
   }
 
   if (keys & KEY_UP) {
-    if (ship->velocity < ship->max_velocity)
-      ship->velocity += ship->acceleration;
+    if (ship->obj.velocity < ship->max_velocity)
+      ship->obj.velocity += ship->acceleration;
   }
 
   if (keys & KEY_DOWN) {
-    if (ship->velocity > -ship->max_velocity)
-      ship->velocity -= ship->acceleration;
+    if (ship->obj.velocity > -ship->max_velocity)
+      ship->obj.velocity -= ship->acceleration;
   }
 
-  if (ABS(ship->velocity) > 0.1) {  
-    s16 bin_rotation = degreesToAngle(-ship->rotation);
+  if (pressed_keys & KEY_X) {
+    if (ship->num_shoots < ship->max_num_shoots) {
+      spawnShoot(ship);
+    }
+  }
+
+  if (ABS(ship->obj.velocity) > 0.1) {  
+    s16 bin_rotation = degreesToAngle(-ship->obj.rotation);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
-    X(ship->position) -= ship->velocity * sin;
-    Y(ship->position) -= ship->velocity * cos;
+    X(ship->obj.position) -= ship->obj.velocity * sin;
+    Y(ship->obj.position) -= ship->obj.velocity * cos;
   }
 
-  crossScreen(&ship->position);
+  for (int i=0; i<ship->num_shoots; i++) {
+    Shoot *sh = &ship->shoots[i];
+    if (!sh->obj.alive)
+      continue;
+    s16 bin_rotation = degreesToAngle(-sh->obj.rotation);
+    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+    X(sh->obj.position) -= sh->obj.velocity * sin;
+    Y(sh->obj.position) -= sh->obj.velocity * cos;
+
+    
+    if (OUT_OF_BOUNDS(sh->obj.position, SHOOT_SIZE)) {
+      sh->obj.alive = false;
+      ship->num_shoots--;
+    }
+  }
+
+  crossScreen(&ship->obj.position);
 }
 
-void astroidGameLogic(GameObj *astro) {
-  if (!astro->alive)
-    return;
+bool astroidGameLogic(Astroid *astro) {
+  if (!astro->obj.alive)
+    return false;
 
-  s16 bin_rotation = degreesToAngle(-astro->rotation);
+  s16 bin_rotation = degreesToAngle(-astro->obj.rotation);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
-  if (ABS(astro->velocity) > 0.1) {
-    X(astro->position) += astro->velocity * sin;
-    Y(astro->position) += astro->velocity * cos;
+  if (ABS(astro->obj.velocity) > 0.1) {
+    X(astro->obj.position) += astro->obj.velocity * sin;
+    Y(astro->obj.position) += astro->obj.velocity * cos;
   }
   
-  if (X(astro->position) > GAME_SCREEN_WIDTH+40 || Y(astro->position) > GAME_SCREEN_HEIGHT+40) {
-    astro->alive = false;
+  if (OUT_OF_BOUNDS(astro->obj.position, 40)) {
+    astro->obj.alive = false;
   }
 
   matrix m = rotation_matrix_2d(ASTROID_ANIMATION_SPEED);
-  astro->polygon = transform(&astro->polygon, m);
+  astro->obj.polygon = transform(&astro->obj.polygon, m);
+
+  return astro->obj.alive;
 }
 
 void spawnAstroid(Game *game) {
-  GameObj *astro = &game->astroids[game->num_astroids++];
+  Astroid *astro = findAstroidToReuse(game->astroids, game->max_num_astroids);
+  if (!astro)
+    return;
+
   vector pos;
 
   float rot = (float)(random() % 360);
@@ -168,25 +253,13 @@ void spawnAstroid(Game *game) {
   float fact = game->astroid_size + GAME_SCREEN_WIDTH / 2;
   pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
 
-  *astro = newGameObj(
-    almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0),
-    pos, game->astroid_velocity, 0, rot + 90, 0, 0, ASTROID_COLOR);
+  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0);
+  astro->obj = newGameObj(
+    poly, pos, game->astroid_velocity,
+    rot + 90, ASTROID_COLOR);
 
-  centralizePolygon(&astro->polygon);
-}
-
-void cleanDeadObjs(GameObj *objs, int *num_objs) {
-  int num_dead_objs = 0;
-  for (int i = *num_objs-1; i >= 0; i--) {
-    if (!objs[i].alive) {
-      num_dead_objs++;
-      for (int j = i+1; j < *num_objs; j++) {
-        objs[j-1] = objs[j];
-      }
-    }
-  }
-
-  *num_objs -= num_dead_objs;
+  centralizePolygon(&astro->obj.polygon);
+  game->num_astroids++;
 }
 
 bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
@@ -198,42 +271,65 @@ bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
-  cleanDeadObjs(game->astroids, &game->num_astroids);
+  if (!game->ship->obj.alive) {
+    printf("Game Over.\n");
+    return game;
+  }
   
-  shipGameLogic(game->ship, game->friction, keys);
+  shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->frame % 300 == 19 && game->num_astroids < game->max_num_astroids) {
     spawnAstroid(game);
   }
 
   for (int i = 0; i < game->num_astroids; i++) {
-    astroidGameLogic(&game->astroids[i]);
+    if (!astroidGameLogic(&game->astroids[i]))
+      game->num_astroids--;
   }
-  
+
+  for (int i = 0; i < game->num_astroids; i++) {
+    GameObj *astro = &game->astroids[i].obj;
+    if (!astro->alive)
+      continue;
+
+    if (checkObjCollision(&game->astroids[i].obj, &game->ship->obj, NULL)) {
+      game->ship->obj.alive = false;
+    }
+
+    for (int j=0 ;j < game->ship->num_shoots; j++){
+      GameObj *shoot = &game->ship->shoots[j].obj;
+      if (!shoot->alive)
+        continue;
+      if (checkObjCollision(astro, shoot, NULL)) {
+        astro->alive = false;
+        shoot->alive = false;
+        game->num_astroids--;
+        game->ship->num_shoots--;
+      }
+    }
+  }
+
+  game->keys = keys;
   game->frame++;
+
   return game;
 }
 
 void renderGameObj(GameObj *obj) {
-  Color rect_color = make_vec(0.2, 0.2, 0.2);
-  Polygon rect = boundingBox(&obj->polygon);
-  
-  renderPolygon(&rect, obj->position, rect_color);
   renderPolygon(&obj->polygon, obj->position, obj->color);
 }
 
-Game *gameRender(Game *game) {
- 
-  renderGameObj(game->ship);
+Game *gameRender(Game *game) { 
+  renderGameObj(&game->ship->obj);
+  for (int i = 0; i < game->ship->num_shoots; i++) {
+    Shoot *shoot = &game->ship->shoots[i];
+    if (shoot->obj.alive)
+      renderGameObj(&shoot->obj);
+  }
+
   for (int i = 0; i < game->num_astroids; i++) {
-    GameObj *astro = &game->astroids[i];
+    GameObj *astro = &game->astroids[i].obj;
     if (astro->alive)
       renderGameObj(astro);
-
-    Polygon poly;
-    if (checkObjCollision(&game->astroids[i], game->ship, &poly)) {
-      renderPolygon(&poly, ZERO_VEC, make_vec(0, 1, 1));
-      printf("Collision with astroid %d!\n", i);
-    }
   }
 
   return game;  

@@ -20,26 +20,52 @@
 #define ASTROID_COLOR make_vec(0.5, 0.5, 0.15)
 #define ASTRO_NUM_VERTICES 7
 #define ASTROID_ANIMATION_SPEED 2
+#define SHOOT_SIZE 10
+
+#define CHANGED_KEYS(g, k)  (((g)->keys) ^ (k))
+#define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))
+#define RELEASED_KEYS(g, k) (((g)->keys) & (~k))
+
+#define OUT_OF_BOUNDS(p, a) (X(p) > GAME_SCREEN_WIDTH+(a) || Y(p) > GAME_SCREEN_HEIGHT+(a))
+
+struct ship_t;
 
 typedef struct game_obj_t {
     bool alive;
     Polygon polygon;
     vec2 position;
     float velocity;
-    float acceleration;
     float rotation;
-    float rotation_speed;
-    float max_velocity;
     Color color;
-    struct game_obj_t *next;
 } GameObj;
 
+typedef struct shoot_t {
+    GameObj obj;
+    struct ship_t *shooter;
+} Shoot;
+
+
+typedef struct ship_t {
+    GameObj obj;
+    float acceleration;
+    float rotation_speed;
+    float max_velocity;
+    Shoot *shoots;
+    float shoot_freq;
+    int num_shoots;
+    int max_num_shoots;
+} Ship;
+
+typedef struct astroid_t {
+    GameObj obj;
+} Astroid;
 
 typedef struct game_t {
   int frame;
+  uint16_t keys;
   float friction;
-  GameObj *ship;
-  GameObj *astroids;
+  Ship *ship;
+  Astroid *astroids;
   int num_astroids;
   int max_num_astroids;
   float astroid_size;
@@ -48,8 +74,11 @@ typedef struct game_t {
 
 Game *gameStart(
     Game *game,
-    GameObj *ship,
-    GameObj *astroids,
+    Ship *ship,
+    Astroid *astroids,
+    Shoot *shoots,
+    int max_num_shoots,
+    float initial_shoot_freq,
     int max_num_astroids,
     float astroid_initial_size,
     float astroid_velocity,

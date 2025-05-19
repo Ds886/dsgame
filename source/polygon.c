@@ -37,6 +37,17 @@ Polygon boundingBox(Polygon *poly) {
   return transform(&rect, scaler_mat);
 }
 
+Polygon newLine(vector end) {
+  Polygon l;
+
+  l.num_vertices = 2;
+
+  VERTEX(&l, 0) = ZERO_VEC;
+  VERTEX(&l, 1) = end;
+
+  return l;
+}
+
 void polygonMove(Polygon *poly, vector v) {
   for (int i=0; i < poly->num_vertices; i++) {
     VERTEX(poly, i) = vec_add(VERTEX(poly, i), v);
