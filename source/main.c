@@ -25,12 +25,13 @@
 #define PLAYER_ACCEL 0.2
 #define ROTATION_SPEED 3
 #define PLAYER_MAX_VELOCITY 10
-#define MAX_NUM_ASTROIDS 8
+#define MAX_NUM_ASTROIDS 20
 #define FRICTION 0.1
 #define ASTROID_SIZE 40
 #define ASTROID_VELOCITY 0.4
-#define MAX_NUM_SHOOTS 5
+#define MAX_NUM_SHOOTS 10
 #define INITIAL_SHOOT_FREQ 10
+#define ASTROID_NUM_STAGES 3
 
 int main(int argc, char **argv)
 {
@@ -53,6 +54,7 @@ int main(int argc, char **argv)
         MAX_NUM_SHOOTS,
         INITIAL_SHOOT_FREQ,
         MAX_NUM_ASTROIDS,
+        ASTROID_NUM_STAGES,
         ASTROID_SIZE,
         ASTROID_VELOCITY,
         FRICTION,
@@ -75,6 +77,11 @@ int main(int argc, char **argv)
         glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
 
         gameRender(&game);
+
+        for (int i =0; i < MAX_NUM_ASTROIDS; i++) {
+            printf("%d, ", astroids[i].stage);
+        }
+        printf("\n");
 
         glEnd2D();
         glFlush(0);

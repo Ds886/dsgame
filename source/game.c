@@ -88,6 +88,7 @@ Game *gameStart(
     int max_num_shoots,
     float initial_shoot_freq,
     int max_num_astroids,
+    int astroid_num_stages,
     float astroid_initial_size,
     float astroid_velocity,
     float friction,
@@ -102,9 +103,9 @@ Game *gameStart(
   game->ship = ship;
   game->astroids = astroids;
   game->max_num_astroids = max_num_astroids;
-  game->num_astroids = 0;
   game->astroid_size = astroid_initial_size;
   game->astroid_velocity = astroid_velocity;
+  game->astroid_num_stages = astroid_num_stages;
   
   vec2 vecPosition = make_vec(
       GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
@@ -151,8 +152,6 @@ void spawnShoot(Ship *ship) {
     line, ship->obj.position, 10,
     rot, ship->obj.color
   );
-
-  ship->num_shoots++;
 }
 
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
@@ -181,9 +180,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   }
 
   if (pressed_keys & KEY_X) {
-    if (ship->num_shoots < ship->max_num_shoots) {
-      spawnShoot(ship);
-    }
+    spawnShoot(ship);
   }
 
   if (ABS(ship->obj.velocity) > 0.1) {  
@@ -194,7 +191,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     Y(ship->obj.position) -= ship->obj.velocity * cos;
   }
 
-  for (int i=0; i<ship->num_shoots; i++) {
+  for (int i=0; i<ship->max_num_shoots; i++) {
     Shoot *sh = &ship->shoots[i];
     if (!sh->obj.alive)
       continue;
@@ -207,7 +204,6 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     
     if (OUT_OF_BOUNDS(sh->obj.position, SHOOT_SIZE)) {
       sh->obj.alive = false;
-      ship->num_shoots--;
     }
   }
 
@@ -237,29 +233,47 @@ bool astroidGameLogic(Astroid *astro) {
   return astro->obj.alive;
 }
 
-void spawnAstroid(Game *game) {
+Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot) {
   Astroid *astro = findAstroidToReuse(game->astroids, game->max_num_astroids);
   if (!astro)
-    return;
+    return NULL;
 
+  float scale_fact = 1;
+  for (int i = 0; i<stage; i++)
+    scale_fact *= scale;
+
+  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size * scale_fact, 0);
+  astro->obj = newGameObj(
+    poly, pos, game->astroid_velocity,
+    rot + 90, ASTROID_COLOR);
+
+  centralizePolygon(&astro->obj.polygon);
+
+  astro->stage = stage;
+  return astro;
+}
+
+void splitAstroid(Game *game, Astroid *astro, float scale, int num_partitions) {
+  float rot;
+
+  for (int i = 0; i < num_partitions; i++) {
+    rot = (float)(random() % 30);
+    spawnAstroid(game, astro->stage+1, scale, astro->obj.position, astro->obj.rotation + rot);
+  }
+
+  astro->obj.alive = false;
+}
+
+void spawnFirstStageAstroid(Game *game) {
   vector pos;
-
   float rot = (float)(random() % 360);
-  
   s16 bin_rotation = degreesToAngle(rot);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
   pos = MAKE_VEC2(GAME_SCREEN_WIDTH/2, GAME_SCREEN_HEIGHT/2);
   float fact = game->astroid_size + GAME_SCREEN_WIDTH / 2;
   pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
-
-  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0);
-  astro->obj = newGameObj(
-    poly, pos, game->astroid_velocity,
-    rot + 90, ASTROID_COLOR);
-
-  centralizePolygon(&astro->obj.polygon);
-  game->num_astroids++;
+  spawnAstroid(game, 0, 1, pos, rot);
 }
 
 bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
@@ -277,33 +291,34 @@ Game *gameLogic(Game *game, uint16_t keys) {
   }
   
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
-  if (game->frame % 300 == 19 && game->num_astroids < game->max_num_astroids) {
-    spawnAstroid(game);
+  if (game->frame % 50 == 19) {
+    spawnFirstStageAstroid(game);
   }
 
-  for (int i = 0; i < game->num_astroids; i++) {
-    if (!astroidGameLogic(&game->astroids[i]))
-      game->num_astroids--;
+  for (int i = 0; i < game->max_num_astroids; i++) {
+    if (game->astroids[i].obj.alive)
+      astroidGameLogic(&game->astroids[i]);
   }
 
-  for (int i = 0; i < game->num_astroids; i++) {
-    GameObj *astro = &game->astroids[i].obj;
-    if (!astro->alive)
+  for (int i = 0; i < game->max_num_astroids; i++) {
+    Astroid *astro = &game->astroids[i];
+    if (!astro->obj.alive)
       continue;
 
-    if (checkObjCollision(&game->astroids[i].obj, &game->ship->obj, NULL)) {
+    if (checkObjCollision(&astro->obj, &game->ship->obj, NULL)) {
       game->ship->obj.alive = false;
     }
 
-    for (int j=0 ;j < game->ship->num_shoots; j++){
-      GameObj *shoot = &game->ship->shoots[j].obj;
-      if (!shoot->alive)
+    for (int j=0 ;j < game->ship->max_num_shoots; j++){
+      Shoot *shoot = &game->ship->shoots[j];
+      if (!shoot->obj.alive)
         continue;
-      if (checkObjCollision(astro, shoot, NULL)) {
-        astro->alive = false;
-        shoot->alive = false;
-        game->num_astroids--;
-        game->ship->num_shoots--;
+      if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
+        if (astro->stage < game->astroid_num_stages)
+          splitAstroid(game, astro, ASTROID_SPLIT_SCALE, ASTROID_SPLIT_NUM_PARTITIONS);
+        else
+          astro->obj.alive = false;
+        shoot->obj.alive = false;
       }
     }
   }
@@ -320,13 +335,13 @@ void renderGameObj(GameObj *obj) {
 
 Game *gameRender(Game *game) { 
   renderGameObj(&game->ship->obj);
-  for (int i = 0; i < game->ship->num_shoots; i++) {
+  for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];
     if (shoot->obj.alive)
       renderGameObj(&shoot->obj);
   }
 
-  for (int i = 0; i < game->num_astroids; i++) {
+  for (int i = 0; i < game->max_num_astroids; i++) {
     GameObj *astro = &game->astroids[i].obj;
     if (astro->alive)
       renderGameObj(astro);

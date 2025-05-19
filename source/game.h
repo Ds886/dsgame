@@ -21,12 +21,15 @@
 #define ASTRO_NUM_VERTICES 7
 #define ASTROID_ANIMATION_SPEED 2
 #define SHOOT_SIZE 10
+#define ASTROID_SPLIT_SCALE 0.5
+#define ASTROID_SPLIT_NUM_PARTITIONS 2
+
 
 #define CHANGED_KEYS(g, k)  (((g)->keys) ^ (k))
 #define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))
 #define RELEASED_KEYS(g, k) (((g)->keys) & (~k))
 
-#define OUT_OF_BOUNDS(p, a) (X(p) > GAME_SCREEN_WIDTH+(a) || Y(p) > GAME_SCREEN_HEIGHT+(a))
+#define OUT_OF_BOUNDS(p, a) ((X(p) < 0) || (Y(p) < 0) || (X(p) >= GAME_SCREEN_WIDTH+(a)) ||( Y(p) >= GAME_SCREEN_HEIGHT+(a)))
 
 struct ship_t;
 
@@ -52,12 +55,12 @@ typedef struct ship_t {
     float max_velocity;
     Shoot *shoots;
     float shoot_freq;
-    int num_shoots;
     int max_num_shoots;
 } Ship;
 
 typedef struct astroid_t {
     GameObj obj;
+    int stage;
 } Astroid;
 
 typedef struct game_t {
@@ -66,10 +69,10 @@ typedef struct game_t {
   float friction;
   Ship *ship;
   Astroid *astroids;
-  int num_astroids;
   int max_num_astroids;
   float astroid_size;
   float astroid_velocity;
+  int astroid_num_stages;
 } Game;
 
 Game *gameStart(
@@ -80,6 +83,7 @@ Game *gameStart(
     int max_num_shoots,
     float initial_shoot_freq,
     int max_num_astroids,
+    int astroid_num_stages,
     float astroid_initial_size,
     float astroid_velocity,
     float friction,
