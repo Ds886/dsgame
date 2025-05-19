@@ -298,9 +298,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   for (int i = 0; i < game->max_num_astroids; i++) {
     if (game->astroids[i].obj.alive)
       astroidGameLogic(&game->astroids[i]);
-  }
 
-  for (int i = 0; i < game->max_num_astroids; i++) {
     Astroid *astro = &game->astroids[i];
     if (!astro->obj.alive)
       continue;
