@@ -277,7 +277,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   }
   
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
-  if (game->frame % 300 == 19) {
+  if (game->frame % 50 == 19) {
     spawnFirstStageAstroid(game);
   }
 
