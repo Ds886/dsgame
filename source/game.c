@@ -245,14 +245,22 @@ Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot)
 
   centralizePolygon(&astro->obj.polygon);
 
-  astro->stage = 0;
+  astro->stage = stage;
   return astro;
+}
+
+void splitAstroid(Game *game, Astroid *astro, float scale, int num_partitions) {
+  float rot = (float)(random() % 30);
+//  float velo = 1.1;
+
+  astro->obj.alive = false;
+
+  spawnAsteroid(game, astro->stage+1, 0.5, astro->obj.position, astro->obj.rotation + rot);
 }
 
 void spawnFirstStageAstroid(Game *game) {
   vector pos;
   float rot = (float)(random() % 360);
-  
   s16 bin_rotation = degreesToAngle(rot);
   float cos = fixedToFloat(cosLerp(bin_rotation), 12);
   float sin = fixedToFloat(sinLerp(bin_rotation), 12);
