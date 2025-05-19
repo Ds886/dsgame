@@ -233,13 +233,24 @@ bool astroidGameLogic(Astroid *astro) {
   return astro->obj.alive;
 }
 
-void spawnAstroid(Game *game) {
+Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot) {
   Astroid *astro = findAstroidToReuse(game->astroids, game->max_num_astroids);
   if (!astro)
-    return;
+    return NULL;
 
+  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size * scale, 0);
+  astro->obj = newGameObj(
+    poly, pos, game->astroid_velocity,
+    rot + 90, ASTROID_COLOR);
+
+  centralizePolygon(&astro->obj.polygon);
+
+  astro->stage = 0;
+  return astro;
+}
+
+void spawnFirstStageAstroid(Game *game) {
   vector pos;
-
   float rot = (float)(random() % 360);
   
   s16 bin_rotation = degreesToAngle(rot);
@@ -248,13 +259,7 @@ void spawnAstroid(Game *game) {
   pos = MAKE_VEC2(GAME_SCREEN_WIDTH/2, GAME_SCREEN_HEIGHT/2);
   float fact = game->astroid_size + GAME_SCREEN_WIDTH / 2;
   pos = vec_add(pos, MAKE_VEC2(cos * fact, sin * fact));
-
-  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0);
-  astro->obj = newGameObj(
-    poly, pos, game->astroid_velocity,
-    rot + 90, ASTROID_COLOR);
-
-  centralizePolygon(&astro->obj.polygon);
+  spawnAstroid(game, 0, 1, pos, rot);
 }
 
 bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
@@ -273,7 +278,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->frame % 300 == 19) {
-    spawnAstroid(game);
+    spawnFirstStageAstroid(game);
   }
 
   for (int i = 0; i < game->max_num_astroids; i++) {
