@@ -238,7 +238,11 @@ Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot)
   if (!astro)
     return NULL;
 
-  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size * scale, 0);
+  float scale_fact = 1;
+  for (int i = 0; i<stage; i++)
+    scale_fact *= scale;
+
+  Polygon poly = regularPolygon(ASTRO_NUM_VERTICES, game->astroid_size * scale_fact);
   astro->obj = newGameObj(
     poly, pos, game->astroid_velocity,
     rot + 90, ASTROID_COLOR);
@@ -309,7 +313,10 @@ Game *gameLogic(Game *game, uint16_t keys) {
       if (!shoot->obj.alive)
         continue;
       if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
-        splitAstroid(game, astro, 0.5, 2);
+        if (astro->stage < game->astroid_num_stages)
+          splitAstroid(game, astro, 0.5, 2);
+        else
+          astro->obj.alive = false;
         shoot->obj.alive = false;
       }
     }
