@@ -78,6 +78,11 @@ int main(int argc, char **argv)
 
         gameRender(&game);
 
+        for (int i =0; i < MAX_NUM_ASTROIDS; i++) {
+            printf("%d, ", astroids[i].obj.alive);
+        }
+        printf("\n");
+
         glEnd2D();
         glFlush(0);
     }
