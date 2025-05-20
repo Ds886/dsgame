@@ -23,7 +23,8 @@
 #define SHOOT_SIZE 10
 #define ASTROID_SPLIT_SCALE 0.5
 #define ASTROID_SPLIT_NUM_PARTITIONS 2
-
+#define POINTS_PER_ASTRO 100
+#define POINTS_STAGE_RATIO 0.6
 
 #define CHANGED_KEYS(g, k)  (((g)->keys) ^ (k))
 #define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))
@@ -83,6 +84,11 @@ typedef struct astroid_t {
     GameObj obj;
     int stage;
 } Astroid;
+
+typedef struct stats_t {
+    int num_astroids_destroied;
+    unsigned int score;
+} Stats;
 
 typedef struct game_t {
   uint16_t keys;
