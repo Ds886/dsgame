@@ -69,6 +69,7 @@ Ship newShip(
   Ship ship;
   Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
 
+  ship.state = SHIP_STATE_BORN;
   ship.acceleration = accel;
   ship.rotation_speed = rotation_speed;
   ship.max_velocity = max_velocity;
@@ -158,59 +159,70 @@ void spawnShoot(Ship *ship) {
 }
 
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
-  if (ship->obj.velocity > 0)
-    ship->obj.velocity -= gameFriction;
+  switch(ship->state) {
+  case SHIP_STATE_NORMAL:
+    if (ship->obj.velocity > 0)
+      ship->obj.velocity -= gameFriction;
 
-  if (ship->obj.velocity < 0)
-    ship->obj.velocity += gameFriction;
+    if (ship->obj.velocity < 0)
+      ship->obj.velocity += gameFriction;
 
-  if (keys & KEY_LEFT) {
-    rotateGameObj(&ship->obj, -ship->rotation_speed);
-  }
+    if (keys & KEY_LEFT) {
+      rotateGameObj(&ship->obj, -ship->rotation_speed);
+    }
 
-  if (keys & KEY_RIGHT) {
-    rotateGameObj(&ship->obj, ship->rotation_speed);
-  }
+    if (keys & KEY_RIGHT) {
+      rotateGameObj(&ship->obj, ship->rotation_speed);
+    }
 
-  if (keys & KEY_UP) {
-    if (ship->obj.velocity < ship->max_velocity)
-      ship->obj.velocity += ship->acceleration;
-  }
+    if (keys & KEY_UP) {
+      if (ship->obj.velocity < ship->max_velocity)
+        ship->obj.velocity += ship->acceleration;
+    }
 
-  if (keys & KEY_DOWN) {
-    if (ship->obj.velocity > -ship->max_velocity)
-      ship->obj.velocity -= ship->acceleration;
-  }
+    if (keys & KEY_DOWN) {
+      if (ship->obj.velocity > -ship->max_velocity)
+        ship->obj.velocity -= ship->acceleration;
+    }
 
-  if (pressed_keys & KEY_X) {
-    spawnShoot(ship);
-  }
+    if (pressed_keys & KEY_X) {
+      spawnShoot(ship);
+    }
 
-  if (ABS(ship->obj.velocity) > 0.1) {  
-    s16 bin_rotation = degreesToAngle(-ship->obj.rotation);
-    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
-    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
-    X(ship->obj.position) -= ship->obj.velocity * sin;
-    Y(ship->obj.position) -= ship->obj.velocity * cos;
-  }
+    if (ABS(ship->obj.velocity) > 0.1) {  
+      s16 bin_rotation = degreesToAngle(-ship->obj.rotation);
+      float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+      float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+      X(ship->obj.position) -= ship->obj.velocity * sin;
+      Y(ship->obj.position) -= ship->obj.velocity * cos;
+    }
 
-  for (int i=0; i<ship->max_num_shoots; i++) {
-    Shoot *sh = &ship->shoots[i];
-    if (!sh->obj.alive)
-      continue;
-    s16 bin_rotation = degreesToAngle(-sh->obj.rotation);
-    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
-    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
-    X(sh->obj.position) -= sh->obj.velocity * sin;
-    Y(sh->obj.position) -= sh->obj.velocity * cos;
+    for (int i=0; i<ship->max_num_shoots; i++) {
+      Shoot *sh = &ship->shoots[i];
+      if (!sh->obj.alive)
+        continue;
+      s16 bin_rotation = degreesToAngle(-sh->obj.rotation);
+      float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+      float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+      X(sh->obj.position) -= sh->obj.velocity * sin;
+      Y(sh->obj.position) -= sh->obj.velocity * cos;
 
     
-    if (OUT_OF_BOUNDS(sh->obj.position, SHOOT_SIZE)) {
-      sh->obj.alive = false;
+      if (OUT_OF_BOUNDS(sh->obj.position, SHOOT_SIZE)) {
+        sh->obj.alive = false;
+      }
     }
-  }
 
-  crossScreen(&ship->obj.position);
+    crossScreen(&ship->obj.position);
+    break;
+  case SHIP_STATE_BORN:
+  case SHIP_STATE_REBORN:
+    ship->state = SHIP_STATE_NORMAL;
+    break;
+  default:
+    printf("where's my ship?\n");
+    break;
+  }
 }
 
 bool astroidGameLogic(Astroid *astro) {
@@ -309,6 +321,7 @@ void respawnShip(Game *game) {
       }
   } while(!good_place && tries < 20);
 
+  ship->state = SHIP_STATE_REBORN;
   ship->lives--;
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color);
 }

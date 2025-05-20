@@ -33,6 +33,14 @@
 
 struct ship_t;
 
+enum ship_state {
+    SHIP_STATE_NONE,
+    SHIP_STATE_NORMAL,
+    SHIP_STATE_DYING,
+    SHIP_STATE_BORN,
+    SHIP_STATE_REBORN
+};
+
 typedef struct game_obj_t {
     bool alive;
     Polygon polygon;
@@ -50,6 +58,7 @@ typedef struct shoot_t {
 
 typedef struct ship_t {
     GameObj obj;
+    enum ship_state state;
     float acceleration;
     float rotation_speed;
     float max_velocity;
