@@ -289,12 +289,25 @@ bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
 
 void respawnShip(Game *game) {
   Ship *ship = game->ship;
-  
-  vec2 pos = make_vec(
-      GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
-      GAME_SCREEN_HEIGHT / 2 - PLAYER_HALF_HEIGHT,
-      0
-  );
+  float x,y;
+  vector pos;
+
+  bool good_place;
+  int tries = 0;
+  do {
+    good_place = true;
+    tries++;
+    x = random() % GAME_SCREEN_WIDTH;
+    y = random() % GAME_SCREEN_HEIGHT;
+    pos = MAKE_VEC2(x, y);
+
+    for (int i = 0; i < game->max_num_astroids; i++)
+      if (game->astroids[i].obj.alive
+          && checkObjCollision(&game->ship->obj, &game->astroids[i].obj, NULL)) {
+        good_place = false;
+        break;
+      }
+  } while(!good_place && tries < 20);
 
   ship->lives--;
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color);
