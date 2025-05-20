@@ -64,7 +64,7 @@ Ship newShip(
     vec2 pos, float width, float height, float accel,
     float rotation_speed, float max_velocity,
     Shoot *shoots, int max_num_shoots,
-    int initial_shoot_freq, Color color
+    int initial_shoot_freq, int lives, Color color
 ) {
   Ship ship;
   Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
@@ -75,6 +75,7 @@ Ship newShip(
   ship.shoots = shoots;
   ship.max_num_shoots = max_num_shoots;
   ship.shoot_freq = initial_shoot_freq;
+  ship.lives = lives;
   ship.obj = newGameObj(poly, pos, 0, 0, color);
 
   return ship;
@@ -95,6 +96,7 @@ Game *gameStart(
     float player_accel,
     float player_rotation_speed,
     float player_max_velocity,
+    int player_lives,
     Color player_color) 
 {
   game->frame = 0;
@@ -125,6 +127,7 @@ Game *gameStart(
         shoots,
         max_num_shoots,
         initial_shoot_freq,
+        player_lives,
         player_color
     );
 
@@ -284,9 +287,40 @@ bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
   );
 }
 
+void respawnShip(Game *game) {
+  Ship *ship = game->ship;
+  float x,y;
+  vector pos;
+
+  bool good_place;
+  int tries = 0;
+  do {
+    good_place = true;
+    tries++;
+    x = random() % GAME_SCREEN_WIDTH;
+    y = random() % GAME_SCREEN_HEIGHT;
+    pos = MAKE_VEC2(x, y);
+
+    for (int i = 0; i < game->max_num_astroids; i++)
+      if (game->astroids[i].obj.alive
+          && checkObjCollision(&game->ship->obj, &game->astroids[i].obj, NULL)) {
+        good_place = false;
+        break;
+      }
+  } while(!good_place && tries < 20);
+
+  ship->lives--;
+  ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color);
+}
+
 Game *gameLogic(Game *game, uint16_t keys) {
   if (!game->ship->obj.alive) {
-    printf("Game Over.\n");
+
+    if (game->ship->lives <= 1)
+      printf("Game Over.\n");
+    else
+      respawnShip(game);
+
     return game;
   }
   
@@ -298,9 +332,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   for (int i = 0; i < game->max_num_astroids; i++) {
     if (game->astroids[i].obj.alive)
       astroidGameLogic(&game->astroids[i]);
-  }
 
-  for (int i = 0; i < game->max_num_astroids; i++) {
     Astroid *astro = &game->astroids[i];
     if (!astro->obj.alive)
       continue;

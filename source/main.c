@@ -32,6 +32,7 @@
 #define MAX_NUM_SHOOTS 10
 #define INITIAL_SHOOT_FREQ 10
 #define ASTROID_NUM_STAGES 3
+#define PLAYER_LIVES 3
 
 int main(int argc, char **argv)
 {
@@ -61,6 +62,7 @@ int main(int argc, char **argv)
         PLAYER_ACCEL,
         ROTATION_SPEED,
         PLAYER_MAX_VELOCITY,
+        PLAYER_LIVES,
         colorBase
     );
 
@@ -82,6 +84,7 @@ int main(int argc, char **argv)
             printf("%d, ", astroids[i].stage);
         }
         printf("\n");
+        printf("Lives: %d\n", poly.lives);
 
         glEnd2D();
         glFlush(0);
