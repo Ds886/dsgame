@@ -85,6 +85,7 @@ int main(int argc, char **argv)
         }
         printf("\n");
         printf("Lives: %d\n", poly.lives);
+        printf("Rotation: %f\n", poly.obj.rotation);
 
         glEnd2D();
         glFlush(0);
