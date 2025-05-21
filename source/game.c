@@ -220,8 +220,11 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     break;
   case SHIP_STATE_BORN:
   case SHIP_STATE_REBORN:
-    ship->state = SHIP_STATE_NORMAL;
-    ship->obj.collidable = true;
+    int elapsed = ELAPSED(ship->obj.born_frame);
+    if(elapsed > 200) {
+      ship->state = SHIP_STATE_NORMAL;
+      ship->obj.collidable = true;
+    }
     break;
   default:
     printf("where's my ship?\n");
@@ -389,7 +392,22 @@ void renderGameObj(GameObj *obj) {
 }
 
 Game *gameRender(Game *game) { 
-  renderGameObj(&game->ship->obj);
+  matrix m;
+
+  switch (game->ship->state) {
+  case SHIP_STATE_BORN:
+  case SHIP_STATE_REBORN:
+    int elapsed = ELAPSED(game->ship->obj.born_frame);
+    float sc = (float)(4 * (200 - elapsed) +  elapsed)/200;
+    m = mat_scaling(sc);
+    break;
+  default:
+    m = mat_identity();
+    break;
+  }
+  
+  renderGameObjTransformed(&game->ship->obj, m);
+  
   for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];
     if (shoot->obj.alive)
