@@ -2,6 +2,7 @@
 
 #include <nds.h>
 
+static uint32_t frame = 0;
 
 void crossScreen(vec2 *pos) {
     coord *cpos = COORD(pos);
@@ -34,6 +35,7 @@ GameObj newGameObj(
     ret.color = color;
     ret.alive = true;
     ret.collidable = collidable;
+    ret.born_frame = frame;
 
     return ret;
 }
@@ -373,6 +375,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
 
   game->keys = keys;
   game->frame++;
+  frame++;
 
   return game;
 }

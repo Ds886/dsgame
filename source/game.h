@@ -31,6 +31,11 @@
 
 #define OUT_OF_BOUNDS(p, a) ((X(p) < 0) || (Y(p) < 0) || (X(p) >= GAME_SCREEN_WIDTH+(a)) ||( Y(p) >= GAME_SCREEN_HEIGHT+(a)))
 
+//TODO: this will fail after 2^32 frames!
+// must take care of overflow!
+#define ELAPSED_BETWEEN(a, b) ((b) - (a))
+#define ELAPSED(a) ELAPSED_BETWEEN(a, frame)
+
 struct ship_t;
 
 enum ship_state {
@@ -49,6 +54,7 @@ typedef struct game_obj_t {
     float rotation;
     bool collidable;
     Color color;
+    int born_frame;
 } GameObj;
 
 typedef struct shoot_t {
