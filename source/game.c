@@ -23,7 +23,7 @@ void crossScreen(vec2 *pos) {
 
 GameObj newGameObj(
     Polygon poly, vec2 pos, float velocity,
-    float rotation, Color color
+    float rotation, Color color, bool collidable
 ) {
     GameObj ret;
 
@@ -33,6 +33,7 @@ GameObj newGameObj(
     ret.rotation = rotation;
     ret.color = color;
     ret.alive = true;
+    ret.collidable = collidable;
 
     return ret;
 }
@@ -77,7 +78,7 @@ Ship newShip(
   ship.max_num_shoots = max_num_shoots;
   ship.shoot_freq = initial_shoot_freq;
   ship.lives = lives;
-  ship.obj = newGameObj(poly, pos, 0, 0, color);
+  ship.obj = newGameObj(poly, pos, 0, 0, color, false);
 
   return ship;
 }
@@ -154,7 +155,7 @@ void spawnShoot(Ship *ship) {
   shoot->shooter = ship;
   shoot->obj = newGameObj(
     line, ship->obj.position, 10,
-    rot, ship->obj.color
+    rot, ship->obj.color, true
   );
 }
 
@@ -218,6 +219,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   case SHIP_STATE_BORN:
   case SHIP_STATE_REBORN:
     ship->state = SHIP_STATE_NORMAL;
+    ship->obj.collidable = true;
     break;
   default:
     printf("where's my ship?\n");
@@ -260,7 +262,7 @@ Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot)
   Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size * scale_fact, 0);
   astro->obj = newGameObj(
     poly, pos, game->astroid_velocity,
-    rot + 90, ASTROID_COLOR);
+    rot + 90, ASTROID_COLOR, true);
 
   centralizePolygon(&astro->obj.polygon);
 
@@ -292,11 +294,12 @@ void spawnFirstStageAstroid(Game *game) {
 }
 
 bool checkObjCollision(GameObj *obj1, GameObj *obj2, Polygon *collision) {
-  return checkCollision(
-    &obj1->polygon, obj1->position,
-    &obj2->polygon, obj2->position,
-    collision
-  );
+  return obj1->collidable && obj2->collidable
+    && checkCollision(
+      &obj1->polygon, obj1->position,
+      &obj2->polygon, obj2->position,
+      collision
+    );
 }
 
 void respawnShip(Game *game) {
@@ -323,7 +326,7 @@ void respawnShip(Game *game) {
 
   ship->state = SHIP_STATE_REBORN;
   ship->lives--;
-  ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color);
+  ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false);
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {

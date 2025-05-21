@@ -47,6 +47,7 @@ typedef struct game_obj_t {
     vec2 position;
     float velocity;
     float rotation;
+    bool collidable;
     Color color;
 } GameObj;
 
