@@ -380,8 +380,12 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
+void renderGameObjTransformed(GameObj *obj, matrix trans) {
+  renderPolygonTransformed(&obj->polygon, obj->position, trans, obj->color);
+}
+
 void renderGameObj(GameObj *obj) {
-  renderPolygon(&obj->polygon, obj->position, obj->color);
+  renderGameObjTransformed(obj, mat_identity());
 }
 
 Game *gameRender(Game *game) { 
