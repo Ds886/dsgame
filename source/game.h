@@ -36,6 +36,8 @@
 #define ELAPSED_BETWEEN(a, b) ((b) - (a))
 #define ELAPSED(a) ELAPSED_BETWEEN(a, frame)
 
+#define SHIP_ANIMATION_TIME 200
+
 struct ship_t;
 
 enum ship_state {

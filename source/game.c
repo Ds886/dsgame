@@ -221,7 +221,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   case SHIP_STATE_BORN:
   case SHIP_STATE_REBORN:
     int elapsed = ELAPSED(ship->obj.born_frame);
-    if(elapsed > 200) {
+    if(elapsed > SHIP_ANIMATION_TIME) {
       ship->state = SHIP_STATE_NORMAL;
       ship->obj.collidable = true;
     }
@@ -398,7 +398,7 @@ Game *gameRender(Game *game) {
   case SHIP_STATE_BORN:
   case SHIP_STATE_REBORN:
     int elapsed = ELAPSED(game->ship->obj.born_frame);
-    float sc = (float)(4 * (200 - elapsed) +  elapsed)/200;
+    float sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
     break;
   default:
