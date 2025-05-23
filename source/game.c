@@ -229,7 +229,6 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     crossScreen(&ship->obj.position);
     break;
   case OBJ_STATE_BORN:
-  case OBJ_STATE_REBORN:
     int elapsed = ELAPSED(ship->obj.born_frame);
     if(elapsed > SHIP_ANIMATION_TIME) {
       ship->obj.state = OBJ_STATE_NORMAL;
@@ -354,7 +353,7 @@ void respawnShip(Game *game) {
       }
   } while(!good_place && tries < 20);
 
-  ship->obj.state = OBJ_STATE_REBORN;
+  ship->obj.state = OBJ_STATE_BORN;
   ship->lives--;
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false);
 }
@@ -416,7 +415,6 @@ Game *gameRender(Game *game) {
 
   switch (game->ship->obj.state) {
   case OBJ_STATE_BORN:
-  case OBJ_STATE_REBORN:
     elapsed = ELAPSED(game->ship->obj.born_frame);
     sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);

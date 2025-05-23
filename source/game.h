@@ -45,7 +45,6 @@ enum obj_state {
     OBJ_STATE_DYING,
     OBJ_STATE_DEAD,
     OBJ_STATE_BORN,
-    OBJ_STATE_REBORN,
     OBJ_STATE_READY_REBORN
 };
 
