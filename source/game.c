@@ -2,6 +2,8 @@
 
 #include <nds.h>
 
+#define ELAPSED(a) ELAPSED_BETWEEN(a, frame)
+
 static uint32_t frame = 0;
 
 void crossScreen(vec2 *pos) {

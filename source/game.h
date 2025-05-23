@@ -34,7 +34,6 @@
 //TODO: this will fail after 2^32 frames!
 // must take care of overflow!
 #define ELAPSED_BETWEEN(a, b) ((b) - (a))
-#define ELAPSED(a) ELAPSED_BETWEEN(a, frame)
 
 #define SHIP_ANIMATION_TIME 10
 
