@@ -56,7 +56,7 @@ typedef struct game_obj_t {
     float rotation;
     bool collidable;
     Color color;
-    int born_frame;
+    int state_time;
     enum obj_state state;
 } GameObj;
 

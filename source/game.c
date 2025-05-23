@@ -37,7 +37,7 @@ GameObj newGameObj(
     ret.color = color;
     ret.alive = true;
     ret.collidable = collidable;
-    ret.born_frame = frame;
+    ret.state_time = frame;
     ret.state = OBJ_STATE_BORN;
 
     return ret;
@@ -168,7 +168,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   case OBJ_STATE_NORMAL:
     if (!ship->obj.alive) {
       ship->obj.state = OBJ_STATE_DYING;
-      ship->obj.born_frame = frame;
+      ship->obj.state_time = frame;
       ship->obj.collidable = false;
 
       return;
@@ -229,7 +229,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     crossScreen(&ship->obj.position);
     break;
   case OBJ_STATE_BORN:
-    int elapsed = ELAPSED(ship->obj.born_frame);
+    int elapsed = ELAPSED(ship->obj.state_time);
     if(elapsed > SHIP_ANIMATION_TIME) {
       ship->obj.state = OBJ_STATE_NORMAL;
       ship->obj.collidable = true;
@@ -237,7 +237,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     break;
   case OBJ_STATE_READY_REBORN:
   case OBJ_STATE_DYING:
-    elapsed = ELAPSED(ship->obj.born_frame);
+    elapsed = ELAPSED(ship->obj.state_time);
     if(elapsed > SHIP_ANIMATION_TIME) {
       if(ship->lives > 1) {
         ship->obj.state = OBJ_STATE_READY_REBORN;
@@ -415,12 +415,12 @@ Game *gameRender(Game *game) {
 
   switch (game->ship->obj.state) {
   case OBJ_STATE_BORN:
-    elapsed = ELAPSED(game->ship->obj.born_frame);
+    elapsed = ELAPSED(game->ship->obj.state_time);
     sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
     break;
   case OBJ_STATE_DYING:
-    elapsed = ELAPSED(game->ship->obj.born_frame);
+    elapsed = ELAPSED(game->ship->obj.state_time);
     sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
     break;

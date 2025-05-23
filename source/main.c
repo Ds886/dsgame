@@ -83,7 +83,7 @@ int main(int argc, char **argv)
 
         printf("Lives: %d\n", poly.lives);
         printf("Ship State: %d\n", poly.obj.state);
-        printf("ship born: %d\n", poly.obj.born_frame);
+        printf("ship born: %d\n", poly.obj.state_time);
 
         glEnd2D();
         glFlush(0);
