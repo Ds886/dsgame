@@ -410,13 +410,24 @@ void renderGameObj(GameObj *obj) {
 
 Game *gameRender(Game *game) { 
   matrix m;
+  int elapsed;
+  float sc;
 
   switch (game->ship->state) {
   case SHIP_STATE_BORN:
   case SHIP_STATE_REBORN:
-    int elapsed = ELAPSED(game->ship->obj.born_frame);
-    float sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
+    elapsed = ELAPSED(game->ship->obj.born_frame);
+    sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
+    break;
+  case SHIP_STATE_DYING:
+    elapsed = ELAPSED(game->ship->obj.born_frame);
+    sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
+    m = mat_scaling(sc);
+    break;
+  case SHIP_STATE_DEAD:
+    //TODO: such a dirty hack!
+    m = mat_scaling(1000);
     break;
   default:
     m = mat_identity();
