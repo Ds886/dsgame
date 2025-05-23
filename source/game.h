@@ -43,8 +43,10 @@ enum ship_state {
     SHIP_STATE_NONE,
     SHIP_STATE_NORMAL,
     SHIP_STATE_DYING,
+    SHIP_STATE_DEAD,
     SHIP_STATE_BORN,
-    SHIP_STATE_REBORN
+    SHIP_STATE_REBORN,
+    SHIP_STATE_READY_REBORN
 };
 
 typedef struct game_obj_t {

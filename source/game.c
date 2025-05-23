@@ -166,6 +166,14 @@ void spawnShoot(Ship *ship) {
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
   switch(ship->state) {
   case SHIP_STATE_NORMAL:
+    if (!ship->obj.alive) {
+      ship->state = SHIP_STATE_DYING;
+      ship->obj.born_frame = frame;
+      ship->obj.collidable = false;
+
+      return;
+    }
+  
     if (ship->obj.velocity > 0)
       ship->obj.velocity -= gameFriction;
 
@@ -337,17 +345,10 @@ void respawnShip(Game *game) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
-  if (!game->ship->obj.alive) {
-
-    if (game->ship->lives <= 1)
-      printf("Game Over.\n");
-    else
+  shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
+  if (game->ship->state == SHIP_STATE_READY_REBORN)
       respawnShip(game);
 
-    return game;
-  }
-  
-  shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->frame % 50 == 19) {
     spawnFirstStageAstroid(game);
   }
