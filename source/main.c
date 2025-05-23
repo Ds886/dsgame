@@ -80,12 +80,10 @@ int main(int argc, char **argv)
 
         gameRender(&game);
 
-        for (int i =0; i < MAX_NUM_ASTROIDS; i++) {
-            printf("%d, ", astroids[i].stage);
-        }
-        printf("\n");
+
         printf("Lives: %d\n", poly.lives);
-        printf("Rotation: %f\n", poly.obj.rotation);
+        printf("Ship State: %d\n", poly.state);
+        printf("ship born: %d\n", poly.obj.born_frame);
 
         glEnd2D();
         glFlush(0);
