@@ -288,7 +288,8 @@ Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot)
   for (int i = 0; i<stage; i++)
     scale_fact *= scale;
 
-  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size * scale_fact, 0);
+  Polygon poly = almostRegularPolygon(ASTRO_NUM_VERTICES, game->astroid_size, 0);
+  poly = transform(&poly, mat_scaling(scale_fact));
   astro->obj = newGameObj(
     poly, pos, game->astroid_velocity,
     rot + 90, ASTROID_COLOR, true);
