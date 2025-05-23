@@ -236,6 +236,20 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
       ship->obj.collidable = true;
     }
     break;
+  case SHIP_STATE_READY_REBORN:
+  case SHIP_STATE_DYING:
+    elapsed = ELAPSED(ship->obj.born_frame);
+    if(elapsed > SHIP_ANIMATION_TIME) {
+      if(ship->lives > 1) {
+        ship->state = SHIP_STATE_READY_REBORN;
+        ship->obj.collidable = true;
+      } else
+        ship->state = SHIP_STATE_DEAD;
+    }
+    break;
+  case SHIP_STATE_DEAD:
+    printf("Game Over\n");
+    break;
   default:
     printf("where's my ship?\n");
     break;
