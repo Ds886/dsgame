@@ -38,6 +38,7 @@ GameObj newGameObj(
     ret.alive = true;
     ret.collidable = collidable;
     ret.born_frame = frame;
+    ret.state = OBJ_STATE_BORN;
 
     return ret;
 }
@@ -74,7 +75,6 @@ Ship newShip(
   Ship ship;
   Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
 
-  ship.state = SHIP_STATE_BORN;
   ship.acceleration = accel;
   ship.rotation_speed = rotation_speed;
   ship.max_velocity = max_velocity;
@@ -164,10 +164,10 @@ void spawnShoot(Ship *ship) {
 }
 
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
-  switch(ship->state) {
-  case SHIP_STATE_NORMAL:
+  switch(ship->obj.state) {
+  case OBJ_STATE_NORMAL:
     if (!ship->obj.alive) {
-      ship->state = SHIP_STATE_DYING;
+      ship->obj.state = OBJ_STATE_DYING;
       ship->obj.born_frame = frame;
       ship->obj.collidable = false;
 
@@ -228,26 +228,26 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
 
     crossScreen(&ship->obj.position);
     break;
-  case SHIP_STATE_BORN:
-  case SHIP_STATE_REBORN:
+  case OBJ_STATE_BORN:
+  case OBJ_STATE_REBORN:
     int elapsed = ELAPSED(ship->obj.born_frame);
     if(elapsed > SHIP_ANIMATION_TIME) {
-      ship->state = SHIP_STATE_NORMAL;
+      ship->obj.state = OBJ_STATE_NORMAL;
       ship->obj.collidable = true;
     }
     break;
-  case SHIP_STATE_READY_REBORN:
-  case SHIP_STATE_DYING:
+  case OBJ_STATE_READY_REBORN:
+  case OBJ_STATE_DYING:
     elapsed = ELAPSED(ship->obj.born_frame);
     if(elapsed > SHIP_ANIMATION_TIME) {
       if(ship->lives > 1) {
-        ship->state = SHIP_STATE_READY_REBORN;
+        ship->obj.state = OBJ_STATE_READY_REBORN;
         ship->obj.collidable = true;
       } else
-        ship->state = SHIP_STATE_DEAD;
+        ship->obj.state = OBJ_STATE_DEAD;
     }
     break;
-  case SHIP_STATE_DEAD:
+  case OBJ_STATE_DEAD:
     printf("Game Over\n");
     break;
   default:
@@ -354,14 +354,14 @@ void respawnShip(Game *game) {
       }
   } while(!good_place && tries < 20);
 
-  ship->state = SHIP_STATE_REBORN;
+  ship->obj.state = OBJ_STATE_REBORN;
   ship->lives--;
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false);
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
-  if (game->ship->state == SHIP_STATE_READY_REBORN)
+  if (game->ship->obj.state == OBJ_STATE_READY_REBORN)
       respawnShip(game);
 
   if (game->frame % 50 == 19) {
@@ -414,19 +414,19 @@ Game *gameRender(Game *game) {
   int elapsed;
   float sc;
 
-  switch (game->ship->state) {
-  case SHIP_STATE_BORN:
-  case SHIP_STATE_REBORN:
+  switch (game->ship->obj.state) {
+  case OBJ_STATE_BORN:
+  case OBJ_STATE_REBORN:
     elapsed = ELAPSED(game->ship->obj.born_frame);
     sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
     break;
-  case SHIP_STATE_DYING:
+  case OBJ_STATE_DYING:
     elapsed = ELAPSED(game->ship->obj.born_frame);
     sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
     break;
-  case SHIP_STATE_DEAD:
+  case OBJ_STATE_DEAD:
     //TODO: such a dirty hack!
     m = mat_scaling(1000);
     break;

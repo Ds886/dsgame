@@ -39,14 +39,14 @@
 
 struct ship_t;
 
-enum ship_state {
-    SHIP_STATE_NONE,
-    SHIP_STATE_NORMAL,
-    SHIP_STATE_DYING,
-    SHIP_STATE_DEAD,
-    SHIP_STATE_BORN,
-    SHIP_STATE_REBORN,
-    SHIP_STATE_READY_REBORN
+enum obj_state {
+    OBJ_STATE_NONE,
+    OBJ_STATE_NORMAL,
+    OBJ_STATE_DYING,
+    OBJ_STATE_DEAD,
+    OBJ_STATE_BORN,
+    OBJ_STATE_REBORN,
+    OBJ_STATE_READY_REBORN
 };
 
 typedef struct game_obj_t {
@@ -58,6 +58,7 @@ typedef struct game_obj_t {
     bool collidable;
     Color color;
     int born_frame;
+    enum obj_state state;
 } GameObj;
 
 typedef struct shoot_t {
@@ -68,7 +69,6 @@ typedef struct shoot_t {
 
 typedef struct ship_t {
     GameObj obj;
-    enum ship_state state;
     float acceleration;
     float rotation_speed;
     float max_velocity;
