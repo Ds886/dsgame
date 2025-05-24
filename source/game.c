@@ -84,6 +84,9 @@ Ship newShip(
   ship.lives = lives;
   ship.obj = newGameObj(poly, pos, 0, 0, color, false);
 
+  for (int i=0; i<max_num_shoots; i++)
+    objChangeState(&shoots[i].obj, OBJ_STATE_DEAD, 0);
+
   return ship;
 }
 
