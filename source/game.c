@@ -258,24 +258,34 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
 }
 
 bool astroidGameLogic(Astroid *astro) {
-  if (!astro->obj.alive)
-    return false;
+  switch(astro->obj.state) {
+  case OBJ_STATE_NORMAL:
+    if (!astro->obj.alive)
+      return false;
 
-  s16 bin_rotation = degreesToAngle(-astro->obj.rotation);
-  float cos = fixedToFloat(cosLerp(bin_rotation), 12);
-  float sin = fixedToFloat(sinLerp(bin_rotation), 12);
+    s16 bin_rotation = degreesToAngle(-astro->obj.rotation);
+    float cos = fixedToFloat(cosLerp(bin_rotation), 12);
+    float sin = fixedToFloat(sinLerp(bin_rotation), 12);
 
-  if (ABS(astro->obj.velocity) > 0.1) {
-    X(astro->obj.position) += astro->obj.velocity * sin;
-    Y(astro->obj.position) += astro->obj.velocity * cos;
-  }
+    if (ABS(astro->obj.velocity) > 0.1) {
+      X(astro->obj.position) += astro->obj.velocity * sin;
+      Y(astro->obj.position) += astro->obj.velocity * cos;
+    }
   
-  if (OUT_OF_BOUNDS(astro->obj.position, 40)) {
-    astro->obj.alive = false;
-  }
+    if (OUT_OF_BOUNDS(astro->obj.position, 40)) {
+      astro->obj.alive = false;
+    }
 
-  matrix m = rotation_matrix_2d(ASTROID_ANIMATION_SPEED);
-  astro->obj.polygon = transform(&astro->obj.polygon, m);
+    matrix m = rotation_matrix_2d(ASTROID_ANIMATION_SPEED);
+    astro->obj.polygon = transform(&astro->obj.polygon, m);
+    break;
+  case OBJ_STATE_BORN:
+    objChangeState(&astro->obj, OBJ_STATE_NORMAL);
+    break;
+  default:
+    printf("where's my astroid?\n");
+    break;
+  }
 
   return astro->obj.alive;
 }
