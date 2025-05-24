@@ -31,6 +31,8 @@
 
 #define OUT_OF_BOUNDS(p, a) ((X(p) < 0) || (Y(p) < 0) || (X(p) >= GAME_SCREEN_WIDTH+(a)) ||( Y(p) >= GAME_SCREEN_HEIGHT+(a)))
 
+#define OBJ_ALIVE(obj) ((obj).state != OBJ_STATE_DEAD)
+
 //TODO: this will fail after 2^32 frames!
 // must take care of overflow!
 #define ELAPSED_BETWEEN(a, b) ((b) - (a))
@@ -48,7 +50,6 @@ enum obj_state {
 };
 
 typedef struct game_obj_t {
-    bool alive;
     Polygon polygon;
     vec2 position;
     float velocity;

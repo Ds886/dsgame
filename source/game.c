@@ -45,7 +45,6 @@ GameObj newGameObj(
     ret.velocity = velocity;
     ret.rotation = rotation;
     ret.color = color;
-    ret.alive = true;
     ret.collidable = collidable;
     ret.state_time = frame;
     ret.state = OBJ_STATE_BORN;
@@ -57,7 +56,7 @@ Astroid *findAstroidToReuse(Astroid *astros, int len_astros) {
   Astroid *astro;
   for (int i = 0; i< len_astros; i++) {
     astro = &astros[i];
-    if (!astro->obj.alive)
+    if (!OBJ_ALIVE(astro->obj))
       return astro;
   }
 
@@ -68,7 +67,7 @@ Shoot *findShootToReuse(Shoot *shoots, int len_shoots) {
   Shoot *shoot;
   for (int i = 0; i< len_shoots; i++) {
     shoot = &shoots[i];
-    if (!shoot->obj.alive)
+    if (!OBJ_ALIVE(shoot->obj))
       return shoot;
   }
 
@@ -134,7 +133,7 @@ Game *gameStart(
   );
 
   for(int i = 0; i< max_num_astroids; i++)
-    astroids[i].obj.alive = false;
+    objChangeState(&astroids[i].obj, OBJ_STATE_DEAD, 0);
 
   *ship = newShip (
         vecPosition,
@@ -178,7 +177,7 @@ void spawnShoot(Ship *ship) {
 void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t pressed_keys) {
   switch(ship->obj.state) {
   case OBJ_STATE_NORMAL:
-    if (!ship->obj.alive) {
+    if (!OBJ_ALIVE(ship->obj)) {
       objChangeState(&ship->obj, OBJ_STATE_DYING, 0);
 
       return;
@@ -222,7 +221,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
 
     for (int i=0; i<ship->max_num_shoots; i++) {
       Shoot *sh = &ship->shoots[i];
-      if (!sh->obj.alive)
+      if (!OBJ_ALIVE(sh->obj))
         continue;
       s16 bin_rotation = degreesToAngle(-sh->obj.rotation);
       float cos = fixedToFloat(cosLerp(bin_rotation), 12);
@@ -232,7 +231,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
 
     
       if (OUT_OF_BOUNDS(sh->obj.position, SHOOT_SIZE)) {
-        sh->obj.alive = false;
+        objChangeState(&sh->obj, OBJ_STATE_DEAD, 0);
       }
     }
 
@@ -259,9 +258,6 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
 bool astroidGameLogic(Astroid *astro) {
   switch(astro->obj.state) {
   case OBJ_STATE_NORMAL:
-    if (!astro->obj.alive)
-      return false;
-
     s16 bin_rotation = degreesToAngle(-astro->obj.rotation);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
@@ -272,7 +268,7 @@ bool astroidGameLogic(Astroid *astro) {
     }
   
     if (OUT_OF_BOUNDS(astro->obj.position, 40)) {
-      astro->obj.alive = false;
+      objChangeState(&astro->obj, OBJ_STATE_DEAD, 0);
     }
 
     matrix m = rotation_matrix_2d(ASTROID_ANIMATION_SPEED);
@@ -286,7 +282,7 @@ bool astroidGameLogic(Astroid *astro) {
     break;
   }
 
-  return astro->obj.alive;
+  return OBJ_ALIVE(astro->obj);
 }
 
 Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot) {
@@ -318,7 +314,7 @@ void splitAstroid(Game *game, Astroid *astro, float scale, int num_partitions) {
     spawnAstroid(game, astro->stage+1, scale, astro->obj.position, astro->obj.rotation + rot);
   }
 
-  astro->obj.alive = false;
+  objChangeState(&astro->obj, OBJ_STATE_DEAD, 0);
 }
 
 void spawnFirstStageAstroid(Game *game) {
@@ -357,7 +353,7 @@ void respawnShip(Game *game) {
     pos = MAKE_VEC2(x, y);
 
     for (int i = 0; i < game->max_num_astroids; i++)
-      if (game->astroids[i].obj.alive
+      if (OBJ_ALIVE(game->astroids[i].obj)
           && checkObjCollision(&game->ship->obj, &game->astroids[i].obj, NULL)) {
         good_place = false;
         break;
@@ -379,27 +375,27 @@ Game *gameLogic(Game *game, uint16_t keys) {
   }
 
   for (int i = 0; i < game->max_num_astroids; i++) {
-    if (game->astroids[i].obj.alive)
+    if (OBJ_ALIVE(game->astroids[i].obj))
       astroidGameLogic(&game->astroids[i]);
 
     Astroid *astro = &game->astroids[i];
-    if (!astro->obj.alive)
+    if (!OBJ_ALIVE(astro->obj))
       continue;
 
     if (checkObjCollision(&astro->obj, &game->ship->obj, NULL)) {
-      game->ship->obj.alive = false;
+      objChangeState(&game->ship->obj, OBJ_STATE_DYING, 0);
     }
 
     for (int j=0 ;j < game->ship->max_num_shoots; j++){
       Shoot *shoot = &game->ship->shoots[j];
-      if (!shoot->obj.alive)
+      if (!OBJ_ALIVE(shoot->obj))
         continue;
       if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
         if (astro->stage < game->astroid_num_stages)
           splitAstroid(game, astro, ASTROID_SPLIT_SCALE, ASTROID_SPLIT_NUM_PARTITIONS);
         else
-          astro->obj.alive = false;
-        shoot->obj.alive = false;
+          objChangeState(&astro->obj, OBJ_STATE_DEAD, 0);
+        objChangeState(&shoot->obj, OBJ_STATE_DEAD, 0);
       }
     }
   }
@@ -452,13 +448,13 @@ Game *gameRender(Game *game) {
   
   for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];
-    if (shoot->obj.alive)
+    if (OBJ_ALIVE(shoot->obj))
       renderGameObj(&shoot->obj);
   }
 
   for (int i = 0; i < game->max_num_astroids; i++) {
     GameObj *astro = &game->astroids[i].obj;
-    if (astro->alive)
+    if (OBJ_ALIVE(*astro))
       renderGameObj(astro);
   }
 
