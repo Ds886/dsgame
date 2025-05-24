@@ -23,7 +23,6 @@ void crossScreen(vec2 *pos) {
     }
 }
 
-
 GameObj newGameObj(
     Polygon poly, vec2 pos, float velocity,
     float rotation, Color color, bool collidable
@@ -65,6 +64,16 @@ Shoot *findShootToReuse(Shoot *shoots, int len_shoots) {
   return NULL;
 }
 
+bool objChangeState(GameObj *obj, enum obj_state new_state, int wait) {
+  if(ELAPSED(obj->state_time) >= wait) {
+    obj->state = new_state;
+    obj->state_time = frame;
+    obj->collidable = (new_state == OBJ_STATE_NORMAL);
+    return true;
+  }
+
+  return false;
+}
 
 Ship newShip(
     vec2 pos, float width, float height, float accel,
@@ -83,6 +92,9 @@ Ship newShip(
   ship.shoot_freq = initial_shoot_freq;
   ship.lives = lives;
   ship.obj = newGameObj(poly, pos, 0, 0, color, false);
+
+  for (int i=0; i<max_num_shoots; i++)
+    objChangeState(&shoots[i].obj, OBJ_STATE_DEAD, 0);
 
   return ship;
 }
@@ -139,17 +151,6 @@ Game *gameStart(
 
   
   return game;
-}
-
-bool objChangeState(GameObj *obj, enum obj_state new_state, int wait) {
-  if(ELAPSED(obj->state_time) >= wait) {
-    obj->state = new_state;
-    obj->state_time = frame;
-    obj->collidable = (new_state == OBJ_STATE_NORMAL);
-    return true;
-  }
-
-  return false;
 }
 
 void rotateGameObj(GameObj *obj, float degrees) {
