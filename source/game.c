@@ -238,12 +238,11 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
       objChangeState(&ship->obj, OBJ_STATE_NORMAL);
     }
     break;
-  case OBJ_STATE_READY_REBORN:
   case OBJ_STATE_DYING:
     elapsed = ELAPSED(ship->obj.state_time);
     if(elapsed > SHIP_ANIMATION_TIME) {
       if(ship->lives > 1) {
-        objChangeState(&ship->obj, OBJ_STATE_READY_REBORN);
+        objChangeState(&ship->obj, OBJ_STATE_BORN);
         ship->obj.collidable = true;
       } else
         objChangeState(&ship->obj, OBJ_STATE_DEAD);
@@ -363,7 +362,7 @@ void respawnShip(Game *game) {
 
 Game *gameLogic(Game *game, uint16_t keys) {
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
-  if (game->ship->obj.state == OBJ_STATE_READY_REBORN)
+  if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
       respawnShip(game);
 
   if (game->frame % 50 == 19) {
