@@ -141,6 +141,11 @@ Game *gameStart(
   return game;
 }
 
+void objChangeState(GameObj *obj, enum obj_state new_state) {
+  obj->state = new_state;
+  obj->state_time = frame;
+}
+
 void rotateGameObj(GameObj *obj, float degrees) {
   matrix rotate = rotation_matrix_2d(degrees);
   obj->polygon = transform(&obj->polygon, rotate);
@@ -167,8 +172,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   switch(ship->obj.state) {
   case OBJ_STATE_NORMAL:
     if (!ship->obj.alive) {
-      ship->obj.state = OBJ_STATE_DYING;
-      ship->obj.state_time = frame;
+      objChangeState(&ship->obj, OBJ_STATE_DYING);
       ship->obj.collidable = false;
 
       return;
@@ -231,7 +235,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   case OBJ_STATE_BORN:
     int elapsed = ELAPSED(ship->obj.state_time);
     if(elapsed > SHIP_ANIMATION_TIME) {
-      ship->obj.state = OBJ_STATE_NORMAL;
+      objChangeState(&ship->obj, OBJ_STATE_NORMAL);
       ship->obj.collidable = true;
     }
     break;
@@ -240,10 +244,10 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     elapsed = ELAPSED(ship->obj.state_time);
     if(elapsed > SHIP_ANIMATION_TIME) {
       if(ship->lives > 1) {
-        ship->obj.state = OBJ_STATE_READY_REBORN;
+        objChangeState(&ship->obj, OBJ_STATE_READY_REBORN);
         ship->obj.collidable = true;
       } else
-        ship->obj.state = OBJ_STATE_DEAD;
+        objChangeState(&ship->obj, OBJ_STATE_DEAD);
     }
     break;
   case OBJ_STATE_DEAD:
@@ -353,7 +357,7 @@ void respawnShip(Game *game) {
       }
   } while(!good_place && tries < 20);
 
-  ship->obj.state = OBJ_STATE_BORN;
+  objChangeState(&ship->obj, OBJ_STATE_BORN);
   ship->lives--;
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false);
 }
