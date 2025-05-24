@@ -116,7 +116,6 @@ Game *gameStart(
     int player_lives,
     Color player_color) 
 {
-  game->frame = 0;
   game->keys = 0;
   game->friction = friction;
   game->ship = ship;
@@ -370,7 +369,7 @@ Game *gameLogic(Game *game, uint16_t keys) {
   if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
       respawnShip(game);
 
-  if (game->frame % 50 == 19) {
+  if (frame % 50 == 19) {
     spawnFirstStageAstroid(game);
   }
 
@@ -401,7 +400,6 @@ Game *gameLogic(Game *game, uint16_t keys) {
   }
 
   game->keys = keys;
-  game->frame++;
   frame++;
 
   return game;

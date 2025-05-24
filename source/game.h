@@ -83,7 +83,6 @@ typedef struct astroid_t {
 } Astroid;
 
 typedef struct game_t {
-  int frame;
   uint16_t keys;
   float friction;
   Ship *ship;
