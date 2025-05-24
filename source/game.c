@@ -144,6 +144,7 @@ Game *gameStart(
 void objChangeState(GameObj *obj, enum obj_state new_state) {
   obj->state = new_state;
   obj->state_time = frame;
+  obj->collidable = (new_state == OBJ_STATE_NORMAL);
 }
 
 void rotateGameObj(GameObj *obj, float degrees) {
@@ -173,7 +174,6 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   case OBJ_STATE_NORMAL:
     if (!ship->obj.alive) {
       objChangeState(&ship->obj, OBJ_STATE_DYING);
-      ship->obj.collidable = false;
 
       return;
     }
@@ -236,7 +236,6 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     int elapsed = ELAPSED(ship->obj.state_time);
     if(elapsed > SHIP_ANIMATION_TIME) {
       objChangeState(&ship->obj, OBJ_STATE_NORMAL);
-      ship->obj.collidable = true;
     }
     break;
   case OBJ_STATE_READY_REBORN:
