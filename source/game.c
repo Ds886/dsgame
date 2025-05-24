@@ -404,7 +404,11 @@ Game *gameLogic(Game *game, uint16_t keys) {
 }
 
 void renderGameObjTransformed(GameObj *obj, matrix trans) {
-  renderPolygonTransformed(&obj->polygon, obj->position, trans, obj->color);
+  //TODO: changing color for debug purposes only!
+  Color c = obj->color;
+  if (!obj->collidable)
+    c = make_vec(1, 1, 1);
+  renderPolygonTransformed(&obj->polygon, obj->position, trans, c);
 }
 
 void renderGameObj(GameObj *obj) {
