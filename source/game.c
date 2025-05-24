@@ -23,6 +23,16 @@ void crossScreen(vec2 *pos) {
     }
 }
 
+bool objChangeState(GameObj *obj, enum obj_state new_state, int wait) {
+  if(ELAPSED(obj->state_time) >= wait) {
+    obj->state = new_state;
+    obj->state_time = frame;
+    obj->collidable = (new_state == OBJ_STATE_NORMAL);
+    return true;
+  }
+
+  return false;
+}
 
 GameObj newGameObj(
     Polygon poly, vec2 pos, float velocity,
@@ -142,17 +152,6 @@ Game *gameStart(
 
   
   return game;
-}
-
-bool objChangeState(GameObj *obj, enum obj_state new_state, int wait) {
-  if(ELAPSED(obj->state_time) >= wait) {
-    obj->state = new_state;
-    obj->state_time = frame;
-    obj->collidable = (new_state == OBJ_STATE_NORMAL);
-    return true;
-  }
-
-  return false;
 }
 
 void rotateGameObj(GameObj *obj, float degrees) {
