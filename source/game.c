@@ -241,7 +241,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     objChangeState(&ship->obj, OBJ_STATE_NORMAL, SHIP_ANIMATION_TIME);
     break;
   case OBJ_STATE_DYING:
-    if(ship->lives > 1)
+    if(ship->lives > 0)
       objChangeState(&ship->obj, OBJ_STATE_BORN, SHIP_ANIMATION_TIME);
     else
       objChangeState(&ship->obj, OBJ_STATE_DEAD, SHIP_ANIMATION_TIME);

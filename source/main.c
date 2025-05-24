@@ -81,7 +81,7 @@ int main(int argc, char **argv)
         gameRender(&game);
 
 
-        printf("Lives: %d\n", poly.lives);
+        printf("Lives: %d\n", poly.lives+1);
         printf("Ship State: %d\n", poly.obj.state);
         printf("ship born: %d\n", poly.obj.state_time);
 
