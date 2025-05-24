@@ -141,10 +141,15 @@ Game *gameStart(
   return game;
 }
 
-void objChangeState(GameObj *obj, enum obj_state new_state) {
-  obj->state = new_state;
-  obj->state_time = frame;
-  obj->collidable = (new_state == OBJ_STATE_NORMAL);
+bool objChangeState(GameObj *obj, enum obj_state new_state, int wait) {
+  if(ELAPSED(obj->state_time) >= wait) {
+    obj->state = new_state;
+    obj->state_time = frame;
+    obj->collidable = (new_state == OBJ_STATE_NORMAL);
+    return true;
+  }
+
+  return false;
 }
 
 void rotateGameObj(GameObj *obj, float degrees) {
@@ -173,7 +178,7 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
   switch(ship->obj.state) {
   case OBJ_STATE_NORMAL:
     if (!ship->obj.alive) {
-      objChangeState(&ship->obj, OBJ_STATE_DYING);
+      objChangeState(&ship->obj, OBJ_STATE_DYING, 0);
 
       return;
     }
@@ -233,20 +238,13 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
     crossScreen(&ship->obj.position);
     break;
   case OBJ_STATE_BORN:
-    int elapsed = ELAPSED(ship->obj.state_time);
-    if(elapsed > SHIP_ANIMATION_TIME) {
-      objChangeState(&ship->obj, OBJ_STATE_NORMAL);
-    }
+    objChangeState(&ship->obj, OBJ_STATE_NORMAL, SHIP_ANIMATION_TIME);
     break;
   case OBJ_STATE_DYING:
-    elapsed = ELAPSED(ship->obj.state_time);
-    if(elapsed > SHIP_ANIMATION_TIME) {
-      if(ship->lives > 1) {
-        objChangeState(&ship->obj, OBJ_STATE_BORN);
-        ship->obj.collidable = true;
-      } else
-        objChangeState(&ship->obj, OBJ_STATE_DEAD);
-    }
+    if(ship->lives > 1)
+      objChangeState(&ship->obj, OBJ_STATE_BORN, SHIP_ANIMATION_TIME);
+    else
+      objChangeState(&ship->obj, OBJ_STATE_DEAD, SHIP_ANIMATION_TIME);
     break;
   case OBJ_STATE_DEAD:
     printf("Game Over\n");
@@ -280,7 +278,7 @@ bool astroidGameLogic(Astroid *astro) {
     astro->obj.polygon = transform(&astro->obj.polygon, m);
     break;
   case OBJ_STATE_BORN:
-    objChangeState(&astro->obj, OBJ_STATE_NORMAL);
+    objChangeState(&astro->obj, OBJ_STATE_NORMAL, 0);
     break;
   default:
     printf("where's my astroid?\n");
@@ -365,7 +363,7 @@ void respawnShip(Game *game) {
       }
   } while(!good_place && tries < 20);
 
-  objChangeState(&ship->obj, OBJ_STATE_BORN);
+  objChangeState(&ship->obj, OBJ_STATE_BORN, 0);
   ship->lives--;
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false);
 }
