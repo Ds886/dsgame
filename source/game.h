@@ -75,6 +75,7 @@ typedef struct ship_t {
     float shoot_freq;
     int max_num_shoots;
     int lives;
+    bool is_moving;
 } Ship;
 
 typedef struct astroid_t {

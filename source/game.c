@@ -90,6 +90,7 @@ Ship newShip(
   ship.max_num_shoots = max_num_shoots;
   ship.shoot_freq = initial_shoot_freq;
   ship.lives = lives;
+  ship.is_moving = false;
   ship.obj = newGameObj(poly, pos, 0, 0, color, false);
 
   for (int i=0; i<max_num_shoots; i++)
@@ -196,7 +197,9 @@ void shipGameLogic(Ship *ship, float gameFriction, uint16_t keys, uint16_t press
       rotateGameObj(&ship->obj, ship->rotation_speed);
     }
 
+    ship->is_moving = false;
     if (keys & KEY_UP) {
+      ship->is_moving = true;
       if (ship->obj.velocity < ship->max_velocity)
         ship->obj.velocity += ship->acceleration;
     }
