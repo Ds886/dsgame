@@ -84,7 +84,11 @@ Ship newShip(
 ) {
   Ship ship;
   Polygon poly = isoscelesTriangleCentered(PLAYER_WIDTH, PLAYER_HEIGHT);
+  Polygon visu = isoscelesTriangleCentered(PLAYER_WIDTH/2, PLAYER_HEIGHT/2);
 
+  visu = transform(&visu, rotation_matrix_2d(180));
+  polygonMove(&visu, make_vec(0, 2*PLAYER_HEIGHT/3, 0));
+  
   ship.acceleration = accel;
   ship.rotation_speed = rotation_speed;
   ship.max_velocity = max_velocity;
@@ -93,7 +97,7 @@ Ship newShip(
   ship.shoot_freq = initial_shoot_freq;
   ship.lives = lives;
   ship.is_moving = false;
-  ship.obj = newGameObj(poly, pos, 0, 0, color, false, poly);
+  ship.obj = newGameObj(poly, pos, 0, 0, color, false, visu);
 
   for (int i=0; i<max_num_shoots; i++)
     objChangeState(&shoots[i].obj, OBJ_STATE_DEAD, 0);
@@ -452,7 +456,7 @@ Game *gameRender(Game *game) {
     break;
   }
 
-  renderGameObjTransformed(&game->ship->obj, m, false);
+  renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
   
   for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];
