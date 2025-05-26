@@ -36,7 +36,8 @@ bool objChangeState(GameObj *obj, enum obj_state new_state, int wait) {
 
 GameObj newGameObj(
     Polygon poly, vec2 pos, float velocity,
-    float rotation, Color color, bool collidable
+    float rotation, Color color, bool collidable,
+    Polygon visual
 ) {
     GameObj ret;
 
@@ -48,6 +49,7 @@ GameObj newGameObj(
     ret.collidable = collidable;
     ret.state_time = frame;
     ret.state = OBJ_STATE_BORN;
+    ret.visual = visual;
 
     return ret;
 }
@@ -91,7 +93,7 @@ Ship newShip(
   ship.shoot_freq = initial_shoot_freq;
   ship.lives = lives;
   ship.is_moving = false;
-  ship.obj = newGameObj(poly, pos, 0, 0, color, false);
+  ship.obj = newGameObj(poly, pos, 0, 0, color, false, poly);
 
   for (int i=0; i<max_num_shoots; i++)
     objChangeState(&shoots[i].obj, OBJ_STATE_DEAD, 0);
@@ -155,6 +157,7 @@ Game *gameStart(
 void rotateGameObj(GameObj *obj, float degrees) {
   matrix rotate = rotation_matrix_2d(degrees);
   obj->polygon = transform(&obj->polygon, rotate);
+  obj->visual = transform(&obj->visual, rotate);
   obj->rotation += degrees;
 }
 
@@ -170,7 +173,8 @@ void spawnShoot(Ship *ship) {
   shoot->shooter = ship;
   shoot->obj = newGameObj(
     line, ship->obj.position, 10,
-    rot, ship->obj.color, true
+    rot, ship->obj.color, true,
+    line
   );
 }
 
@@ -300,7 +304,8 @@ Astroid *spawnAstroid(Game *game, int stage, float scale, vector pos, float rot)
   poly = transform(&poly, mat_scaling(scale_fact));
   astro->obj = newGameObj(
     poly, pos, game->astroid_velocity,
-    rot + 90, ASTROID_COLOR, true);
+    rot + 90, ASTROID_COLOR, true,
+    poly);
 
   centralizePolygon(&astro->obj.polygon);
 
@@ -364,7 +369,7 @@ void respawnShip(Game *game) {
 
   objChangeState(&ship->obj, OBJ_STATE_BORN, 0);
   ship->lives--;
-  ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false);
+  ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false, ship->obj.visual);
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
@@ -408,16 +413,18 @@ Game *gameLogic(Game *game, uint16_t keys) {
   return game;
 }
 
-void renderGameObjTransformed(GameObj *obj, matrix trans) {
+void renderGameObjTransformed(GameObj *obj, matrix trans, bool render_visual) {
   //TODO: changing color for debug purposes only!
   Color c = obj->color;
   if (!obj->collidable)
     c = make_vec(1, 1, 1);
   renderPolygonTransformed(&obj->polygon, obj->position, trans, c);
+  if (render_visual)
+    renderPolygonTransformed(&obj->visual, obj->position, trans, make_vec(1, 0.6, 0.1));
 }
 
-void renderGameObj(GameObj *obj) {
-  renderGameObjTransformed(obj, mat_identity());
+void renderGameObj(GameObj *obj, bool render_visual) {
+  renderGameObjTransformed(obj, mat_identity(), render_visual);
 }
 
 Game *gameRender(Game *game) { 
@@ -444,19 +451,19 @@ Game *gameRender(Game *game) {
     m = mat_identity();
     break;
   }
-  
-  renderGameObjTransformed(&game->ship->obj, m);
+
+  renderGameObjTransformed(&game->ship->obj, m, false);
   
   for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];
     if (OBJ_ALIVE(shoot->obj))
-      renderGameObj(&shoot->obj);
+      renderGameObj(&shoot->obj, false);
   }
 
   for (int i = 0; i < game->max_num_astroids; i++) {
     GameObj *astro = &game->astroids[i].obj;
     if (OBJ_ALIVE(*astro))
-      renderGameObj(astro);
+      renderGameObj(astro, false);
   }
 
   return game;  

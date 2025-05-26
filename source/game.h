@@ -51,6 +51,7 @@ enum obj_state {
 
 typedef struct game_obj_t {
     Polygon polygon;
+    Polygon visual;
     vec2 position;
     float velocity;
     float rotation;
