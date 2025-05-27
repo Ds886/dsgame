@@ -37,5 +37,7 @@ Polygon boundingBox(Polygon *poly);
 
 Polygon transform(Polygon *poly, matrix trans);
 
+void polygonMove(Polygon *poly, vector v);
+
 bool checkCollision(Polygon *poly1, vector pos1, Polygon *poly2, vector pos2, Polygon *collision);
 #endif

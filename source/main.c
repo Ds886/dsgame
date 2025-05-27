@@ -47,6 +47,8 @@ int main(int argc, char **argv)
     Astroid astroids[MAX_NUM_ASTROIDS];
     Shoot shoots[MAX_NUM_SHOOTS];
 
+
+    char *mem_end = (char*)(shoots + MAX_NUM_SHOOTS);
     gameStart(
         &game,
         &poly,
@@ -80,11 +82,11 @@ int main(int argc, char **argv)
 
         gameRender(&game);
 
-        for (int i =0; i < MAX_NUM_ASTROIDS; i++) {
-            printf("%d, ", astroids[i].stage);
-        }
-        printf("\n");
-        printf("Lives: %d\n", poly.lives);
+        printf("MEM: %p (%d)\n", &game, (int)(&game));
+        printf("Memory required: %d\n", (int)(mem_end - (char*)&game));
+        printf("Lives: %d\n", poly.lives+1);
+        printf("Ship State: %d\n", poly.obj.state);
+        printf("ship born: %d\n", poly.obj.state_time);
 
         glEnd2D();
         glFlush(0);

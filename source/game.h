@@ -31,15 +31,34 @@
 
 #define OUT_OF_BOUNDS(p, a) ((X(p) < 0) || (Y(p) < 0) || (X(p) >= GAME_SCREEN_WIDTH+(a)) ||( Y(p) >= GAME_SCREEN_HEIGHT+(a)))
 
+#define OBJ_ALIVE(obj) ((obj).state != OBJ_STATE_DEAD)
+
+//TODO: this will fail after 2^32 frames!
+// must take care of overflow!
+#define ELAPSED_BETWEEN(a, b) ((b) - (a))
+
+#define SHIP_ANIMATION_TIME 10
+
 struct ship_t;
 
+enum obj_state {
+    OBJ_STATE_NONE,
+    OBJ_STATE_NORMAL,
+    OBJ_STATE_DYING,   //Transitory
+    OBJ_STATE_DEAD,
+    OBJ_STATE_BORN     //Transitory
+};
+
 typedef struct game_obj_t {
-    bool alive;
     Polygon polygon;
+    Polygon visual;
     vec2 position;
     float velocity;
     float rotation;
+    bool collidable;
     Color color;
+    int state_time;
+    enum obj_state state;
 } GameObj;
 
 typedef struct shoot_t {
@@ -57,6 +76,7 @@ typedef struct ship_t {
     float shoot_freq;
     int max_num_shoots;
     int lives;
+    bool is_moving;
 } Ship;
 
 typedef struct astroid_t {
@@ -65,7 +85,6 @@ typedef struct astroid_t {
 } Astroid;
 
 typedef struct game_t {
-  int frame;
   uint16_t keys;
   float friction;
   Ship *ship;
