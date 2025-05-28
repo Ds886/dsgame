@@ -99,6 +99,7 @@ typedef struct game_t {
   float astroid_size;
   float astroid_velocity;
   int astroid_num_stages;
+  Stats stats;
 } Game;
 
 Game *gameStart(
