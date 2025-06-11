@@ -27,5 +27,18 @@ void renderPolygon(Polygon *poly, vector pos, Color color) {
         );
     }
 
+    // TODO: this is a workaround for drawing lines.
+    // a better method is required.
+    if (poly->num_vertices == 2) {
+        vector vertex = vec_add(VERTEX(poly, 1), pos);
+        vertex = vec_add(vertex, MAKE_VEC2(1, 0));
+        
+        glVertex3f(
+            GLX(X(vertex)),
+            GLY(Y(vertex)),
+            0
+        );
+    }
+
     glEnd();
 }
