@@ -98,6 +98,7 @@ Ship newShip(
   ship.lives = lives;
   ship.is_moving = false;
   ship.obj = newGameObj(poly, pos, 0, 0, color, false, visu);
+  ship.obj.state = OBJ_STATE_NONE;
 
   for (int i=0; i<max_num_shoots; i++)
     objChangeState(&shoots[i].obj, OBJ_STATE_DEAD, 0);
@@ -380,6 +381,9 @@ Game *gameLogic(Game *game, uint16_t keys) {
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
       respawnShip(game);
+
+  if (game->ship->obj.state == OBJ_STATE_NONE)
+    objChangeState(&game->ship->obj, OBJ_STATE_BORN, 0);
 
   if (frame % 50 == 19) {
     spawnFirstStageAstroid(game);
