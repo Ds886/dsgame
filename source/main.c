@@ -74,8 +74,6 @@ int main(int argc, char **argv)
 
         gameLogic(&game, keys);
 
-        glBegin2D();
-        glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
 
         gameRender(&game);
 
@@ -85,7 +83,6 @@ int main(int argc, char **argv)
         printf("MEM: %p (%d)\n", &game, (int)(&game));
         printf("Memory required: %d\n", (int)(mem_end - (char*)&game));
 
-        glEnd2D();
         glFlush(0);
     }
 
