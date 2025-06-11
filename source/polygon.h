@@ -5,7 +5,7 @@
 
 #include <nds.h>
 
-#define POLYGON_MAX_VERTICES 20
+#define POLYGON_MAX_VERTICES 5
 
 #define VERTEX(p, i) ((p)->v[i])
 

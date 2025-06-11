@@ -18,12 +18,13 @@
 #define PLAYER_HALF_HEIGHT (PLAYER_HEIGHT / 2)
 
 #define ASTROID_COLOR make_vec(0.5, 0.5, 0.15)
-#define ASTRO_NUM_VERTICES 7
+#define ASTRO_NUM_VERTICES 5
 #define ASTROID_ANIMATION_SPEED 2
 #define SHOOT_SIZE 10
 #define ASTROID_SPLIT_SCALE 0.5
 #define ASTROID_SPLIT_NUM_PARTITIONS 2
-
+#define POINTS_PER_ASTRO 100
+#define POINTS_STAGE_RATIO 0.6
 
 #define CHANGED_KEYS(g, k)  (((g)->keys) ^ (k))
 #define PRESSED_KEYS(g, k)  ((~(g)->keys) & (k))
@@ -84,6 +85,11 @@ typedef struct astroid_t {
     int stage;
 } Astroid;
 
+typedef struct stats_t {
+    int num_astroids_destroied;
+    unsigned int score;
+} Stats;
+
 typedef struct game_t {
   uint16_t keys;
   float friction;
@@ -93,6 +99,7 @@ typedef struct game_t {
   float astroid_size;
   float astroid_velocity;
   int astroid_num_stages;
+  Stats stats;
 } Game;
 
 Game *gameStart(

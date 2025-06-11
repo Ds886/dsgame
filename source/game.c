@@ -402,11 +402,18 @@ Game *gameLogic(Game *game, uint16_t keys) {
       if (!OBJ_ALIVE(shoot->obj))
         continue;
       if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
-        if (astro->stage < game->astroid_num_stages)
+        float scale = 1;
+        for (int i = 0; i < astro->stage-1;i++)
+          scale *= POINTS_STAGE_RATIO;
+        
+        if (astro->stage < game->astroid_num_stages) {
           splitAstroid(game, astro, ASTROID_SPLIT_SCALE, ASTROID_SPLIT_NUM_PARTITIONS);
-        else
+        } else {
           objChangeState(&astro->obj, OBJ_STATE_DEAD, 0);
+        }
         objChangeState(&shoot->obj, OBJ_STATE_DEAD, 0);
+        game->stats.score += POINTS_PER_ASTRO * scale;
+        game->stats.num_astroids_destroied++;
       }
     }
   }

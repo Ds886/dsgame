@@ -82,11 +82,11 @@ int main(int argc, char **argv)
 
         gameRender(&game);
 
+        printf("Lives: %d\n", poly.lives);
+        printf("Score: %d\n", game.stats.score);
+        printf("Astros destroied: %d\n", game.stats.num_astroids_destroied);
         printf("MEM: %p (%d)\n", &game, (int)(&game));
         printf("Memory required: %d\n", (int)(mem_end - (char*)&game));
-        printf("Lives: %d\n", poly.lives+1);
-        printf("Ship State: %d\n", poly.obj.state);
-        printf("ship born: %d\n", poly.obj.state_time);
 
         glEnd2D();
         glFlush(0);
