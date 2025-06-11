@@ -90,8 +90,13 @@ Polygon regularPolygon(int num_vertices, float size) {
 
   res.num_vertices = num_vertices;
 
+  int j;
   for (int i = 0; i < num_vertices; i++) {
-    float rot = ((float)i * 360) / num_vertices;
+    if (i % 2 == 0)
+      j = num_vertices - i/2;
+    else
+      j = (i + 1) / 2;
+    float rot = ((float)j * 360) / num_vertices;
     s16 bin_rotation = degreesToAngle(rot);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);
