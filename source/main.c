@@ -19,9 +19,6 @@
 #include "polygon.h"
 #include "game.h"
 
-#define GAME_SCREEN_WIDTH 256
-#define GAME_SCREEN_HEIGHT 192
-#define GAME_SCREEN_BOUNDS 2
 #define PLAYER_ACCEL 0.2
 #define ROTATION_SPEED 3
 #define PLAYER_MAX_VELOCITY 10
