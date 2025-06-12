@@ -79,7 +79,7 @@ Polygon almostRegularPolygon(int num_vertices, float size, float diviation) {
   Polygon res = regularPolygon(num_vertices, size);
   for (int i=0; i< num_vertices; i++) {
     vector *v = &VERTEX(&res, i);
-    *v = vec_add(*v, MAKE_VEC2(rand() % 35, rand() %35));
+    *v = vec_add(*v, MAKE_VEC2(rand() % 10, rand() %10));
   }
 
   return res;
