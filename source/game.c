@@ -461,9 +461,6 @@ Game *gameRender(Game *game) {
     renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   case OBJ_STATE_DEAD:
-    //TODO: such a dirty hack!
-    m = mat_scaling(1000);
-    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   default:
     m = mat_identity();
