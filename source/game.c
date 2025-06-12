@@ -452,22 +452,25 @@ Game *gameRender(Game *game) {
     elapsed = ELAPSED(game->ship->obj.state_time);
     sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   case OBJ_STATE_DYING:
     elapsed = ELAPSED(game->ship->obj.state_time);
     sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   case OBJ_STATE_DEAD:
     //TODO: such a dirty hack!
     m = mat_scaling(1000);
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   default:
     m = mat_identity();
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   }
 
-  renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
   
   for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];
