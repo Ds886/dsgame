@@ -15,9 +15,6 @@ typedef vector Color;
 #define GAME_SCREEN_WIDTH 256
 #define GAME_SCREEN_HEIGHT 192
 
-#define GLX(x) ((2*(float)(x) / (GAME_SCREEN_WIDTH)) - 1)
-#define GLY(y) (1 - (2*(float)(y) / (GAME_SCREEN_HEIGHT)))
-
 void renderPolygonTransformed(Polygon *poly, vector pos,  matrix m, Color color);
 void renderPolygon(Polygon *poly, vector pos, Color color);
 

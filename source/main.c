@@ -37,6 +37,7 @@ int main(int argc, char **argv)
     videoSetMode(MODE_5_3D);
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
+    glBegin2D();
 
     Game game;
     Color colorBase = make_vec(0.999, 0.1, 0.0);
@@ -87,6 +88,7 @@ int main(int argc, char **argv)
     }
 
     gameEnd(&game);
+    glEnd2D();
     
     return 0;
 }

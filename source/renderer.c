@@ -20,9 +20,9 @@ void renderPolygon(Polygon *poly, vector pos, Color color) {
     for (int i = 0; i < poly->num_vertices; i++) {
         vector vertex = vec_add(VERTEX(poly, i), pos);
         
-        glVertex3f(
-            GLX(X(vertex)),
-            GLY(Y(vertex)),
+        glVertex3v16(
+            X(vertex),
+            Y(vertex),
             0
         );
     }
@@ -33,9 +33,9 @@ void renderPolygon(Polygon *poly, vector pos, Color color) {
         vector vertex = vec_add(VERTEX(poly, 1), pos);
         vertex = vec_add(vertex, MAKE_VEC2(1, 0));
         
-        glVertex3f(
-            GLX(X(vertex)),
-            GLY(Y(vertex)),
+        glVertex3v16(
+            X(vertex),
+            Y(vertex),
             0
         );
     }
