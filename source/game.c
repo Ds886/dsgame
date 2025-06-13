@@ -132,6 +132,7 @@ Game *gameStart(
   game->astroid_size = astroid_initial_size;
   game->astroid_velocity = astroid_velocity;
   game->astroid_num_stages = astroid_num_stages;
+  game->screen = SCREEN_OPEN;
   
   vec2 vecPosition = make_vec(
       GAME_SCREEN_WIDTH / 2 - PLAYER_HALF_WIDTH,
@@ -378,53 +379,63 @@ void respawnShip(Game *game) {
 }
 
 Game *gameLogic(Game *game, uint16_t keys) {
-  shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
-  if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
-      respawnShip(game);
+  switch(game->screen) {
+  case SCREEN_MAIN:
+    shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
+    if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
+        respawnShip(game);
 
-  if (game->ship->obj.state == OBJ_STATE_NONE)
-    objChangeState(&game->ship->obj, OBJ_STATE_BORN, 0);
+    if (game->ship->obj.state == OBJ_STATE_NONE)
+      objChangeState(&game->ship->obj, OBJ_STATE_BORN, 0);
 
-  if (frame % 50 == 19) {
-    spawnFirstStageAstroid(game);
-  }
-
-  for (int i = 0; i < game->max_num_astroids; i++) {
-    if (OBJ_ALIVE(game->astroids[i].obj))
-      astroidGameLogic(&game->astroids[i]);
-
-    Astroid *astro = &game->astroids[i];
-    if (!OBJ_ALIVE(astro->obj))
-      continue;
-
-    if (checkObjCollision(&astro->obj, &game->ship->obj, NULL)) {
-      objChangeState(&game->ship->obj, OBJ_STATE_DYING, 0);
+    if (frame % 50 == 19) {
+      spawnFirstStageAstroid(game);
     }
 
-    for (int j=0 ;j < game->ship->max_num_shoots; j++){
-      Shoot *shoot = &game->ship->shoots[j];
-      if (!OBJ_ALIVE(shoot->obj))
+    for (int i = 0; i < game->max_num_astroids; i++) {
+      if (OBJ_ALIVE(game->astroids[i].obj))
+        astroidGameLogic(&game->astroids[i]);
+
+      Astroid *astro = &game->astroids[i];
+      if (!OBJ_ALIVE(astro->obj))
         continue;
-      if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
-        float scale = 1;
-        for (int i = 0; i < astro->stage-1;i++)
-          scale *= POINTS_STAGE_RATIO;
+
+      if (checkObjCollision(&astro->obj, &game->ship->obj, NULL)) {
+        objChangeState(&game->ship->obj, OBJ_STATE_DYING, 0);
+      }
+
+      for (int j=0 ;j < game->ship->max_num_shoots; j++){
+        Shoot *shoot = &game->ship->shoots[j];
+        if (!OBJ_ALIVE(shoot->obj))
+          continue;
+        if (checkObjCollision(&astro->obj, &shoot->obj, NULL)) {
+          float scale = 1;
+          for (int i = 0; i < astro->stage-1;i++)
+            scale *= POINTS_STAGE_RATIO;
         
-        if (astro->stage < game->astroid_num_stages) {
-          splitAstroid(game, astro, ASTROID_SPLIT_SCALE, ASTROID_SPLIT_NUM_PARTITIONS);
-        } else {
-          objChangeState(&astro->obj, OBJ_STATE_DEAD, 0);
+          if (astro->stage < game->astroid_num_stages) {
+            splitAstroid(game, astro, ASTROID_SPLIT_SCALE, ASTROID_SPLIT_NUM_PARTITIONS);
+          } else {
+            objChangeState(&astro->obj, OBJ_STATE_DEAD, 0);
+          }
+          objChangeState(&shoot->obj, OBJ_STATE_DEAD, 0);
+          game->stats.score += POINTS_PER_ASTRO * scale;
+          game->stats.num_astroids_destroied++;
         }
-        objChangeState(&shoot->obj, OBJ_STATE_DEAD, 0);
-        game->stats.score += POINTS_PER_ASTRO * scale;
-        game->stats.num_astroids_destroied++;
       }
     }
+
+    game->keys = keys;
+    break;
+  case SCREEN_OPEN:
+    printf("Opening screen will be implemented here\n");
+    break;
+  default:
+    printf("Unknown game screen (%d)\n", game->screen);
+    break;
   }
 
-  game->keys = keys;
   frame++;
-
   return game;
 }
 
@@ -442,45 +453,54 @@ void renderGameObj(GameObj *obj, bool render_visual) {
   renderGameObjTransformed(obj, mat_identity(), render_visual);
 }
 
-Game *gameRender(Game *game) { 
-  matrix m;
-  int elapsed;
-  float sc;
+Game *gameRender(Game *game) {
+  switch(game->screen) {
+  case SCREEN_MAIN:
+    matrix m;
+    int elapsed;
+    float sc;
 
-  switch (game->ship->obj.state) {
-  case OBJ_STATE_BORN:
-    elapsed = ELAPSED(game->ship->obj.state_time);
-    sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
-    m = mat_scaling(sc);
-    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
-    break;
-  case OBJ_STATE_DYING:
-    elapsed = ELAPSED(game->ship->obj.state_time);
-    sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
-    m = mat_scaling(sc);
-    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
-    break;
-  case OBJ_STATE_DEAD:
-    break;
-  default:
-    m = mat_identity();
-    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
-    break;
-  }
+    switch (game->ship->obj.state) {
+    case OBJ_STATE_BORN:
+      elapsed = ELAPSED(game->ship->obj.state_time);
+      sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
+      m = mat_scaling(sc);
+      renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
+      break;
+    case OBJ_STATE_DYING:
+      elapsed = ELAPSED(game->ship->obj.state_time);
+      sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
+      m = mat_scaling(sc);
+      renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
+      break;
+    case OBJ_STATE_DEAD:
+      break;
+    default:
+      m = mat_identity();
+      renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
+      break;
+    }
 
   
-  for (int i = 0; i < game->ship->max_num_shoots; i++) {
-    Shoot *shoot = &game->ship->shoots[i];
-    if (OBJ_ALIVE(shoot->obj))
-      renderGameObj(&shoot->obj, false);
-  }
+    for (int i = 0; i < game->ship->max_num_shoots; i++) {
+      Shoot *shoot = &game->ship->shoots[i];
+      if (OBJ_ALIVE(shoot->obj))
+        renderGameObj(&shoot->obj, false);
+    }
 
-  for (int i = 0; i < game->max_num_astroids; i++) {
-    GameObj *astro = &game->astroids[i].obj;
-    if (OBJ_ALIVE(*astro))
-      renderGameObj(astro, false);
+    for (int i = 0; i < game->max_num_astroids; i++) {
+      GameObj *astro = &game->astroids[i].obj;
+      if (OBJ_ALIVE(*astro))
+        renderGameObj(astro, false);
+    }
+    break;
+  case SCREEN_OPEN:
+    printf("Rendering opening screen!\n");
+    break;
+  default:
+    printf("cannot render unknown screen (%d)\n", game->screen);
+    break;
   }
-
   return game;  
 }
 

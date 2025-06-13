@@ -50,6 +50,12 @@ enum obj_state {
     OBJ_STATE_BORN     //Transitory
 };
 
+enum game_screen {
+    SCREEN_NONE,
+    SCREEN_OPEN,
+    SCREEN_MAIN
+};
+
 typedef struct game_obj_t {
     Polygon polygon;
     Polygon visual;
@@ -100,6 +106,7 @@ typedef struct game_t {
   float astroid_velocity;
   int astroid_num_stages;
   Stats stats;
+  enum game_screen screen;
 } Game;
 
 Game *gameStart(

@@ -78,6 +78,7 @@ int main(int argc, char **argv)
 
         printf("Lives: %d\n", poly.lives);
         printf("Score: %d\n", game.stats.score);
+        printf("screen: %d\n", game.screen);
         printf("Astros destroied: %d\n", game.stats.num_astroids_destroied);
         printf("MEM: %p (%d)\n", &game, (int)(&game));
         printf("Memory required: %d\n", (int)(mem_end - (char*)&game));
