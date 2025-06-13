@@ -79,7 +79,7 @@ Polygon almostRegularPolygon(int num_vertices, float size, float diviation) {
   Polygon res = regularPolygon(num_vertices, size);
   for (int i=0; i< num_vertices; i++) {
     vector *v = &VERTEX(&res, i);
-    *v = vec_add(*v, MAKE_VEC2(rand() % 35, rand() %35));
+    *v = vec_add(*v, MAKE_VEC2(rand() % 10, rand() %10));
   }
 
   return res;
@@ -90,8 +90,13 @@ Polygon regularPolygon(int num_vertices, float size) {
 
   res.num_vertices = num_vertices;
 
+  int j;
   for (int i = 0; i < num_vertices; i++) {
-    float rot = ((float)i * 360) / num_vertices;
+    if (i % 2 == 0)
+      j = num_vertices - i/2;
+    else
+      j = (i + 1) / 2;
+    float rot = ((float)j * 360) / num_vertices;
     s16 bin_rotation = degreesToAngle(rot);
     float cos = fixedToFloat(cosLerp(bin_rotation), 12);
     float sin = fixedToFloat(sinLerp(bin_rotation), 12);

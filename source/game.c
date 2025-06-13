@@ -98,6 +98,7 @@ Ship newShip(
   ship.lives = lives;
   ship.is_moving = false;
   ship.obj = newGameObj(poly, pos, 0, 0, color, false, visu);
+  ship.obj.state = OBJ_STATE_NONE;
 
   for (int i=0; i<max_num_shoots; i++)
     objChangeState(&shoots[i].obj, OBJ_STATE_DEAD, 0);
@@ -321,7 +322,7 @@ void splitAstroid(Game *game, Astroid *astro, float scale, int num_partitions) {
   float rot;
 
   for (int i = 0; i < num_partitions; i++) {
-    rot = (float)(random() % 30);
+    rot = (float)(random() % (170-40) + 40);
     spawnAstroid(game, astro->stage+1, scale, astro->obj.position, astro->obj.rotation + rot);
   }
 
@@ -380,6 +381,9 @@ Game *gameLogic(Game *game, uint16_t keys) {
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
       respawnShip(game);
+
+  if (game->ship->obj.state == OBJ_STATE_NONE)
+    objChangeState(&game->ship->obj, OBJ_STATE_BORN, 0);
 
   if (frame % 50 == 19) {
     spawnFirstStageAstroid(game);
@@ -448,22 +452,22 @@ Game *gameRender(Game *game) {
     elapsed = ELAPSED(game->ship->obj.state_time);
     sc = (float)(4 * (SHIP_ANIMATION_TIME - elapsed) +  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   case OBJ_STATE_DYING:
     elapsed = ELAPSED(game->ship->obj.state_time);
     sc = (float)(20 * elapsed + SHIP_ANIMATION_TIME -  elapsed)/SHIP_ANIMATION_TIME;
     m = mat_scaling(sc);
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   case OBJ_STATE_DEAD:
-    //TODO: such a dirty hack!
-    m = mat_scaling(1000);
     break;
   default:
     m = mat_identity();
+    renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
     break;
   }
 
-  renderGameObjTransformed(&game->ship->obj, m, game->ship->is_moving);
   
   for (int i = 0; i < game->ship->max_num_shoots; i++) {
     Shoot *shoot = &game->ship->shoots[i];

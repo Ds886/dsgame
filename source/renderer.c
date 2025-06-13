@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-#include <gl2d.h>
+#include <nds/arm9/videoGL.h>
 
 void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color color) {
     Polygon trans_poly = transform(poly, trans);
@@ -8,31 +8,37 @@ void renderPolygonTransformed(Polygon *poly, vector pos,  matrix trans, Color co
 }
 
 void renderPolygon(Polygon *poly, vector pos, Color color) {
-    vector first_vertex = make_vec(0,0,0);
-    vector prev_vertex = make_vec(0,0,0);
-    for (int i = 0; i < poly->num_vertices; i++) {
-        vector trans_vertex = vec_add(VERTEX(poly, i), pos);
-        
-        if (i > 0) {
-            glLine(
-                X(trans_vertex),
-                Y(trans_vertex),
-                X(prev_vertex),
-                Y(prev_vertex),
-                COLOR_TO_15BIT(color)
-            );
-        } else {
-            first_vertex = trans_vertex;
-        }
+    glBegin(GL_TRIANGLE_STRIP);
+    
+    glColor(COLOR_TO_15BIT(color));
 
-        prev_vertex = trans_vertex;
+    glPolyFmt(
+      POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0)
+    );
+
+
+    for (int i = 0; i < poly->num_vertices; i++) {
+        vector vertex = vec_add(VERTEX(poly, i), pos);
+        
+        glVertex3v16(
+            X(vertex),
+            Y(vertex),
+            0
+        );
     }
 
-    glLine(
-        X(first_vertex),
-        Y(first_vertex),
-        X(prev_vertex),
-        Y(prev_vertex),
-        COLOR_TO_15BIT(color)
-    );
+    // TODO: this is a workaround for drawing lines.
+    // a better method is required.
+    if (poly->num_vertices == 2) {
+        vector vertex = vec_add(VERTEX(poly, 1), pos);
+        vertex = vec_add(vertex, MAKE_VEC2(1, 0));
+        
+        glVertex3v16(
+            X(vertex),
+            Y(vertex),
+            0
+        );
+    }
+
+    glEnd();
 }

@@ -19,15 +19,12 @@
 #include "polygon.h"
 #include "game.h"
 
-#define GAME_SCREEN_WIDTH 256
-#define GAME_SCREEN_HEIGHT 192
-#define GAME_SCREEN_BOUNDS 2
 #define PLAYER_ACCEL 0.2
 #define ROTATION_SPEED 3
 #define PLAYER_MAX_VELOCITY 10
 #define MAX_NUM_ASTROIDS 20
 #define FRICTION 0.1
-#define ASTROID_SIZE 40
+#define ASTROID_SIZE 30
 #define ASTROID_VELOCITY 0.4
 #define MAX_NUM_SHOOTS 10
 #define INITIAL_SHOOT_FREQ 10
@@ -40,6 +37,7 @@ int main(int argc, char **argv)
     videoSetMode(MODE_5_3D);
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
+    glBegin2D();
 
     Game game;
     Color colorBase = make_vec(0.999, 0.1, 0.0);
@@ -77,8 +75,6 @@ int main(int argc, char **argv)
 
         gameLogic(&game, keys);
 
-        glBegin2D();
-        glPolyFmt(POLY_ALPHA(31) | POLY_CULL_NONE | POLY_ID(0));
 
         gameRender(&game);
 
@@ -88,11 +84,11 @@ int main(int argc, char **argv)
         printf("MEM: %p (%d)\n", &game, (int)(&game));
         printf("Memory required: %d\n", (int)(mem_end - (char*)&game));
 
-        glEnd2D();
         glFlush(0);
     }
 
     gameEnd(&game);
+    glEnd2D();
     
     return 0;
 }

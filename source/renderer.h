@@ -11,6 +11,10 @@
 
 typedef vector Color;
 
+//TODO: code dup! delete these!
+#define GAME_SCREEN_WIDTH 256
+#define GAME_SCREEN_HEIGHT 192
+
 void renderPolygonTransformed(Polygon *poly, vector pos,  matrix m, Color color);
 void renderPolygon(Polygon *poly, vector pos, Color color);
 
