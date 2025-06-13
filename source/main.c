@@ -74,8 +74,6 @@ int main(int argc, char **argv)
         uint16_t keys = keysHeld();
 
         gameLogic(&game, keys);
-
-
         gameRender(&game);
 
         printf("Lives: %d\n", poly.lives);
