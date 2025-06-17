@@ -428,7 +428,8 @@ Game *gameLogic(Game *game, uint16_t keys) {
     game->keys = keys;
     break;
   case SCREEN_OPEN:
-    printf("Opening screen will be implemented here\n");
+    if (keys == KEY_START)
+      game->screen = SCREEN_MAIN;    
     break;
   default:
     printf("Unknown game screen (%d)\n", game->screen);
@@ -495,7 +496,7 @@ Game *gameRender(Game *game) {
     }
     break;
   case SCREEN_OPEN:
-    printf("Rendering opening screen!\n");
+    printf("Press START\n");
     break;
   default:
     printf("cannot render unknown screen (%d)\n", game->screen);
