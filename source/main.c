@@ -31,6 +31,17 @@
 #define ASTROID_NUM_STAGES 3
 #define PLAYER_LIVES 3
 
+VideoMode getVideoModeForScreen(enum game_screen screen) {
+    switch(screen) {
+        case SCREEN_MAIN:
+            return MODE_0_2D;
+        case SCREEN_OPEN:
+            return MODE_0_2D;
+        default:
+            return MODE_0_2D;
+    }
+}
+
 void setTextMode(PrintConsole *console, PrintConsole *deb) {  
     int x = 3;
     int y = 11;
