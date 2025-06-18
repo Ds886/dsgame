@@ -31,12 +31,39 @@
 #define ASTROID_NUM_STAGES 3
 #define PLAYER_LIVES 3
 
+void setTextMode(PrintConsole *console, PrintConsole *deb) {  
+    int x = 3;
+    int y = 11;
+    int width = 20;
+    int height = 4;
+    videoSetMode(MODE_0_2D);
+    videoSetModeSub(MODE_0_2D);
+    vramSetBankA(VRAM_A_MAIN_BG);
+    vramSetBankC(VRAM_C_SUB_BG);
+    consoleInit(console, 3,
+                BgType_Text4bpp, BgSize_T_256x256,
+                31, 0, true, true);
+    consoleInit(deb, 3,
+                BgType_Text4bpp, BgSize_T_256x256,
+                31, 0, false, true);
+    consoleSelect(console);
+    consoleSetWindow(NULL, x, y, x + width, y + height);
+    consoleSetColor(NULL, CONSOLE_LIGHT_RED);
+}
+
 int main(int argc, char **argv)
 {
     consoleDemoInit();
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
     glBegin2D();
+
+    PrintConsole console;
+    PrintConsole debug_console;
+
+    videoSetMode(MODE_0_2D);
+    videoSetModeSub(MODE_0_2D);
+    setTextMode(&console, &debug_console);
 
     Game game;
     Color colorBase = make_vec(0.999, 0.1, 0.0);
@@ -68,18 +95,25 @@ int main(int argc, char **argv)
     while (1)
     {
         swiWaitForVBlank();
-        consoleClear();
         scanKeys();
         uint16_t keys = keysHeld();
+        consoleSelect(&console);
+        consoleClear();
 
         // TODO: for debug
-        if (keys & KEY_SELECT)
+        if (keys & KEY_SELECT){
             game.screen = SCREEN_OPEN;
+            setTextMode(&console, &debug_console);
+        }
 
-        videoSetMode(MODE_5_3D);
+        if (game.screen == SCREEN_MAIN)
+            videoSetMode(MODE_5_3D);
+
         gameLogic(&game, keys);
         gameRender(&game);
 
+        consoleSelect(&debug_console);
+        consoleClear();
         printf("Lives: %d\n", poly.lives);
         printf("Score: %d\n", game.stats.score);
         printf("screen: %d\n", game.screen);
