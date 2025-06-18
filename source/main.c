@@ -34,7 +34,6 @@
 int main(int argc, char **argv)
 {
     consoleDemoInit();
-    videoSetMode(MODE_5_3D);
     glScreen2D();
     glEnable(GL_TEXTURE_2D);
     glBegin2D();
@@ -77,6 +76,7 @@ int main(int argc, char **argv)
         if (keys & KEY_SELECT)
             game.screen = SCREEN_OPEN;
 
+        videoSetMode(MODE_5_3D);
         gameLogic(&game, keys);
         gameRender(&game);
 
