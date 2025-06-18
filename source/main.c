@@ -73,6 +73,10 @@ int main(int argc, char **argv)
         scanKeys();
         uint16_t keys = keysHeld();
 
+        // TODO: for debug
+        if (keys & KEY_SELECT)
+            game.screen = SCREEN_OPEN;
+
         gameLogic(&game, keys);
         gameRender(&game);
 
