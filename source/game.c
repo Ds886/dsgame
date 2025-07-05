@@ -1,4 +1,5 @@
 #include "game.h"
+#include "nds/input.h"
 
 #include <nds.h>
 
@@ -377,7 +378,12 @@ void respawnShip(Game *game) {
   ship->obj = newGameObj(ship->obj.polygon, pos, 0, ship->obj.rotation, ship->obj.color, false, ship->obj.visual);
 }
 
-Game *gameLogic(Game *game, uint16_t keys) {
+Game *gameLogic(enum game_scene* scene, Game *game, uint16_t keys) {
+  if (keysUp() & KEY_START) {
+    *scene = SCENE_MENU;
+
+    return game;
+  }
   shipGameLogic(game->ship, game->friction, keys, PRESSED_KEYS(game, keys));
   if (game->ship->obj.state == OBJ_STATE_BORN && !ELAPSED(game->ship->obj.state_time))
       respawnShip(game);

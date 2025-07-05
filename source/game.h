@@ -50,6 +50,12 @@ enum obj_state {
     OBJ_STATE_BORN     //Transitory
 };
 
+enum game_scene {
+    SCENE_NONE,
+    SCENE_MAIN,
+    SCENE_MENU
+};
+
 typedef struct game_obj_t {
     Polygon polygon;
     Polygon visual;
@@ -119,7 +125,7 @@ Game *gameStart(
     float player_max_velocity,
     int player_lives,
     Color player_color);
-Game *gameLogic(Game *game, uint16_t keys);
+Game *gameLogic(enum game_scene* scene, Game *game, uint16_t keys);
 Game *gameRender(Game *game);
 Game *gameEnd(Game *game);
 

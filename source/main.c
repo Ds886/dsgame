@@ -31,6 +31,18 @@
 #define ASTROID_NUM_STAGES 3
 #define PLAYER_LIVES 3
 
+
+
+int menuLogic(enum game_scene* scene,  u16 keys) {
+    printf("--MENU--\n");
+    if (keys & KEY_START){
+        *scene = SCENE_MAIN;
+    }
+
+
+    return 0;
+}
+
 int main(int argc, char **argv)
 {
     consoleDemoInit();
@@ -44,7 +56,7 @@ int main(int argc, char **argv)
     Ship poly;
     Astroid astroids[MAX_NUM_ASTROIDS];
     Shoot shoots[MAX_NUM_SHOOTS];
-
+    enum game_scene scene = SCENE_MENU;
 
     char *mem_end = (char*)(shoots + MAX_NUM_SHOOTS);
     gameStart(
@@ -72,11 +84,21 @@ int main(int argc, char **argv)
         consoleClear();
         scanKeys();
         uint16_t keys = keysHeld();
+        uint16_t keys_up = keysUp();
 
-        gameLogic(&game, keys);
+        switch(scene) {
+        case SCENE_MAIN:
+            gameLogic(&scene, &game, keys);
+            gameRender(&game);
+            break;
+        case SCENE_MENU:
+            menuLogic(&scene, keys_up);
+            break;
+        default:
+            printf("Where am I?\n");
+            break;
+        }
 
-
-        gameRender(&game);
 
         printf("Lives: %d\n", poly.lives);
         printf("Score: %d\n", game.stats.score);
